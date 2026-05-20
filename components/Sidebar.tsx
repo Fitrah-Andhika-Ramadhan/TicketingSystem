@@ -63,9 +63,9 @@ export default function Sidebar({ user }: SidebarProps) {
       href: '/analytics',
     },
     {
-      label: 'Users',
+      label: 'Team',
       icon: Users,
-      href: '/users',
+      href: '/team',
     },
   ];
 

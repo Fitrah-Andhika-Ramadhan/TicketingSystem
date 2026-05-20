@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Users, Mail, Phone, MapPin, Edit, Trash2, Plus } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
+import swal from '@/lib/swal';
 
 interface TeamMember {
   id: string;
@@ -65,10 +66,10 @@ export default function TeamPage() {
           id: '2',
           name: 'Budi Santoso',
           role: 'MANAGER',
-          position: 'Construction Manager',
-          email: 'budi@natagroup.com',
+          position: 'IT Support Manager',
+          email: 'budi@fitrahpro.com',
           phone: '+62812345679',
-          department: 'Construction',
+          department: 'IT Support',
           status: 'Active',
           joinDate: new Date('2023-02-01'),
           avatar: 'B',
@@ -77,8 +78,8 @@ export default function TeamPage() {
           id: '3',
           name: 'Siti Nurhaliza',
           role: 'MANAGER',
-          position: 'Quality Manager',
-          email: 'siti@natagroup.com',
+          position: 'SLA QA Lead',
+          email: 'siti@fitrahpro.com',
           phone: '+62812345680',
           department: 'Quality Assurance',
           status: 'Active',
@@ -89,10 +90,10 @@ export default function TeamPage() {
           id: '4',
           name: 'Roni Wijaya',
           role: 'CONTRACTOR',
-          position: 'Site Supervisor',
-          email: 'roni@contractor.com',
+          position: 'Senior Support Agent',
+          email: 'roni@fitrahpro.com',
           phone: '+62812345681',
-          department: 'Construction',
+          department: 'IT Support',
           status: 'Active',
           joinDate: new Date('2023-03-01'),
           avatar: 'R',
@@ -101,10 +102,10 @@ export default function TeamPage() {
           id: '5',
           name: 'Dewi Lestari',
           role: 'CONTRACTOR',
-          position: 'Safety Officer',
-          email: 'dewi@contractor.com',
+          position: 'Security Analyst',
+          email: 'dewi@fitrahpro.com',
           phone: '+62812345682',
-          department: 'Health & Safety',
+          department: 'IT Security',
           status: 'Active',
           joinDate: new Date('2023-03-10'),
           avatar: 'D',
@@ -113,8 +114,8 @@ export default function TeamPage() {
           id: '6',
           name: 'Andi Gunawan',
           role: 'VIEWER',
-          position: 'Administrator',
-          email: 'andi@natagroup.com',
+          position: 'System Administrator',
+          email: 'andi@fitrahpro.com',
           phone: '+62812345683',
           department: 'Administration',
           status: 'Active',
@@ -129,6 +130,124 @@ export default function TeamPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddMemberClick = () => {
+    swal.fire({
+      title: 'Tambah Anggota Tim',
+      html:
+        '<input id="swal-input-name" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama Lengkap">' +
+        '<input id="swal-input-position" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Jabatan">' +
+        '<input id="swal-input-email" type="email" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Email">' +
+        '<select id="swal-input-department" class="swal2-input border border-gray-250 p-2.5 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500">' +
+          '<option value="IT Support">IT Support</option>' +
+          '<option value="Quality Assurance">Quality Assurance</option>' +
+          '<option value="IT Security">IT Security</option>' +
+          '<option value="Management">Management</option>' +
+          '<option value="Administration">Administration</option>' +
+        '</select>',
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Tambah',
+      cancelButtonText: 'Batal',
+      preConfirm: () => {
+        const name = (document.getElementById('swal-input-name') as HTMLInputElement).value;
+        const position = (document.getElementById('swal-input-position') as HTMLInputElement).value;
+        const email = (document.getElementById('swal-input-email') as HTMLInputElement).value;
+        const department = (document.getElementById('swal-input-department') as HTMLSelectElement).value;
+        if (!name || !position || !email) {
+          swal.showValidationMessage('Semua kolom harus diisi!');
+          return false;
+        }
+        return { name, position, email, department };
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const val = result.value;
+        const newMember: TeamMember = {
+          id: String(teamMembers.length + 1),
+          name: val.name,
+          role: 'CONTRACTOR',
+          position: val.position,
+          email: val.email,
+          phone: '+62812' + Math.floor(10000000 + Math.random() * 90000000),
+          department: val.department,
+          status: 'Active',
+          joinDate: new Date(),
+          avatar: val.name.charAt(0).toUpperCase(),
+        };
+        setTeamMembers([...teamMembers, newMember]);
+        swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: 'Anggota tim baru berhasil ditambahkan.',
+        });
+      }
+    });
+  };
+
+  const handleEditMember = (member: TeamMember) => {
+    swal.fire({
+      title: 'Edit Anggota Tim',
+      html:
+        `<input id="swal-input-name" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" value="${member.name}" placeholder="Nama Lengkap">` +
+        `<input id="swal-input-position" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" value="${member.position}" placeholder="Jabatan">` +
+        `<input id="swal-input-email" type="email" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" value="${member.email}" placeholder="Email">` +
+        `<select id="swal-input-department" class="swal2-input border border-gray-250 p-2.5 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500">` +
+          `<option value="IT Support" ${member.department === 'IT Support' ? 'selected' : ''}>IT Support</option>` +
+          `<option value="Quality Assurance" ${member.department === 'Quality Assurance' ? 'selected' : ''}>Quality Assurance</option>` +
+          `<option value="IT Security" ${member.department === 'IT Security' ? 'selected' : ''}>IT Security</option>` +
+          `<option value="Management" ${member.department === 'Management' ? 'selected' : ''}>Management</option>` +
+          `<option value="Administration" ${member.department === 'Administration' ? 'selected' : ''}>Administration</option>` +
+        `</select>`,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Simpan',
+      cancelButtonText: 'Batal',
+      preConfirm: () => {
+        const name = (document.getElementById('swal-input-name') as HTMLInputElement).value;
+        const position = (document.getElementById('swal-input-position') as HTMLInputElement).value;
+        const email = (document.getElementById('swal-input-email') as HTMLInputElement).value;
+        const department = (document.getElementById('swal-input-department') as HTMLSelectElement).value;
+        if (!name || !position || !email) {
+          swal.showValidationMessage('Semua kolom harus diisi!');
+          return false;
+        }
+        return { name, position, email, department };
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const val = result.value;
+        setTeamMembers(teamMembers.map(m =>
+          m.id === member.id ? { ...m, name: val.name, position: val.position, email: val.email, department: val.department, avatar: val.name.charAt(0).toUpperCase() } : m
+        ));
+        swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: 'Data anggota tim berhasil diperbarui.',
+        });
+      }
+    });
+  };
+
+  const handleDeleteMember = (id: string, name: string) => {
+    swal.fire({
+      title: 'Apakah Anda yakin?',
+      text: `Anggota tim "${name}" akan dihapus secara permanen!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setTeamMembers(teamMembers.filter(m => m.id !== id));
+        swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: 'Anggota tim berhasil dihapus.',
+        });
+      }
+    });
   };
 
   if (!user) {
@@ -156,11 +275,11 @@ export default function TeamPage() {
     switch (dept) {
       case 'Management':
         return 'bg-purple-50';
-      case 'Construction':
+      case 'IT Support':
         return 'bg-yellow-50';
       case 'Quality Assurance':
         return 'bg-blue-50';
-      case 'Health & Safety':
+      case 'IT Security':
         return 'bg-red-50';
       case 'Administration':
         return 'bg-gray-50';
@@ -183,7 +302,10 @@ export default function TeamPage() {
                 <h1 className="text-3xl font-bold text-gray-900">Team Management</h1>
                 <p className="text-gray-600 mt-1">Manage project team members and roles</p>
               </div>
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button 
+                onClick={handleAddMemberClick}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Team Member
               </Button>
@@ -278,10 +400,19 @@ export default function TeamPage() {
                         Joined: {member.joinDate.toLocaleDateString()}
                       </span>
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleEditMember(member)}
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleDeleteMember(member.id, member.name)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
