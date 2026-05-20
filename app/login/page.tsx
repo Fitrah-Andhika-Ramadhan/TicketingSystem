@@ -5,12 +5,111 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, Sparkles, Activity, ShieldCheck, HelpCircle } from 'lucide-react';
-import { redirect } from 'next/navigation';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
-  // Bypass login and redirect to dashboard
-  redirect('/dashboard');
-  return null;
+  const router = useRouter();
+  const [email, setEmail] = useState('admin@fitrahpro.com');
+  const [password, setPassword] = useState('FitrahPro@2026');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showDemoHelp, setShowDemoHelp] = useState(true);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        toast.success('Login Berhasil! Selamat datang di VibeDesk.');
+
+        // Redirect to dashboard
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 800);
+      } else {
+        const errMsg = data.error || 'Login gagal. Periksa kembali email & password Anda.';
+        setError(errMsg);
+        toast.error(errMsg);
+      }
+    } catch (err) {
+      setError('Terjadi kesalahan koneksi. Silakan coba lagi.');
+      toast.error('Gagal terhubung ke server. Silakan periksa jaringan Anda.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50 text-slate-800 font-sans antialiased overflow-x-hidden">
+      
+      {/* LEFT SIDE: Brand Presentation (Visible on md+ screens) */}
+      <div className="hidden md:flex md:w-[45%] lg:w-[50%] p-12 flex-col justify-between relative bg-gradient-to-br from-blue-900 via-blue-850 to-cyan-900 border-r border-slate-100 overflow-hidden">
+        
+        {/* Glow Effects */}
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] aspect-square rounded-full bg-blue-500/10 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] aspect-square rounded-full bg-cyan-500/10 blur-[100px] pointer-events-none" />
+        
+        {/* Brand Header */}
+        <div className="relative z-10 flex items-center gap-2.5">
+          <img 
+            src="/icon.svg" 
+            alt="VibeDesk Logo" 
+            className="h-10 w-10 rounded-xl border border-white/20 shadow-lg object-cover bg-white"
+          />
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-white">
+              VibeDesk
+            </h1>
+            <p className="text-[10px] text-blue-200 tracking-wider uppercase font-medium">Ticketing System</p>
+          </div>
+        </div>
+
+        {/* Visual Presentation / Interactive Widget */}
+        <div className="relative z-10 my-auto py-10 space-y-8">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-medium">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
+              Sistem Pelaporan Terpadu
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-extrabold leading-tight text-white">
+              Kelola kendala teknis dan tim dalam <span className="text-cyan-300">satu platform</span>.
+            </h2>
+            <p className="text-blue-100 text-sm max-w-md leading-relaxed opacity-90">
+              Pantau antrean tiket, tangani SLA secara real-time, dan tingkatkan kepuasan pengguna dengan VibeDesk Admin Portal.
+            </p>
+          </div>
+
+          {/* Glowing Mock Dashboard Widget */}
+          <div className="relative w-full max-w-md rounded-2xl bg-white/10 border border-white/10 p-5 shadow-2xl space-y-4 backdrop-blur-md">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-green-400"></span>
+              </div>
+              <span className="text-[10px] text-blue-200 font-mono opacity-85">system_metrics_active.json</span>
+            </div>
+            
+            <div className="space-y-2.5">
+              <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-red-500/20 text-red-300">
+                    <Activity className="w-4 h-4" />
+                  </div>
                   <div>
                     <h4 className="text-xs font-semibold text-white">Warning SLA Breach</h4>
                     <p className="text-[9px] text-blue-200">Ticket #VD-2041 • High Priority</p>
