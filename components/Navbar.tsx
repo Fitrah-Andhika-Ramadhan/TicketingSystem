@@ -1,8 +1,9 @@
 'use client';
-
+ 
 import { Bell, LogOut, User, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +12,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
+ 
 interface NavbarProps {
   user: any;
-  onLogout: () => void;
+  onLogout?: () => void;
 }
-
+ 
 export default function Navbar({ user, onLogout }: NavbarProps) {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    } else {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      router.push('/login');
+    }
+  };
+
   return (
     <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
       <div className="flex-1">
@@ -25,7 +38,7 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
           Welcome, {user?.name}
         </h2>
       </div>
-
+ 
       <div className="flex items-center gap-4">
         {/* Preview Landing Page - For Admin */}
         <Link href="/landing" target="_blank">
@@ -34,12 +47,12 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
             <span className="hidden sm:inline">Preview Landing</span>
           </Button>
         </Link>
-
+ 
         {/* Notifications */}
         <Button variant="ghost" size="icon">
           <Bell className="w-5 h-5 text-gray-600" />
         </Button>
-
+ 
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -60,7 +73,7 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
               <span>Settings</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onLogout} className="cursor-pointer text-red-600">
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
               <LogOut className="w-4 h-4 mr-2" />
               <span>Logout</span>
             </DropdownMenuItem>
