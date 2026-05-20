@@ -22,6 +22,40 @@ export async function GET(request: NextRequest) {
     verificationError = 'No token provided in Authorization header';
   }
 
+  // Parse DATABASE_URL safely
+  let dbUrlParsed = null;
+  const dbUrl = process.env.DATABASE_URL;
+  if (dbUrl) {
+    try {
+      // Basic split check to avoid URL parse errors if socket path contains slashes
+      const atIndex = dbUrl.lastIndexOf('@');
+      if (atIndex !== -1) {
+        const credentialsPart = dbUrl.substring(0, atIndex);
+        const hostPart = dbUrl.substring(atIndex + 1);
+        
+        const credsMatch = credentialsPart.match(/^mysql:\/\/([^:]+):(.*)$/);
+        if (credsMatch) {
+          const [_, username, password] = credsMatch;
+          dbUrlParsed = {
+            username,
+            passwordLength: password.length,
+            passwordFirst3: password.substring(0, 3),
+            passwordLast3: password.substring(password.length - 3),
+            passwordContainsPercent40: password.includes('%40'),
+            passwordContainsAt: password.includes('@'),
+            hostPartPreview: hostPart.substring(0, 30) + '...',
+          };
+        } else {
+          dbUrlParsed = { error: 'Failed to split username and password' };
+        }
+      } else {
+        dbUrlParsed = { error: 'No @ delimiter found in connection URL' };
+      }
+    } catch (e: any) {
+      dbUrlParsed = { error: e.message || String(e) };
+    }
+  }
+
   // Test Database Connection
   let dbConnectionSuccess = false;
   let dbError = null;
@@ -46,7 +80,7 @@ export async function GET(request: NextRequest) {
         HAS_JWT_SECRET: !!process.env.JWT_SECRET,
         JWT_SECRET_PREVIEW: process.env.JWT_SECRET ? `${process.env.JWT_SECRET.substring(0, 3)}...` : 'not set',
         DATABASE_URL_SET: !!process.env.DATABASE_URL,
-        DATABASE_URL_PREVIEW: process.env.DATABASE_URL ? (process.env.DATABASE_URL.includes('@') ? 'Has @ character' : 'Safe URL') : 'not set',
+        DATABASE_URL_PARSED: dbUrlParsed,
       },
       database: {
         success: dbConnectionSuccess,
