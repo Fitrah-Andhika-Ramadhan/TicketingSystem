@@ -26,14 +26,29 @@ export default function AdminSettingsPage() {
   });
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('vibedesk_settings');
-      if (stored) {
-        try {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        if (data.success) {
+          setSettings(data.data);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('vibedesk_settings', JSON.stringify(data.data));
+          }
+        } else {
+          const stored = localStorage.getItem('vibedesk_settings');
+          if (stored) {
+            setSettings(JSON.parse(stored));
+          }
+        }
+      } catch (err) {
+        const stored = localStorage.getItem('vibedesk_settings');
+        if (stored) {
           setSettings(JSON.parse(stored));
-        } catch (e) {}
+        }
       }
-    }
+    };
+    fetchSettings();
   }, []);
 
   const [changed, setChanged] = useState(false);
@@ -70,13 +85,31 @@ export default function AdminSettingsPage() {
     setChanged(true);
   };
 
-  const handleSave = () => {
-    console.log('Saving settings:', settings);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('vibedesk_settings', JSON.stringify(settings));
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(settings),
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('vibedesk_settings', JSON.stringify(settings));
+        }
+        setChanged(false);
+        toast.success('Pengaturan sistem berhasil disimpan secara permanen!');
+      } else {
+        toast.error('Gagal menyimpan pengaturan.');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Gagal menghubungkan ke server.');
     }
-    setChanged(false);
-    toast.success('Pengaturan sistem berhasil disimpan secara permanen!');
   };
 
   if (!user) {

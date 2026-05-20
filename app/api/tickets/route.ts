@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
       status: 'OPEN',
       createdBy: decoded?.userId || '1',
       createdByName: 'Admin User',
-      createdByEmail: decoded?.email || 'admin@natagroup.com',
+      createdByEmail: decoded?.email || 'admin@fitrahpro.com',
       assignedTo: null,
       assignedName: null,
       createdAt: new Date().toISOString(),

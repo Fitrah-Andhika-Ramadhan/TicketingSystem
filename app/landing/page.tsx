@@ -27,6 +27,11 @@ export default function Landing() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [content, setContent] = useState<any>(null);
+  const [sysSettings, setSysSettings] = useState<any>({
+    email: 'support@fitrahpro.com',
+    phone: '+62 (21) 567-8900',
+    location: 'Jakarta, Indonesia'
+  });
   
   // Text Rotator State
   const rotatorWords = ['Sistem Tiket', 'Manajemen SLA', 'Dukungan Pelanggan', 'Kolaborasi Tim'];
@@ -36,7 +41,7 @@ export default function Landing() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Load landing content dynamically
+  // Load landing content and settings dynamically
   useEffect(() => {
     const loadContent = async () => {
       try {
@@ -49,7 +54,29 @@ export default function Landing() {
         console.error('Failed to load landing content:', err);
       }
     };
+
+    const loadSettings = async () => {
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        if (data.success) {
+          setSysSettings(data.data);
+        } else {
+          const stored = localStorage.getItem('vibedesk_settings');
+          if (stored) {
+            setSysSettings(JSON.parse(stored));
+          }
+        }
+      } catch (err) {
+        const stored = localStorage.getItem('vibedesk_settings');
+        if (stored) {
+          setSysSettings(JSON.parse(stored));
+        }
+      }
+    };
+
     loadContent();
+    loadSettings();
   }, []);
 
   // Rotate text words
@@ -588,8 +615,8 @@ export default function Landing() {
                 <Mail className="w-5 h-5" />
               </div>
               <h3 className="font-bold text-slate-900">Email</h3>
-              <a href="mailto:support@natagroup.com" className="text-sm text-blue-600 hover:underline font-semibold">
-                support@natagroup.com
+              <a href={`mailto:${sysSettings.email}`} className="text-sm text-blue-600 hover:underline font-semibold">
+                {sysSettings.email}
               </a>
             </div>
 
@@ -598,8 +625,8 @@ export default function Landing() {
                 <Phone className="w-5 h-5" />
               </div>
               <h3 className="font-bold text-slate-900">Telepon</h3>
-              <a href="tel:+62215678900" className="text-sm text-cyan-600 hover:underline font-semibold">
-                +62 (21) 567-8900
+              <a href={`tel:${sysSettings.phone}`} className="text-sm text-cyan-600 hover:underline font-semibold">
+                {sysSettings.phone}
               </a>
             </div>
 
@@ -608,7 +635,7 @@ export default function Landing() {
                 <MapPin className="w-5 h-5" />
               </div>
               <h3 className="font-bold text-slate-900">Kantor Pusat</h3>
-              <p className="text-sm text-slate-500">Jakarta, Indonesia</p>
+              <p className="text-sm text-slate-500">{sysSettings.location}</p>
             </div>
           </div>
 

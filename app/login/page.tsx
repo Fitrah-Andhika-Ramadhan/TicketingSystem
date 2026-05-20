@@ -9,8 +9,8 @@ import { toast } from 'sonner';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('admin@natagroup.com');
-  const [password, setPassword] = useState('NataGroup@2026');
+  const [email, setEmail] = useState('admin@fitrahpro.com');
+  const [password, setPassword] = useState('FitrahPro@2026');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -136,7 +136,7 @@ export default function LoginPage() {
 
         {/* Brand Footer */}
         <div className="relative z-10 flex justify-between items-center text-xs text-blue-200 opacity-80">
-          <p>© 2026 VibeDesk. Powered by NataGroup.</p>
+          <p>© 2026 VibeDesk. Powered by FitrahPro.</p>
           <div className="flex gap-4">
             <span className="hover:text-white cursor-pointer transition">Support</span>
             <span className="hover:text-white cursor-pointer transition">Privacy Policy</span>
@@ -293,8 +293,8 @@ export default function LoginPage() {
               <div className="mt-3 pt-3 border-t border-slate-100 space-y-1.5 text-xs text-slate-500 text-left">
                 <p>Gunakan kredensial berikut untuk masuk sebagai administrator:</p>
                 <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200/60 space-y-1 font-mono text-[11px] text-slate-700">
-                  <p><span className="text-slate-400 font-bold">Email:</span> admin@natagroup.com</p>
-                  <p><span className="text-slate-400 font-bold">Pass :</span> NataGroup@2026</p>
+                  <p><span className="text-slate-400 font-bold">Email:</span> admin@fitrahpro.com</p>
+                  <p><span className="text-slate-400 font-bold">Pass :</span> FitrahPro@2026</p>
                 </div>
               </div>
             )}
