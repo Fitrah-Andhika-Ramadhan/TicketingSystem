@@ -284,7 +284,7 @@ export default function LoginPage() {
                 <HelpCircle className="w-4 h-4 text-blue-500" />
                 <span>Informasi Akun Demo</span>
               </div>
-              <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-650">
+              <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-600">
                 {showDemoHelp ? 'Sembunyikan' : 'Tampilkan'}
               </span>
             </button>
