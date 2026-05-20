@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, Sparkles, Activity, ShieldCheck, HelpCircle } from 'lucide-react';
@@ -16,30 +15,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showDemoHelp, setShowDemoHelp] = useState(true);
-  const [autoLoggingIn, setAutoLoggingIn] = useState(true);
-
-  // Auto-login on page load
-  useEffect(() => {
-    const autoLogin = async () => {
-      try {
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: 'admin@fitrahpro.com', password: 'FitrahPro@2026' }),
-        });
-        const data = await response.json();
-        if (data.success) {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-          router.push('/dashboard');
-          return;
-        }
-      } catch (_) {}
-      // If auto-login fails, show the manual login form
-      setAutoLoggingIn(false);
-    };
-    autoLogin();
-  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,53 +52,6 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
-  // Show premium splash/loading screen while auto-logging in
-  if (autoLoggingIn) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-900 via-blue-850 to-cyan-900 relative overflow-hidden">
-        {/* Glow Effects */}
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] aspect-square rounded-full bg-blue-500/10 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] aspect-square rounded-full bg-cyan-500/10 blur-[100px] pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col items-center gap-6 text-center">
-          {/* Logo */}
-          <div className="relative">
-            <div className="absolute inset-0 rounded-2xl bg-blue-400/30 blur-xl scale-110" />
-            <img
-              src="/icon.svg"
-              alt="VibeDesk Logo"
-              className="relative h-20 w-20 rounded-2xl border border-white/20 shadow-2xl object-cover bg-white"
-            />
-          </div>
-
-          {/* Brand */}
-          <div className="space-y-1">
-            <h1 className="text-3xl font-extrabold tracking-tight text-white">VibeDesk</h1>
-            <p className="text-sm text-blue-200 tracking-widest uppercase font-medium">Ticketing System</p>
-          </div>
-
-          {/* Spinner */}
-          <div className="flex items-center gap-3 mt-2">
-            <Loader2 className="w-5 h-5 animate-spin text-cyan-300" />
-            <span className="text-sm text-blue-100 font-medium">Memuat portal admin...</span>
-          </div>
-
-          {/* Animated dots */}
-          <div className="flex gap-1.5 mt-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-bounce" style={{animationDelay: '0ms'}} />
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-bounce" style={{animationDelay: '150ms'}} />
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-bounce" style={{animationDelay: '300ms'}} />
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="absolute bottom-6 text-xs text-blue-300 opacity-60">
-          © 2026 VibeDesk. Powered by FitrahPro.
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-slate-50 text-slate-800 font-sans antialiased overflow-x-hidden">
@@ -289,9 +217,9 @@ export default function LoginPage() {
                   <label className="text-xs font-bold text-slate-600">
                     Password
                   </label>
-                  <Link href="/forgot-password" className="text-xs text-blue-600 hover:text-blue-700 hover:underline cursor-pointer transition font-medium">
+                  <span className="text-xs text-blue-600 hover:text-blue-700 hover:underline cursor-pointer transition font-medium">
                     Lupa Password?
-                  </Link>
+                  </span>
                 </div>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
@@ -356,7 +284,7 @@ export default function LoginPage() {
                 <HelpCircle className="w-4 h-4 text-blue-500" />
                 <span>Informasi Akun Demo</span>
               </div>
-              <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-600">
+              <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-650">
                 {showDemoHelp ? 'Sembunyikan' : 'Tampilkan'}
               </span>
             </button>

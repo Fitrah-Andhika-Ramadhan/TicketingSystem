@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { TicketCategory, Priority, TicketStatus } from '@prisma/client';
 
 // Get ticket details
 export async function GET(
@@ -18,72 +19,63 @@ export async function GET(
       );
     }
 
-    const t = await prisma.ticket.findUnique({
+    const ticket = await prisma.ticket.findUnique({
       where: { id: params.id },
       include: {
-        createdByUser: true,
-        assignedUser: true,
+        createdByUser: { select: { name: true, email: true } },
+        assignedUser: { select: { name: true, email: true } },
         comments: {
           include: {
-            user: true
+            user: { select: { name: true, email: true } }
           },
-          orderBy: {
-            createdAt: 'desc'
-          }
+          orderBy: { createdAt: 'desc' }
         },
         history: {
-          orderBy: {
-            changedAt: 'desc'
-          }
-        }
+          include: {
+            user: { select: { name: true, email: true } }
+          },
+          orderBy: { changedAt: 'desc' }
+        },
+        attachments: true
       }
     });
 
-    if (!t) {
+    if (!ticket) {
       return NextResponse.json(
         { error: 'Ticket not found' },
         { status: 404 }
       );
     }
 
-    const mappedTicket = {
-      id: t.id,
-      ticketNumber: t.ticketNumber,
-      title: t.title,
-      description: t.description,
-      category: t.category,
-      priority: t.priority,
-      status: t.status,
-      createdBy: t.createdBy,
-      createdByName: t.createdByUser?.name || 'Admin User',
-      createdByEmail: t.createdByUser?.email || 'admin@fitrahpro.com',
-      assignedTo: t.assignedTo,
-      assignedName: t.assignedUser?.name || null,
-      createdAt: t.createdAt.toISOString(),
-      updatedAt: t.updatedAt.toISOString(),
-      resolutionTime: t.resolutionTime,
-      dueDate: t.dueDate?.toISOString(),
-      comments: t.comments.map(c => ({
-        id: c.id,
-        content: c.content,
-        userId: c.userId,
-        userName: c.user?.name || 'User',
-        isInternal: c.isInternal,
-        createdAt: c.createdAt.toISOString()
-      })),
-      attachments: t.attachments || [],
-      history: t.history.map(h => ({
-        id: h.id,
-        action: h.action,
-        oldValue: h.oldValue,
-        newValue: h.newValue,
-        changedAt: h.changedAt.toISOString()
-      }))
+    const formattedComments = ticket.comments.map(c => ({
+      id: c.id,
+      content: c.content,
+      userId: c.userId,
+      userName: c.user?.name || 'User',
+      isInternal: c.isInternal,
+      createdAt: c.createdAt.toISOString()
+    }));
+
+    const formattedHistory = ticket.history.map(h => ({
+      id: h.id,
+      action: h.action,
+      oldValue: h.oldValue,
+      newValue: h.newValue,
+      changedAt: h.changedAt.toISOString()
+    }));
+
+    const formattedTicket = {
+      ...ticket,
+      createdByName: ticket.createdByUser?.name || 'Admin User',
+      createdByEmail: ticket.createdByUser?.email || 'admin@fitrahpro.com',
+      assignedName: ticket.assignedUser?.name || null,
+      comments: formattedComments,
+      history: formattedHistory,
     };
 
     return NextResponse.json({
       success: true,
-      data: mappedTicket,
+      data: formattedTicket,
     });
   } catch (error) {
     console.error('Get ticket error:', error);
@@ -111,13 +103,15 @@ export async function PATCH(
     }
 
     const decoded = verifyToken(token);
+    const userId = decoded?.userId || '1';
     const body = await request.json();
 
-    const currentTicket = await prisma.ticket.findUnique({
-      where: { id: params.id }
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: params.id },
+      include: { assignedUser: true }
     });
 
-    if (!currentTicket) {
+    if (!ticket) {
       return NextResponse.json(
         { error: 'Ticket not found' },
         { status: 404 }
@@ -125,171 +119,129 @@ export async function PATCH(
     }
 
     const updateData: any = {};
-    const historyEntries: any[] = [];
-    const changerId = decoded?.userId || '1';
-
-    // Ensure changer user exists in database first
-    const userExists = await prisma.user.findUnique({
-      where: { id: changerId }
-    });
-    if (!userExists) {
-      await prisma.user.create({
-        data: {
-          id: changerId,
-          email: decoded?.email || 'admin@fitrahpro.com',
-          name: 'Admin User',
-          password: 'FitrahPro@2026_hashed',
-          role: 'SUPER_ADMIN',
-          department: 'Management',
-          isActive: true
-        }
-      });
-    }
-
+    
     // Handle Comment Addition
     if (body.comment) {
       await prisma.comment.create({
         data: {
-          ticketId: params.id,
-          userId: changerId,
+          ticketId: ticket.id,
+          userId: userId,
           content: body.comment.content,
-          isInternal: body.comment.isInternal || false
+          isInternal: body.comment.isInternal || false,
         }
       });
 
-      historyEntries.push({
-        action: 'comment_added',
-        newValue: `Comment added: "${body.comment.content.substring(0, 30)}..."`,
-        changedBy: changerId
+      await prisma.ticketHistory.create({
+        data: {
+          ticketId: ticket.id,
+          action: 'comment_added',
+          newValue: `Comment added: "${body.comment.content.substring(0, 30)}..."`,
+          changedBy: userId,
+        }
       });
     }
 
-    // Update individual fields
-    if (body.status && body.status !== currentTicket.status) {
-      historyEntries.push({
-        action: 'status_changed',
-        oldValue: currentTicket.status,
-        newValue: body.status,
-        changedBy: changerId
+    // Update individual fields and create history records
+    if (body.status && body.status !== ticket.status) {
+      await prisma.ticketHistory.create({
+        data: {
+          ticketId: ticket.id,
+          action: 'status_changed',
+          oldValue: ticket.status,
+          newValue: body.status,
+          changedBy: userId,
+        }
       });
-      updateData.status = body.status as any;
+      updateData.status = body.status as TicketStatus;
     }
 
-    if (body.priority && body.priority !== currentTicket.priority) {
-      historyEntries.push({
-        action: 'priority_changed',
-        oldValue: currentTicket.priority,
-        newValue: body.priority,
-        changedBy: changerId
+    if (body.priority && body.priority !== ticket.priority) {
+      await prisma.ticketHistory.create({
+        data: {
+          ticketId: ticket.id,
+          action: 'priority_changed',
+          oldValue: ticket.priority,
+          newValue: body.priority,
+          changedBy: userId,
+        }
       });
-      updateData.priority = body.priority as any;
+      updateData.priority = body.priority as Priority;
     }
 
-    if (body.assignedTo !== undefined && body.assignedTo !== currentTicket.assignedTo) {
+    if (body.assignedTo !== undefined && body.assignedTo !== ticket.assignedTo) {
+      let assignedName = null;
       if (body.assignedTo) {
-        // Ensure assigned user exists
-        const assignedUserExists = await prisma.user.findUnique({
+        const assignedUser = await prisma.user.findUnique({
           where: { id: body.assignedTo }
         });
-        if (!assignedUserExists) {
-          await prisma.user.create({
-            data: {
-              id: body.assignedTo,
-              email: body.assignedTo === '1' ? 'admin@fitrahpro.com' : `agent${body.assignedTo}@natagroup.com`,
-              name: body.assignedTo === '1' ? 'Admin User' : `Support Agent ${body.assignedTo}`,
-              password: 'FitrahPro@2026_hashed',
-              role: body.assignedTo === '1' ? 'SUPER_ADMIN' : 'MANAGER',
-              department: 'Support',
-              isActive: true
-            }
-          });
-        }
+        assignedName = assignedUser?.name || 'Support Agent';
       }
-
-      historyEntries.push({
-        action: 'assigned_to_changed',
-        oldValue: currentTicket.assignedTo,
-        newValue: body.assignedTo || null,
-        changedBy: changerId
+      await prisma.ticketHistory.create({
+        data: {
+          ticketId: ticket.id,
+          action: 'assigned_to_changed',
+          oldValue: ticket.assignedUser?.name || null,
+          newValue: assignedName,
+          changedBy: userId,
+        }
       });
-      updateData.assignedTo = body.assignedTo || null;
+      updateData.assignedTo = body.assignedTo;
     }
 
-    if (body.title && body.title !== currentTicket.title) {
-      updateData.title = body.title;
-    }
-    if (body.description && body.description !== currentTicket.description) {
-      updateData.description = body.description;
-    }
+    if (body.title && body.title !== ticket.title) updateData.title = body.title;
+    if (body.description && body.description !== ticket.description) updateData.description = body.description;
 
-    if (historyEntries.length > 0) {
-      updateData.history = {
-        create: historyEntries
-      };
-    }
-
-    updateData.updatedAt = new Date();
-
-    const t = await prisma.ticket.update({
+    const updatedTicket = await prisma.ticket.update({
       where: { id: params.id },
       data: updateData,
       include: {
-        createdByUser: true,
-        assignedUser: true,
+        createdByUser: { select: { name: true, email: true } },
+        assignedUser: { select: { name: true, email: true } },
         comments: {
           include: {
-            user: true
+            user: { select: { name: true, email: true } }
           },
-          orderBy: {
-            createdAt: 'desc'
-          }
+          orderBy: { createdAt: 'desc' }
         },
         history: {
-          orderBy: {
-            changedAt: 'desc'
-          }
-        }
+          include: {
+            user: { select: { name: true, email: true } }
+          },
+          orderBy: { changedAt: 'desc' }
+        },
+        attachments: true
       }
     });
 
-    const mappedTicket = {
-      id: t.id,
-      ticketNumber: t.ticketNumber,
-      title: t.title,
-      description: t.description,
-      category: t.category,
-      priority: t.priority,
-      status: t.status,
-      createdBy: t.createdBy,
-      createdByName: t.createdByUser?.name || 'Admin User',
-      createdByEmail: t.createdByUser?.email || 'admin@fitrahpro.com',
-      assignedTo: t.assignedTo,
-      assignedName: t.assignedUser?.name || null,
-      createdAt: t.createdAt.toISOString(),
-      updatedAt: t.updatedAt.toISOString(),
-      resolutionTime: t.resolutionTime,
-      dueDate: t.dueDate?.toISOString(),
-      comments: t.comments.map(c => ({
-        id: c.id,
-        content: c.content,
-        userId: c.userId,
-        userName: c.user?.name || 'User',
-        isInternal: c.isInternal,
-        createdAt: c.createdAt.toISOString()
-      })),
-      attachments: t.attachments || [],
-      history: t.history.map(h => ({
-        id: h.id,
-        action: h.action,
-        oldValue: h.oldValue,
-        newValue: h.newValue,
-        changedAt: h.changedAt.toISOString()
-      }))
+    const formattedComments = updatedTicket.comments.map(c => ({
+      id: c.id,
+      content: c.content,
+      userId: c.userId,
+      userName: c.user?.name || 'User',
+      isInternal: c.isInternal,
+      createdAt: c.createdAt.toISOString()
+    }));
+
+    const formattedHistory = updatedTicket.history.map(h => ({
+      id: h.id,
+      action: h.action,
+      oldValue: h.oldValue,
+      newValue: h.newValue,
+      changedAt: h.changedAt.toISOString()
+    }));
+
+    const formattedTicket = {
+      ...updatedTicket,
+      createdByName: updatedTicket.createdByUser?.name || 'Admin User',
+      createdByEmail: updatedTicket.createdByUser?.email || 'admin@fitrahpro.com',
+      assignedName: updatedTicket.assignedUser?.name || null,
+      comments: formattedComments,
+      history: formattedHistory,
     };
 
     return NextResponse.json({
       success: true,
-      data: mappedTicket,
+      data: formattedTicket,
     });
   } catch (error) {
     console.error('Update ticket error:', error);
@@ -316,11 +268,11 @@ export async function DELETE(
       );
     }
 
-    const currentTicket = await prisma.ticket.findUnique({
-      where: { id: params.id }
+    const ticketExists = await prisma.ticket.findUnique({
+      where: { id: params.id },
     });
 
-    if (!currentTicket) {
+    if (!ticketExists) {
       return NextResponse.json(
         { error: 'Ticket not found' },
         { status: 404 }
@@ -328,7 +280,7 @@ export async function DELETE(
     }
 
     await prisma.ticket.delete({
-      where: { id: params.id }
+      where: { id: params.id },
     });
 
     return NextResponse.json({

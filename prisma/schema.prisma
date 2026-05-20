@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // User Management
@@ -223,33 +224,46 @@ model AuditLog {
   @@index([createdAt])
 }
 
-// Projects
+// Landing Page Content
+model LandingContent {
+  id        String   @id @default("default-landing")
+  hero      Json     // contains title, subtitle, description, ctaText, backgroundImage
+  features  Json     // array of feature objects
+  stats     Json     // contains projects, units, yearsExperience, satisfaction
+  about     Json     // contains title, description, mission, vision
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// System Configuration
+model SystemSettings {
+  id                   String   @id @default("default-settings")
+  projectName          String
+  location             String
+  companyName          String
+  email                String
+  phone                String
+  budgetAlertThreshold Int      @default(85)
+  delayAlertDays       Int      @default(5)
+  notificationsEnabled Boolean  @default(true)
+  emailNotifications   Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+// Project (for Dashboard / Projects Management)
 model Project {
   id                  String   @id @default(cuid())
   name                String
   location            String
-  description         String?
-  status              String   @default("Planning")
-  progress            Int      @default(0)
-  budgetAmount        Float    @default(0)
-  spentAmount         Float    @default(0)
-  startDate           DateTime @default(now())
-  estimatedCompletion DateTime?
-  endDate             DateTime?
-  phases              Phase[]
-
+  description         String
+  status              String
+  progress            Int
+  budgetAmount        Float
+  spentAmount         Float
+  startDate           DateTime
+  estimatedCompletion DateTime
+  phases              Json     // array of phase objects
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
-}
-
-// Phases of Projects
-model Phase {
-  id        String   @id @default(cuid())
-  projectId String
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  name      String
-  progress  Int      @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

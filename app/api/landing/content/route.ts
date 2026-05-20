@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-import fs from 'fs';
-import path from 'path';
-
-// Define the file path for landing page content persistence
-const CONTENT_FILE = path.join(process.cwd(), 'landing-content.json');
+import { prisma } from '@/lib/prisma';
 
 const defaultContent = {
   hero: {
-    title: 'FitrahPro',
+    title: 'VibeDesk',
     subtitle: 'Sistem Manajemen Tiket & SLA Terbaik',
     description: 'Sistem penanganan tiket dan pemantauan Service Level Agreement (SLA) terbaik untuk bisnis digital Anda.',
     ctaText: 'Mulai Sekarang',
@@ -47,49 +43,40 @@ const defaultContent = {
     }
   ],
   stats: {
-    projects: 50, // 50K+ Tiket Selesai
-    units: 2, // 2 Menit Respon
-    yearsExperience: 99, // 99.9% Uptime
-    satisfaction: 500 // 500+ Mitra
+    projects: 50,
+    units: 2,
+    yearsExperience: 99,
+    satisfaction: 500
   },
   about: {
-    title: 'Tentang FitrahPro',
-    description: 'Dengan pengalaman bertahun-tahun, FitrahPro menghadirkan solusi teknologi mutakhir untuk mempermudah operasional bisnis dan penanganan dukungan pelanggan di Indonesia.',
+    title: 'Tentang VibeDesk',
+    description: 'Dengan pengalaman bertahun-tahun, VibeDesk menghadirkan solusi teknologi mutakhir untuk mempermudah operasional bisnis dan penanganan dukungan pelanggan di Indonesia.',
     mission: 'Menyediakan platform manajemen operasional & dukungan pelanggan yang mulus bagi seluruh pelaku industri digital.',
     vision: 'Menjadi standar ekosistem platform helpdesk & SLA monitoring terdepan di Asia Tenggara.'
   }
 };
 
-// Read from JSON file
-function readContent(): typeof defaultContent {
-  try {
-    if (!fs.existsSync(CONTENT_FILE)) {
-      fs.writeFileSync(CONTENT_FILE, JSON.stringify(defaultContent, null, 2), 'utf-8');
-      return defaultContent;
-    }
-    const raw = fs.readFileSync(CONTENT_FILE, 'utf-8');
-    return JSON.parse(raw);
-  } catch (error) {
-    console.error('Failed to read landing content file, using defaults', error);
-    return defaultContent;
-  }
-}
-
-// Write to JSON file
-function writeContent(data: any): void {
-  try {
-    fs.writeFileSync(CONTENT_FILE, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (error) {
-    console.error('Failed to write landing content file', error);
-  }
-}
-
 export async function GET(request: NextRequest) {
   try {
-    const data = readContent();
+    let content = await prisma.landingContent.findUnique({
+      where: { id: 'default-landing' },
+    });
+
+    if (!content) {
+      content = await prisma.landingContent.create({
+        data: {
+          id: 'default-landing',
+          hero: defaultContent.hero,
+          features: defaultContent.features,
+          stats: defaultContent.stats,
+          about: defaultContent.about,
+        },
+      });
+    }
+
     return NextResponse.json({
       success: true,
-      data,
+      data: content,
     });
   } catch (error) {
     console.error('Get landing content error:', error);
@@ -113,19 +100,28 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const currentData = readContent();
     
-    // Update content
-    const updatedData = {
-      ...currentData,
-      ...body,
-    };
+    const updateData: any = {};
+    if (body.hero !== undefined) updateData.hero = body.hero;
+    if (body.features !== undefined) updateData.features = body.features;
+    if (body.stats !== undefined) updateData.stats = body.stats;
+    if (body.about !== undefined) updateData.about = body.about;
 
-    writeContent(updatedData);
+    const updatedContent = await prisma.landingContent.upsert({
+      where: { id: 'default-landing' },
+      update: updateData,
+      create: {
+        id: 'default-landing',
+        hero: body.hero || defaultContent.hero,
+        features: body.features || defaultContent.features,
+        stats: body.stats || defaultContent.stats,
+        about: body.about || defaultContent.about,
+      }
+    });
 
     return NextResponse.json({
       success: true,
-      data: updatedData,
+      data: updatedContent,
     });
   } catch (error) {
     console.error('Update landing content error:', error);

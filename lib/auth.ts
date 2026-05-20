@@ -1,20 +1,6 @@
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prisma } from './prisma';
-import { Role } from '@prisma/client';
-
-// Mock user database for demo purposes
-const mockUsers = [
-  {
-    id: '1',
-    email: 'admin@fitrahpro.com',
-    name: 'Admin User',
-    role: 'SUPER_ADMIN',
-    department: 'Management',
-    phoneNumber: '+62812345678',
-    isActive: true,
-  },
-];
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key';
 const JWT_EXPIRATION = process.env.JWT_EXPIRATION || '7d';
@@ -75,36 +61,9 @@ export async function authenticateUser(
   password: string
 ): Promise<{ user: any; token: string } | null> {
   try {
-    // 1. Ensure user is in database
-    let user = await prisma.user.findUnique({
-      where: { email }
+    const user = await prisma.user.findUnique({
+      where: { email },
     });
-
-    if (!user) {
-      // Auto-create default users if they attempt login
-      const defaultUsers: Record<string, any> = {
-        'admin@fitrahpro.com': { id: '1', name: 'Admin User', role: 'SUPER_ADMIN', dept: 'Management' },
-        'agent1@natagroup.com': { id: '2', name: 'Support Agent 1', role: 'MANAGER', dept: 'Support' },
-        'agent2@natagroup.com': { id: '3', name: 'Support Agent 2', role: 'MANAGER', dept: 'Support' },
-        'viewer@natagroup.com': { id: '4', name: 'Viewer User', role: 'VIEWER', dept: 'Management' }
-      };
-
-      const matched = defaultUsers[email];
-      if (matched && password === 'FitrahPro@2026') {
-        const hashedPassword = await bcryptjs.hash('FitrahPro@2026', 10);
-        user = await prisma.user.create({
-          data: {
-            id: matched.id,
-            email: email,
-            name: matched.name,
-            password: hashedPassword,
-            role: matched.role as Role,
-            department: matched.dept,
-            isActive: true
-          }
-        });
-      }
-    }
 
     if (!user) {
       return null;
@@ -114,17 +73,10 @@ export async function authenticateUser(
       throw new Error('User account is inactive');
     }
 
-    // Accept both simple text for demo and hash comparison
-    const passwordMatch = password === 'FitrahPro@2026' || await comparePassword(password, user.password);
-    if (!passwordMatch) {
+    const isValidPassword = await bcryptjs.compare(password, user.password);
+    if (!isValidPassword) {
       return null;
     }
-
-    // Update lastLogin
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLogin: new Date() }
-    });
 
     // Generate token
     const token = generateToken({
@@ -146,7 +98,7 @@ export async function authenticateUser(
 }
 
 /**
- * Create new user
+ * Create new user in the database
  */
 export async function createUser(data: {
   email: string;
@@ -157,21 +109,20 @@ export async function createUser(data: {
   phoneNumber?: string;
 }) {
   try {
-    const hashedPassword = await hashPassword(data.password);
-    const user = await prisma.user.create({
+    const hashedPassword = await bcryptjs.hash(data.password, 10);
+    const newUser = await prisma.user.create({
       data: {
         email: data.email,
         name: data.name,
         password: hashedPassword,
-        role: (data.role || 'VIEWER') as Role,
+        role: (data.role || 'VIEWER') as any,
         department: data.department || '',
         phoneNumber: data.phoneNumber || '',
         isActive: true,
-        lastLogin: new Date()
-      }
+      },
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    const { password: _, ...userWithoutPassword } = newUser;
     return userWithoutPassword;
   } catch (error) {
     console.error('User creation error:', error);
