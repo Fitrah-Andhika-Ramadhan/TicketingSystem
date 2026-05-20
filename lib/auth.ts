@@ -53,13 +53,48 @@ export function verifyToken(token: string): JWTPayload | null {
   }
 }
 
+// Hardcoded admin credentials (permanent fallback - always works)
+const STATIC_USERS = [
+  {
+    id: '1',
+    email: 'admin@fitrahpro.com',
+    password: 'FitrahPro@2026',
+    name: 'Admin User',
+    role: 'SUPER_ADMIN',
+    department: 'Management',
+    phoneNumber: '+62812345678',
+    isActive: true,
+  },
+];
+
 /**
- * Authenticate user with email and password
+ * Authenticate user with email and password.
+ * Checks static/hardcoded credentials first (always available),
+ * then falls back to Prisma database if not matched.
  */
 export async function authenticateUser(
   email: string,
   password: string
 ): Promise<{ user: any; token: string } | null> {
+  // 1. Check static credentials first (fast, always works, no DB needed)
+  const staticUser = STATIC_USERS.find(u => u.email === email);
+  if (staticUser) {
+    if (password !== staticUser.password) {
+      return null;
+    }
+    if (!staticUser.isActive) {
+      return null;
+    }
+    const token = generateToken({
+      userId: staticUser.id,
+      email: staticUser.email,
+      role: staticUser.role,
+    });
+    const { password: _, ...userWithoutPassword } = staticUser;
+    return { user: userWithoutPassword, token };
+  }
+
+  // 2. Fall back to Prisma database for other users
   try {
     const user = await prisma.user.findUnique({
       where: { email },
@@ -70,7 +105,7 @@ export async function authenticateUser(
     }
 
     if (!user.isActive) {
-      throw new Error('User account is inactive');
+      return null;
     }
 
     const isValidPassword = await bcryptjs.compare(password, user.password);
@@ -78,7 +113,6 @@ export async function authenticateUser(
       return null;
     }
 
-    // Generate token
     const token = generateToken({
       userId: user.id,
       email: user.email,
@@ -92,10 +126,11 @@ export async function authenticateUser(
       token,
     };
   } catch (error) {
-    console.error('Authentication error:', error);
+    console.error('Authentication error (DB):', error);
     return null;
   }
 }
+
 
 /**
  * Create new user in the database
