@@ -183,13 +183,14 @@ ALTER TABLE `TicketHistory` ADD CONSTRAINT `TicketHistory_ticketId_fkey` FOREIGN
 ALTER TABLE `Notification` ADD CONSTRAINT `Notification_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `AuditLog` ADD CONSTRAINT `AuditLog_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- 3. Insert Default Seed Data
+-- 3. Insert Default Seed Data (Users)
 INSERT INTO `User` (`id`, `email`, `name`, `password`, `role`, `department`, `phoneNumber`, `isActive`) VALUES
 ('1', 'admin@fitrahpro.com', 'Admin User', '$2a$12$K1dJv2fXbI5J6t6O8H0K1u5O9mQ9vD.GvB3xM8Y7A5S8B9C1D2E3F', 'SUPER_ADMIN', 'Management', '+62812345678', true),
 ('2', 'agent1@natagroup.com', 'Support Agent 1', '$2a$12$K1dJv2fXbI5J6t6O8H0K1u5O9mQ9vD.GvB3xM8Y7A5S8B9C1D2E3F', 'MANAGER', 'Support', '+62812345679', true),
 ('3', 'agent2@natagroup.com', 'Support Agent 2', '$2a$12$K1dJv2fXbI5J6t6O8H0K1u5O9mQ9vD.GvB3xM8Y7A5S8B9C1D2E3F', 'MANAGER', 'Support', '+62812345680', true),
 ('4', 'viewer@natagroup.com', 'Viewer User', '$2a$12$K1dJv2fXbI5J6t6O8H0K1u5O9mQ9vD.GvB3xM8Y7A5S8B9C1D2E3F', 'VIEWER', 'Management', '+62812345681', true);
 
+-- 4. Insert Default Seed Data (Projects)
 INSERT INTO `Project` (`id`, `name`, `location`, `description`, `status`, `progress`, `budgetAmount`, `spentAmount`, `startDate`, `estimatedCompletion`) VALUES
 ('1', 'VibeDesk Initial Setup', 'Jakarta, Indonesia', 'Pembangunan platform VibeDesk.', 'In Progress', 65, 500000000, 325000000, CURRENT_TIMESTAMP(3), DATE_ADD(CURRENT_TIMESTAMP(3), INTERVAL 365 DAY));
 
@@ -198,3 +199,19 @@ INSERT INTO `Phase` (`id`, `projectId`, `name`, `progress`) VALUES
 ('p2', '1', 'Main Structure', 85),
 ('p3', '1', 'Finishing & Interior', 40),
 ('p4', '1', 'Testing & Handover', 0);
+
+-- 5. Insert Dummy Tickets
+INSERT INTO `Ticket` (`id`, `ticketNumber`, `title`, `description`, `category`, `priority`, `status`, `createdBy`, `assignedTo`, `createdAt`, `dueDate`, `resolvedAt`, `resolutionTime`) VALUES
+('t1', 'TK-1001', 'Error Koneksi Database Cloud SQL', 'Terjadi error timeout saat mencoba melakukan query ke database MySQL Cloud SQL pada jam sibuk.', 'TECHNICAL_ISSUE', 'CRITICAL', 'IN_PROGRESS', '4', '2', DATE_SUB(CURRENT_TIMESTAMP(3), INTERVAL 2 DAY), DATE_ADD(CURRENT_TIMESTAMP(3), INTERVAL 2 DAY), NULL, NULL),
+('t2', 'TK-1002', 'Permintaan Penambahan Fitur Dark Mode', 'Untuk kenyamanan bekerja di malam hari, pengguna meminta penambahan opsi Dark Mode di halaman dashboard.', 'FEATURE_REQUEST', 'LOW', 'OPEN', '4', '3', DATE_SUB(CURRENT_TIMESTAMP(3), INTERVAL 1 DAY), DATE_ADD(CURRENT_TIMESTAMP(3), INTERVAL 7 DAY), NULL, NULL),
+('t3', 'TK-1003', 'Kesalahan Perhitungan SLA Tiket Closed', 'SLA Resolution Time pada tiket yang sudah closed tidak terhitung dengan tepat pada dashboard grafik analitik.', 'BUG', 'HIGH', 'RESOLVED', '1', '2', DATE_SUB(CURRENT_TIMESTAMP(3), INTERVAL 5 DAY), DATE_SUB(CURRENT_TIMESTAMP(3), INTERVAL 2 DAY), DATE_SUB(CURRENT_TIMESTAMP(3), INTERVAL 1 DAY), 5760);
+
+-- 6. Insert Dummy Comments
+INSERT INTO `Comment` (`id`, `ticketId`, `userId`, `content`, `isInternal`, `createdAt`) VALUES
+('c1', 't1', '2', 'Saya sedang menyelidiki log koneksi Cloud SQL. Kelihatannya ada lonjakan request di jam tersebut.', false, DATE_SUB(CURRENT_TIMESTAMP(3), INTERVAL 1 DAY)),
+('c2', 't1', '4', 'Baik, mohon infonya segera ya karena tim kami tidak bisa mengakses laporan proyek.', false, DATE_SUB(CURRENT_TIMESTAMP(3), INTERVAL 12 HOUR));
+
+-- 7. Insert Dummy Audit Logs
+INSERT INTO `AuditLog` (`id`, `userId`, `action`, `entityType`, `entityId`, `oldValue`, `newValue`, `ipAddress`, `userAgent`) VALUES
+('a1', '1', 'LOGIN', 'User', '1', NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0'),
+('a2', '2', 'UPDATE_STATUS', 'Ticket', 't1', 'OPEN', 'IN_PROGRESS', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0');
