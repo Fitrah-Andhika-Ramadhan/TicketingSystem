@@ -8,7 +8,9 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml* ./
+COPY prisma ./prisma/
 RUN pnpm install --frozen-lockfile
+RUN pnpm exec prisma generate
 
 # Stage 2: Builder
 FROM base AS builder
