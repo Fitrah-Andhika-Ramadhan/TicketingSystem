@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, Sparkles, Activity, ShieldCheck, HelpCircle } from 'lucide-react';
@@ -217,9 +218,9 @@ export default function LoginPage() {
                   <label className="text-xs font-bold text-slate-600">
                     Password
                   </label>
-                  <span className="text-xs text-blue-600 hover:text-blue-700 hover:underline cursor-pointer transition font-medium">
+                  <Link href="/forgot-password" className="text-xs text-blue-600 hover:text-blue-700 hover:underline cursor-pointer transition font-medium">
                     Lupa Password?
-                  </span>
+                  </Link>
                 </div>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
