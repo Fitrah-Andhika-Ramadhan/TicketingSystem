@@ -1,0 +1,72 @@
+'use client';
+
+import { Bell, LogOut, User, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+interface NavbarProps {
+  user: any;
+  onLogout: () => void;
+}
+
+export default function Navbar({ user, onLogout }: NavbarProps) {
+  return (
+    <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="flex-1">
+        <h2 className="text-lg font-semibold text-gray-900">
+          Welcome, {user?.name}
+        </h2>
+      </div>
+
+      <div className="flex items-center gap-4">
+        {/* Preview Landing Page - For Admin */}
+        <Link href="/landing" target="_blank">
+          <Button variant="outline" className="flex items-center gap-2">
+            <ExternalLink className="w-4 h-4" />
+            <span className="hidden sm:inline">Preview Landing</span>
+          </Button>
+        </Link>
+
+        {/* Notifications */}
+        <Button variant="ghost" size="icon">
+          <Bell className="w-5 h-5 text-gray-600" />
+        </Button>
+
+        {/* User Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
+                {user?.name?.charAt(0).toUpperCase()}
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer">
+              <User className="w-4 h-4 mr-2" />
+              <span>Profile</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              <span>Settings</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={onLogout} className="cursor-pointer text-red-600">
+              <LogOut className="w-4 h-4 mr-2" />
+              <span>Logout</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </nav>
+  );
+}
