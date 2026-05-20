@@ -1,6 +1,10 @@
 -- SQL Dump Schema for VibeDesk (MySQL)
 -- Cocok untuk diimport langsung ke Cloud SQL MySQL
 
+-- Membuat dan menggunakan database default
+CREATE DATABASE IF NOT EXISTS `vibedesk`;
+USE `vibedesk`;
+
 -- Drop tables if exist to ensure clean slate
 DROP TABLE IF EXISTS `Phase`;
 DROP TABLE IF EXISTS `Attachment`;
