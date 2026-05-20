@@ -18,13 +18,14 @@ Untuk menyelesaikan masalah nyata tersebut, saya membangun **VibeDesk**—sebuah
 
 🛠️ **Tech Stack & Alur AI:**
 * **Frontend/Backend**: Next.js (App Router) & Tailwind CSS dengan arsitektur modern, transisi halus, dan skema warna premium (Blue/White/Teal).
+* **Database**: **Google Cloud SQL dengan database engine MySQL** yang dipadukan dengan **Prisma ORM** untuk manajemen schema relasional yang tangguh.
 * **AI Support**: Didukung oleh kekuatan **Gemini & AI Studio** untuk membantu efisiensi alur kerja pengembang.
-* **Deployment & Database**: Dirilis secara otomatis di **Google Cloud Run** yang terhubung secara aman ke **Google Cloud SQL (MySQL)** menggunakan **Prisma ORM** untuk skalabilitas maksimal.
+* **Deployment**: Dirilis secara otomatis dan stabil di **Google Cloud Run** untuk skalabilitas maksimal.
 
-Kami percaya bahwa layanan pelanggan yang prima tidak harus rumit. Dengan antarmuka yang intuitif dan sistem penyimpanan yang andal, **VibeDesk** siap membantu tim Anda berkolaborasi lebih cepat dan efisien.
+Kami percaya bahwa layanan pelanggan yang prima tidak harus rumit. Dengan antarmuka yang intuitif dan sistem penyimpanan database relasional yang andal, **VibeDesk** siap membantu tim Anda berkolaborasi lebih cepat dan efisien.
 
 Simak video demo singkat berdurasi 60 detik di bawah ini untuk melihat VibeDesk beraksi! ⬇️
 
 cc: Google Cloud Indonesia & Dicoding Indonesia
 
-#JuaraVibeCoding #GoogleCloud #Gemini #CloudRun #NextJS #TicketingSystem #SLALevel #Developers #Dicoding #SoftwareEngineering
+#JuaraVibeCoding #GoogleCloud #Gemini #CloudRun #MySQL #CloudSQL #PrismaORM #NextJS #TicketingSystem #SLALevel #Developers #Dicoding #SoftwareEngineering
