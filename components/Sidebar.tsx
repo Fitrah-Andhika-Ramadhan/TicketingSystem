@@ -81,6 +81,11 @@ export default function Sidebar({ user }: SidebarProps) {
       href: '/admin/users',
     },
     {
+      label: 'Landing Manager',
+      icon: Image,
+      href: '/admin/landing-manager',
+    },
+    {
       label: 'Settings',
       icon: Settings,
       href: '/admin/settings',

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { Save, Edit2, ExternalLink, Eye } from 'lucide-react';
+import swal from '@/lib/swal';
 
 interface LandingContent {
   hero: {
@@ -97,9 +98,25 @@ export default function LandingManager() {
       const data = await response.json();
       if (data.success) {
         setEditingSection(null);
+        swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: 'Konten landing page berhasil disimpan.',
+        });
+      } else {
+        swal.fire({
+          icon: 'error',
+          title: 'Gagal',
+          text: data.error || 'Gagal menyimpan perubahan.',
+        });
       }
     } catch (error) {
       console.error('Failed to save:', error);
+      swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Gagal menyimpan perubahan.',
+      });
     } finally {
       setSaving(false);
     }

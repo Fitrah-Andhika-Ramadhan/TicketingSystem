@@ -26,6 +26,7 @@ import {
 export default function Landing() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [content, setContent] = useState<any>(null);
   
   // Text Rotator State
   const rotatorWords = ['Sistem Tiket', 'Manajemen SLA', 'Dukungan Pelanggan', 'Kolaborasi Tim'];
@@ -34,6 +35,22 @@ export default function Landing() {
   // Slider State
   const [activeSlide, setActiveSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+
+  // Load landing content dynamically
+  useEffect(() => {
+    const loadContent = async () => {
+      try {
+        const res = await fetch('/api/landing/content');
+        const data = await res.json();
+        if (data.success) {
+          setContent(data.data);
+        }
+      } catch (err) {
+        console.error('Failed to load landing content:', err);
+      }
+    };
+    loadContent();
+  }, []);
 
   // Rotate text words
   useEffect(() => {
@@ -67,6 +84,27 @@ export default function Landing() {
 
   const prevSlide = () => {
     setActiveSlide((prev) => (prev - 1 + 3) % 3);
+  };
+
+  const c = content || {
+    hero: {
+      title: 'FitrahPro',
+      subtitle: 'Sistem Manajemen Tiket Masa Kini',
+      description: 'Kelola, delegasikan, dan selesaikan semua kendala dukungan operasional dengan cepat dalam satu dasbor yang ramping.',
+      ctaText: 'Mulai Sekarang'
+    },
+    stats: {
+      projects: 50,
+      units: 2,
+      yearsExperience: 99.9,
+      satisfaction: 500
+    },
+    about: {
+      title: 'Tentang FitrahPro',
+      description: 'Dengan pengalaman bertahun-tahun, FitrahPro menghadirkan solusi teknologi mutakhir untuk mempermudah operasional bisnis dan penanganan dukungan pelanggan di Indonesia.',
+      mission: 'Menyediakan platform manajemen operasional & dukungan pelanggan yang mulus bagi seluruh pelaku industri digital.',
+      vision: 'Menjadi standar ekosistem platform helpdesk & SLA monitoring terdepan di Asia Tenggara.'
+    }
   };
 
   return (
@@ -111,7 +149,7 @@ export default function Landing() {
         <div className="text-center mb-16 relative z-10 space-y-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
-            Sistem Manajemen Tiket Masa Kini
+            {c.hero.subtitle}
           </div>
           
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 max-w-4xl mx-auto leading-[1.1]">
@@ -127,13 +165,13 @@ export default function Landing() {
           </h1>
 
           <p className="text-lg md:text-xl text-slate-650 max-w-2xl mx-auto leading-relaxed">
-            Kelola, delegasikan, dan selesaikan semua kendala dukungan operasional dengan cepat dalam satu dasbor yang ramping.
+            {c.hero.description}
           </p>
 
           <div className="flex gap-4 justify-center pt-4 flex-wrap">
             <Link href="/login">
               <Button className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 border-0 text-base font-semibold px-8 py-6 flex items-center gap-2 shadow-xl shadow-blue-500/20 active:scale-[0.98] transition">
-                Mulai Sekarang <ArrowRight className="w-5 h-5" />
+                {c.hero.ctaText} <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
             <a href="#slider-showcase">
@@ -147,10 +185,10 @@ export default function Landing() {
         {/* Hero Quick Statistics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 max-w-5xl mx-auto relative z-10">
           {[
-            { value: '50K+', label: 'Tiket Selesai' },
-            { value: '2 mnt', label: 'Rata-rata Respon' },
-            { value: '99.9%', label: 'Uptime SLA' },
-            { value: '500+', label: 'Perusahaan Mitra' },
+            { value: `${c.stats.projects}K+`, label: 'Tiket Selesai' },
+            { value: `${c.stats.units} mnt`, label: 'Rata-rata Respon' },
+            { value: `${c.stats.yearsExperience}%`, label: 'Uptime SLA' },
+            { value: `${c.stats.satisfaction}+`, label: 'Perusahaan Mitra' },
           ].map((stat, i) => (
             <div key={i} className="rounded-xl border border-slate-100 bg-white p-5 text-center shadow-md">
               <div className="text-3xl font-extrabold text-blue-600 mb-1.5">{stat.value}</div>
@@ -460,6 +498,62 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* About Section */}
+      <section id="about" className="py-20 border-t border-slate-100 bg-slate-50/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 text-xs font-semibold">
+                Tentang Kami
+              </div>
+              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
+                {c.about.title}
+              </h2>
+              <p className="text-slate-600 text-base leading-relaxed">
+                {c.about.description}
+              </p>
+              <div className="space-y-4 pt-2">
+                <div className="flex gap-4">
+                  <div className="h-6 w-6 rounded-full bg-emerald-100 text-emerald-650 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</div>
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-sm">Misi Kami</h4>
+                    <p className="text-slate-550 text-xs mt-1">{c.about.mission}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="h-6 w-6 rounded-full bg-emerald-100 text-emerald-650 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</div>
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-sm">Visi Kami</h4>
+                    <p className="text-slate-550 text-xs mt-1">{c.about.vision}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Visual illustration of the About Section */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-cyan-500 rounded-3xl rotate-3 scale-[1.02] opacity-5 blur-[10px] pointer-events-none" />
+              <div className="relative rounded-3xl overflow-hidden border border-slate-100 bg-white p-8 shadow-xl space-y-6">
+                <div className="flex justify-between items-center pb-4 border-b border-slate-100">
+                  <span className="text-xs font-bold text-slate-400">Pemberitahuan Sistem</span>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-green-50 text-green-600 font-mono text-[10px]">active</span>
+                </div>
+                <div className="space-y-4 text-sm text-slate-650">
+                  <p className="italic">"Sistem penanganan tiket FitrahPro memberikan peningkatan efisiensi operasional tim support hingga 40% dalam 30 hari pertama penggunaan."</p>
+                  <div className="flex items-center gap-3 pt-2">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 text-white flex items-center justify-center font-bold">FP</div>
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-xs">Fitrah Ramadhan</h4>
+                      <p className="text-[10px] text-slate-400">Founder & CEO, FitrahPro</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 border-t border-slate-100 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-center relative overflow-hidden">
         {/* Background Decorative Circles */}
@@ -589,7 +683,7 @@ export default function Landing() {
           </div>
 
           <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-            <p>&copy; 2026 VibeDesk. All rights reserved. Powered by NataGroup.</p>
+            <p>&copy; 2026 VibeDesk. All rights reserved. Powered by FitrahPro.</p>
             <div className="flex gap-4">
               <span className="hover:text-white cursor-pointer transition"><Twitter className="w-4 h-4" /></span>
               <span className="hover:text-white cursor-pointer transition"><Linkedin className="w-4 h-4" /></span>
