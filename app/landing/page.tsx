@@ -135,32 +135,32 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-[#F9FAFB] text-slate-800 font-sans antialiased overflow-x-hidden scroll-smooth selection:bg-blue-500/10 selection:text-blue-600">
       
       {/* Navigation */}
-      <nav className="border-b border-slate-100 sticky top-0 bg-white/90 backdrop-blur-md z-50 shadow-sm">
+      <nav className="border-b border-slate-100/80 sticky top-0 bg-white/80 backdrop-blur-md z-50 shadow-sm shadow-slate-100/30 transition-all duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-slate-900">
+          <div className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-slate-900 select-none">
             <img 
               src="/icon.svg" 
               alt="VibeDesk Logo" 
-              className="h-9 w-9 rounded-lg border border-blue-500/20 shadow-md object-cover"
+              className="h-9 w-9 rounded-lg border border-blue-500/10 shadow-sm object-cover"
             />
-            <span className="bg-gradient-to-r from-blue-700 to-cyan-600 bg-clip-text text-transparent">VibeDesk</span>
+            <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">VibeDesk</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
-            <a href="#features" className="hover:text-blue-600 transition">Features</a>
-            <a href="#slider-showcase" className="hover:text-blue-600 transition">Showcase</a>
-            <a href="#how-it-works" className="hover:text-blue-600 transition">How It Works</a>
-            <a href="#contact" className="hover:text-blue-600 transition">Contact</a>
+            <a href="#features" className="hover:text-blue-600 transition-all duration-200 hover:-translate-y-[1px]">Features</a>
+            <a href="#slider-showcase" className="hover:text-blue-600 transition-all duration-200 hover:-translate-y-[1px]">Showcase</a>
+            <a href="#how-it-works" className="hover:text-blue-600 transition-all duration-200 hover:-translate-y-[1px]">How It Works</a>
+            <a href="#contact" className="hover:text-blue-600 transition-all duration-200 hover:-translate-y-[1px]">Contact</a>
             <Link href="/login">
-              <Button className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 border-0 text-white font-semibold shadow-lg shadow-blue-500/10 transition duration-200">
+              <Button className="bg-blue-600 hover:bg-blue-700 border-0 text-white font-semibold rounded-lg shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-200 active:scale-[0.98]">
                 Login Portal
               </Button>
             </Link>
           </div>
           <Link href="/login" className="md:hidden">
-            <Button size="sm" className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 border-0 text-white">
+            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 border-0 text-white font-semibold rounded-lg">
               Login
             </Button>
           </Link>
@@ -168,41 +168,41 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
         {/* Background Mesh Orbs */}
-        <div className="absolute top-[10%] left-[-10%] w-[45%] aspect-square rounded-full bg-blue-500/5 blur-[130px] pointer-events-none" />
-        <div className="absolute top-[20%] right-[-10%] w-[35%] aspect-square rounded-full bg-cyan-500/5 blur-[110px] pointer-events-none" />
-
-        <div className="text-center mb-16 relative z-10 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 text-xs font-semibold">
+        <div className="absolute top-[10%] left-[-10%] w-[45%] aspect-square rounded-full bg-blue-500/3 blur-[130px] pointer-events-none" />
+        <div className="absolute top-[20%] right-[-10%] w-[35%] aspect-square rounded-full bg-cyan-500/3 blur-[110px] pointer-events-none" />
+ 
+        <div className="text-center mb-20 relative z-10 space-y-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold tracking-wide select-none shadow-sm">
             <Sparkles className="w-3.5 h-3.5" />
             {c.hero.subtitle}
           </div>
           
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 max-w-4xl mx-auto leading-[1.1]">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 max-w-4xl mx-auto leading-[1.15]">
             Platform Modern untuk{' '}
-            <span className="block h-[1.2em] relative overflow-hidden">
+            <span className="block h-[1.25em] relative overflow-hidden">
               <span 
                 key={rotatorIndex} 
-                className="absolute inset-x-0 top-0 animate-slide-up text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500"
+                className="absolute inset-x-0 top-0 animate-slide-up text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500 font-extrabold"
               >
                 {rotatorWords[rotatorIndex]}
               </span>
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
             {c.hero.description}
           </p>
 
-          <div className="flex gap-4 justify-center pt-4 flex-wrap">
+          <div className="flex gap-4 justify-center pt-6 flex-wrap">
             <Link href="/login">
-              <Button className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 border-0 text-base font-semibold px-8 py-6 flex items-center gap-2 shadow-xl shadow-blue-500/20 active:scale-[0.98] transition">
+              <Button className="bg-blue-600 hover:bg-blue-700 border-0 text-base font-semibold px-8 py-6 rounded-lg flex items-center gap-2 shadow-lg shadow-blue-500/15 hover:shadow-xl hover:shadow-blue-500/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200">
                 {c.hero.ctaText} <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
             <a href="#slider-showcase">
-              <Button variant="outline" className="text-base px-8 py-6 border-slate-200 hover:bg-slate-100 hover:text-slate-900 bg-white">
+              <Button variant="outline" className="text-base px-8 py-6 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-950 bg-white rounded-lg shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200">
                 Lihat Showcase
               </Button>
             </a>
@@ -210,15 +210,15 @@ export default function Landing() {
         </div>
 
         {/* Hero Quick Statistics Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 max-w-5xl mx-auto relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 max-w-5xl mx-auto relative z-10">
           {[
             { value: `${c.stats.projects}K+`, label: 'Tiket Selesai' },
             { value: `${c.stats.units} mnt`, label: 'Rata-rata Respon' },
             { value: `${c.stats.yearsExperience}%`, label: 'Uptime SLA' },
             { value: `${c.stats.satisfaction}+`, label: 'Perusahaan Mitra' },
           ].map((stat, i) => (
-            <div key={i} className="rounded-xl border border-slate-100 bg-white p-5 text-center shadow-md">
-              <div className="text-3xl font-extrabold text-blue-600 mb-1.5">{stat.value}</div>
+            <div key={i} className="rounded-2xl border border-slate-100 bg-white p-6 text-center shadow-md shadow-slate-100/50 hover:shadow-xl hover:shadow-slate-200/60 hover:-translate-y-1 transition-all duration-300">
+              <div className="text-3xl sm:text-4xl font-extrabold text-blue-600 mb-2">{stat.value}</div>
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{stat.label}</p>
             </div>
           ))}
@@ -226,16 +226,16 @@ export default function Landing() {
       </section>
 
       {/* Slider Showcase Section */}
-      <section id="slider-showcase" className="py-20 border-t border-slate-100 bg-white relative">
+      <section id="slider-showcase" className="py-24 border-t border-b border-slate-100 bg-white relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 space-y-3">
+          <div className="text-center mb-16 space-y-3">
             <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Showcase Dasbor Admin</h2>
-            <p className="text-slate-600 text-sm max-w-lg mx-auto">Lihat langsung kemudahan alur kerja monitoring dan penyelesaian masalah di VibeDesk.</p>
+            <p className="text-slate-500 text-sm max-w-lg mx-auto font-medium">Lihat langsung kemudahan alur kerja monitoring dan penyelesaian masalah di VibeDesk.</p>
           </div>
 
           {/* Interactive Showcase Slider */}
           <div 
-            className="relative max-w-5xl mx-auto aspect-video md:aspect-[16/9] rounded-2xl border border-slate-200 bg-slate-50/50 overflow-hidden shadow-xl group"
+            className="relative max-w-5xl mx-auto aspect-video md:aspect-[16/9] rounded-2xl border border-slate-100 bg-slate-50/30 overflow-hidden shadow-xl shadow-slate-100/70 group"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -245,49 +245,49 @@ export default function Landing() {
               {/* SLIDE 0: Real-time Analytics Mock */}
               {activeSlide === 0 && (
                 <div className="w-full h-full flex flex-col justify-between animate-fade-in">
-                  <div className="flex justify-between items-center border-b border-slate-200 pb-4">
-                    <div>
+                  <div className="flex justify-between items-center border-b border-slate-100 pb-4 select-none">
+                    <div className="space-y-1">
                       <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                         <BarChart3 className="w-5 h-5 text-blue-600" />
                         Real-time Dashboard Analytics
                       </h3>
-                      <p className="text-xs text-slate-500">Pemantauan metrik, alokasi tiket, dan workload tim secara instan.</p>
+                      <p className="text-xs text-slate-400 font-medium">Pemantauan metrik, alokasi tiket, dan workload tim secara instan.</p>
                     </div>
-                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100 font-mono">live_stats_ok</span>
+                    <span className="text-[10px] px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 font-bold font-mono shadow-sm">active_live</span>
                   </div>
 
                   {/* Visual UI Grid Mock */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-auto">
-                    <div className="bg-white border border-slate-100 p-4 rounded-xl space-y-2 shadow-sm">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+                    <div className="bg-white border border-slate-100/80 p-5 rounded-2xl space-y-3 shadow-sm hover:shadow-md transition-all duration-200">
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tiket Masuk</p>
-                      <div className="text-2xl font-extrabold text-slate-800">1,482</div>
-                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-600 w-[75%]" />
+                      <div className="text-3xl font-extrabold text-slate-800">1,482</div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-600 rounded-full w-[75%]" />
                       </div>
-                      <p className="text-[9px] text-emerald-600 font-medium">+12% dari minggu lalu</p>
+                      <p className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">↑ 12% <span className="text-slate-400 font-normal">dari minggu lalu</span></p>
                     </div>
 
-                    <div className="bg-white border border-slate-100 p-4 rounded-xl space-y-2 shadow-sm">
+                    <div className="bg-white border border-slate-100/80 p-5 rounded-2xl space-y-3 shadow-sm hover:shadow-md transition-all duration-200">
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tingkat Resolusi</p>
-                      <div className="text-2xl font-extrabold text-slate-800">94.2%</div>
-                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-cyan-500 w-[94%]" />
+                      <div className="text-3xl font-extrabold text-slate-800">94.2%</div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-500 rounded-full w-[94%]" />
                       </div>
-                      <p className="text-[9px] text-slate-500 font-medium">Sesuai dengan target target SLA</p>
+                      <p className="text-[10px] text-slate-500 font-bold">Sesuai target SLA 90%</p>
                     </div>
 
-                    <div className="bg-white border border-slate-100 p-4 rounded-xl space-y-2 shadow-sm">
+                    <div className="bg-white border border-slate-100/80 p-5 rounded-2xl space-y-3 shadow-sm hover:shadow-md transition-all duration-200">
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Rata-rata Respon</p>
-                      <div className="text-2xl font-extrabold text-slate-800">1m 48s</div>
-                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-500 w-[85%]" />
+                      <div className="text-3xl font-extrabold text-slate-800">1m 48s</div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 rounded-full w-[85%]" />
                       </div>
-                      <p className="text-[9px] text-emerald-600 font-medium">Memenuhi target respon cepat</p>
+                      <p className="text-[10px] text-emerald-600 font-bold">Sangat Cepat (Optimal)</p>
                     </div>
                   </div>
 
-                  <div className="text-center text-xs text-slate-400 pt-4 border-t border-slate-100">
-                    *Tampilan grafik diperbarui secara otomatis menggunakan client-side database.
+                  <div className="text-center text-[11px] text-slate-400 pt-4 border-t border-slate-100 select-none">
+                    *Tampilan grafik diperbarui secara otomatis menggunakan database real-time.
                   </div>
                 </div>
               )}
@@ -295,48 +295,48 @@ export default function Landing() {
               {/* SLIDE 1: SLA Control Panel Mock */}
               {activeSlide === 1 && (
                 <div className="w-full h-full flex flex-col justify-between animate-fade-in">
-                  <div className="flex justify-between items-center border-b border-slate-200 pb-4">
-                    <div>
+                  <div className="flex justify-between items-center border-b border-slate-100 pb-4 select-none">
+                    <div className="space-y-1">
                       <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-rose-500" />
+                        <Clock className="w-5 h-5 text-rose-600" />
                         SLA Breach Control Room
                       </h3>
-                      <p className="text-xs text-slate-500">Sistem peringatan otomatis saat tiket terancam melanggar batas SLA.</p>
+                      <p className="text-xs text-slate-400 font-medium">Sistem peringatan otomatis saat tiket terancam melanggar batas SLA.</p>
                     </div>
-                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-100 font-mono">sla_engine_active</span>
+                    <span className="text-[10px] px-3 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-100 font-bold font-mono shadow-sm animate-pulse">sla_engine_breach_check</span>
                   </div>
 
                   {/* SLA Alert List Visual */}
-                  <div className="space-y-3 my-auto max-w-xl mx-auto w-full">
-                    <div className="p-3 bg-white border border-slate-100 rounded-xl flex items-center justify-between shadow-sm">
+                  <div className="space-y-3.5 my-auto max-w-xl mx-auto w-full">
+                    <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-center justify-between shadow-sm hover:shadow hover:-translate-y-0.5 transition-all duration-200">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-rose-50 text-rose-500">
-                          <AlertCircle className="w-4 h-4" />
+                        <div className="p-2.5 rounded-xl bg-rose-50 text-rose-600">
+                          <AlertCircle className="w-5 h-5" />
                         </div>
                         <div>
-                          <h4 className="text-xs font-semibold text-slate-800">SLA Breach Warning: #VD-4821</h4>
-                          <p className="text-[9px] text-slate-400">Problem: Gagal bayar payment gateway • Admin NataGroup</p>
+                          <h4 className="text-sm font-bold text-slate-800">SLA Breach Warning: #VD-4821</h4>
+                          <p className="text-xs text-slate-400 mt-0.5">Kendala: Gagal bayar payment gateway • Admin NataGroup</p>
                         </div>
                       </div>
-                      <span className="text-[9px] px-2.5 py-1 rounded bg-rose-50 text-rose-600 font-mono">12 mnt tersisa</span>
+                      <span className="text-[10px] px-3 py-1.5 rounded-lg bg-rose-50 border border-rose-100 text-rose-600 font-bold font-mono shadow-sm">12 mnt tersisa</span>
                     </div>
 
-                    <div className="p-3 bg-white border border-slate-100 rounded-xl flex items-center justify-between shadow-sm">
+                    <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-center justify-between shadow-sm hover:shadow hover:-translate-y-0.5 transition-all duration-200">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-amber-50 text-amber-500">
-                          <Clock className="w-4 h-4" />
+                        <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600">
+                          <Clock className="w-5 h-5" />
                         </div>
                         <div>
-                          <h4 className="text-xs font-semibold text-slate-800">Pending Customer Action: #VD-4819</h4>
-                          <p className="text-[9px] text-slate-400">Support menunggu kelengkapan bukti screenshot dari user</p>
+                          <h4 className="text-sm font-bold text-slate-800">SLA Warning: #VD-4819</h4>
+                          <p className="text-xs text-slate-400 mt-0.5">Dukungan: Menunggu kelengkapan bukti screenshot dari user</p>
                         </div>
                       </div>
-                      <span className="text-[9px] px-2.5 py-1 rounded bg-amber-50 text-amber-600 font-mono">Awaiting</span>
+                      <span className="text-[10px] px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-100 text-amber-600 font-bold font-mono shadow-sm">Awaiting Customer</span>
                     </div>
                   </div>
 
-                  <div className="text-center text-xs text-slate-400 pt-4 border-t border-slate-100">
-                    Sistem notifikasi dapat diintegrasikan dengan Slack, Discord, dan Email secara instan.
+                  <div className="text-center text-[11px] text-slate-400 pt-4 border-t border-slate-100 select-none">
+                    Sistem notifikasi dapat diintegrasikan dengan Slack, Discord, dan WhatsApp API.
                   </div>
                 </div>
               )}
@@ -344,48 +344,48 @@ export default function Landing() {
               {/* SLIDE 2: Team Collaboration Mock */}
               {activeSlide === 2 && (
                 <div className="w-full h-full flex flex-col justify-between animate-fade-in">
-                  <div className="flex justify-between items-center border-b border-slate-200 pb-4">
-                    <div>
+                  <div className="flex justify-between items-center border-b border-slate-100 pb-4 select-none">
+                    <div className="space-y-1">
                       <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <MessageSquare className="w-5 h-5 text-cyan-600" />
+                        <MessageSquare className="w-5 h-5 text-blue-600" />
                         Collaboration & Team Workroom
                       </h3>
-                      <p className="text-xs text-slate-500">Berbagi catatan internal antar agen, membagi tim, dan melampirkan berkas penunjang.</p>
+                      <p className="text-xs text-slate-400 font-medium">Berbagi catatan internal antar agen, membagi tim, dan melampirkan berkas penunjang.</p>
                     </div>
-                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-cyan-50 text-cyan-600 border border-cyan-100 font-mono">collab_online</span>
+                    <span className="text-[10px] px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100 font-bold font-mono shadow-sm">collab_online</span>
                   </div>
 
                   {/* Chat / Comments Visual representation */}
-                  <div className="space-y-3.5 my-auto max-w-lg mx-auto w-full">
+                  <div className="space-y-4 my-auto max-w-lg mx-auto w-full">
                     <div className="flex gap-3 items-start">
-                      <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white mt-0.5">
+                      <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-md shadow-blue-500/10">
                         A
                       </div>
-                      <div className="flex-1 bg-white border border-slate-100 rounded-xl p-3 shadow-sm">
-                        <div className="flex justify-between items-center mb-1">
+                      <div className="flex-1 bg-white border border-slate-100 rounded-2xl rounded-tl-none p-4 shadow-sm space-y-1">
+                        <div className="flex justify-between items-center">
                           <span className="text-xs font-bold text-slate-800">Admin User</span>
                           <span className="text-[9px] text-slate-400">10:45 AM</span>
                         </div>
-                        <p className="text-xs text-slate-600">Saya telah melakukan reset API key di sisi staging. Tolong bantu verifikasi dari klien.</p>
+                        <p className="text-xs text-slate-500 leading-relaxed">Saya telah melakukan reset API key di sisi staging. Tolong bantu verifikasi dari klien.</p>
                       </div>
                     </div>
 
                     <div className="flex gap-3 items-start pl-8">
-                      <div className="w-7 h-7 rounded-full bg-cyan-500 flex items-center justify-center text-xs font-bold text-white mt-0.5">
+                      <div className="w-8 h-8 rounded-xl bg-blue-500 flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-md shadow-blue-500/10">
                         T
                       </div>
-                      <div className="flex-1 bg-cyan-50 border border-cyan-100/50 rounded-xl p-3 shadow-sm">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs font-bold text-cyan-700">Tim Contractor (Internal Note)</span>
-                          <span className="text-[9px] text-slate-400 font-mono">Internal</span>
+                      <div className="flex-1 bg-blue-50/50 border border-blue-100/50 rounded-2xl rounded-tl-none p-4 shadow-sm space-y-1">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-bold text-blue-700">Tim Contractor</span>
+                          <span className="text-[9px] text-blue-400 font-mono">Internal</span>
                         </div>
-                        <p className="text-xs text-cyan-900">Sudah aman di sisi staging, log DB menunjukkan status sukses.</p>
+                        <p className="text-xs text-slate-500 leading-relaxed">Sudah aman di sisi staging, log DB menunjukkan status sukses.</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="text-center text-xs text-slate-400 pt-4 border-t border-slate-100">
-                    Membedakan percakapan Publik (ke Pelanggan) dan Internal (hanya untuk Agen Dukungan).
+                  <div className="text-center text-[11px] text-slate-400 pt-4 border-t border-slate-100 select-none">
+                    Membedakan percakapan Publik (ke Pelanggan) dan Catatan Internal (khusus Agen).
                   </div>
                 </div>
               )}
@@ -395,7 +395,7 @@ export default function Landing() {
             {/* Slider Controls (Arrow Buttons) */}
             <button 
               onClick={prevSlide}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full border border-slate-200 bg-white/80 hover:bg-slate-100 text-slate-600 cursor-pointer opacity-0 group-hover:opacity-100 transition shadow-md"
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full border border-slate-200 bg-white/80 hover:bg-slate-100 text-slate-600 hover:scale-105 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-md"
               aria-label="Previous Slide"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -403,20 +403,20 @@ export default function Landing() {
             
             <button 
               onClick={nextSlide}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full border border-slate-200 bg-white/80 hover:bg-slate-100 text-slate-600 cursor-pointer opacity-0 group-hover:opacity-100 transition shadow-md"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full border border-slate-200 bg-white/80 hover:bg-slate-100 text-slate-600 hover:scale-105 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-md"
               aria-label="Next Slide"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
 
             {/* Slide Indicators / Dots */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2.5 select-none">
               {[0, 1, 2].map((idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveSlide(idx)}
                   className={`w-2.5 h-2.5 rounded-full border-0 transition-all cursor-pointer ${
-                    activeSlide === idx ? 'bg-blue-600 w-6' : 'bg-slate-300 hover:bg-slate-400'
+                    activeSlide === idx ? 'bg-blue-600 w-6' : 'bg-slate-200 hover:bg-slate-300'
                   }`}
                   aria-label={`Go to slide ${idx + 1}`}
                 />
@@ -544,14 +544,14 @@ export default function Landing() {
                   <div className="h-6 w-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</div>
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm">Misi Kami</h4>
-                    <p className="text-slate-550 text-xs mt-1">{c.about.mission}</p>
+                    <p className="text-slate-500 text-xs mt-1">{c.about.mission}</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="h-6 w-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</div>
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm">Visi Kami</h4>
-                    <p className="text-slate-550 text-xs mt-1">{c.about.vision}</p>
+                    <p className="text-slate-500 text-xs mt-1">{c.about.vision}</p>
                   </div>
                 </div>
               </div>
