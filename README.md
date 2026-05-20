@@ -1,4 +1,4 @@
-# 🏗️ NATA GROUP - METRO PARAGON RESIDENCE MONITORING SYSTEM
+# 🏗️ VIBEDESK - Ticketing System
 
 **Real-time Construction Progress Tracking & Project Management Platform**
 
@@ -9,8 +9,8 @@
 A comprehensive web-based monitoring system for Nata Group to enable real-time tracking of construction progress, financial analytics, document management, and live data from the field for the Metro Paragon Residence project.
 
 ### Key Information:
-- **Client**: Nata Group
-- **Project**: Metro Paragon Residence Monitoring System
+- **Client**: FitrahPro
+- **Project**: VIBEDESK
 - **Status**: Documentation Complete - Ready for Development
 - **Timeline**: 12 weeks (3 months)
 - **Technology**: Next.js 16, React 19, PostgreSQL, TypeScript, Tailwind CSS
