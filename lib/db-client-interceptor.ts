@@ -90,9 +90,9 @@ const INITIAL_DB = {
   projects: [
     {
       id: '1',
-      name: 'FitrahPro',
+      name: 'VibeDesk SLA Monitoring',
       location: 'Jakarta, Indonesia',
-      description: 'Pembangunan platform FitrahPro.',
+      description: 'Pembangunan platform VibeDesk SLA Monitoring untuk manajemen tiket dan pemantauan SLA secara real-time.',
       status: 'In Progress',
       progress: 65,
       budgetAmount: 500000000,
@@ -100,10 +100,10 @@ const INITIAL_DB = {
       startDate: '2023-01-15T00:00:00.000Z',
       estimatedCompletion: '2025-12-31T00:00:00.000Z',
       phases: [
-        { id: 'p1', name: 'Foundation & Basement', progress: 100 },
-        { id: 'p2', name: 'Main Structure', progress: 85 },
-        { id: 'p3', name: 'Finishing & Interior', progress: 40 },
-        { id: 'p4', name: 'Testing & Handover', progress: 0 },
+        { id: 'p1', name: 'Foundation & Architecture', progress: 100 },
+        { id: 'p2', name: 'Core Ticketing System', progress: 85 },
+        { id: 'p3', name: 'SLA Dashboard & Analytics', progress: 40 },
+        { id: 'p4', name: 'Testing & Go-Live', progress: 0 },
       ],
     },
   ]
