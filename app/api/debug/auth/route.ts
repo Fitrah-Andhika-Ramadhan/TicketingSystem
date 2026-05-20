@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { PrismaClient } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
@@ -27,7 +28,6 @@ export async function GET(request: NextRequest) {
   const dbUrl = process.env.DATABASE_URL;
   if (dbUrl) {
     try {
-      // Basic split check to avoid URL parse errors if socket path contains slashes
       const atIndex = dbUrl.lastIndexOf('@');
       if (atIndex !== -1) {
         const credentialsPart = dbUrl.substring(0, atIndex);
@@ -56,20 +56,35 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Test Database Connection
-  let dbConnectionSuccess = false;
-  let dbError = null;
-  let userCount = 0;
-  
+  // Test 1: Connection to 'vibedesk' database
+  let dbVibedeskSuccess = false;
+  let dbVibedeskError = null;
   try {
-    userCount = await prisma.user.count();
-    dbConnectionSuccess = true;
+    await prisma.user.count();
+    dbVibedeskSuccess = true;
   } catch (e: any) {
-    dbError = {
-      message: e.message || String(e),
-      code: e.code || null,
-      meta: e.meta || null,
-    };
+    dbVibedeskError = e.message || String(e);
+  }
+
+  // Test 2: Connection to system 'mysql' database (to check if credentials work)
+  let dbSystemSuccess = false;
+  let dbSystemError = null;
+  if (dbUrl) {
+    try {
+      // Replace '/vibedesk?' with '/mysql?' in connection string
+      const systemDbUrl = dbUrl.replace(/\/vibedesk(\?|$)/, '/mysql$1');
+      const tempPrisma = new PrismaClient({
+        datasources: {
+          db: { url: systemDbUrl }
+        }
+      });
+      // Execute a raw query to check connectivity
+      await tempPrisma.$queryRaw`SELECT 1`;
+      dbSystemSuccess = true;
+      await tempPrisma.$disconnect();
+    } catch (e: any) {
+      dbSystemError = e.message || String(e);
+    }
   }
 
   return NextResponse.json({
@@ -82,10 +97,13 @@ export async function GET(request: NextRequest) {
         DATABASE_URL_SET: !!process.env.DATABASE_URL,
         DATABASE_URL_PARSED: dbUrlParsed,
       },
-      database: {
-        success: dbConnectionSuccess,
-        userCount,
-        error: dbError,
+      testVibedeskDb: {
+        success: dbVibedeskSuccess,
+        error: dbVibedeskError,
+      },
+      testSystemDb: {
+        success: dbSystemSuccess,
+        error: dbSystemError,
       },
       request: {
         hasAuthorizationHeader: !!authHeader,
