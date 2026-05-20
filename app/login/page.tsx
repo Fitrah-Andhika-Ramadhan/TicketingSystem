@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, Sparkles, Activity, ShieldCheck, HelpCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,34 +22,32 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      console.log('[v0] Submitting login form:', { email, password });
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      console.log('[v0] Response status:', response.status);
       const data = await response.json();
-      console.log('[v0] Response data:', data);
 
       if (data.success) {
-        console.log('[v0] Login successful, storing token and redirecting');
-        // Store token in localStorage
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
+
+        toast.success('Login Berhasil! Selamat datang di VibeDesk.');
 
         // Redirect to dashboard
         setTimeout(() => {
           router.push('/dashboard');
-        }, 500);
+        }, 800);
       } else {
-        console.log('[v0] Login failed:', data.error);
-        setError(data.error || 'Login failed. Please try again.');
+        const errMsg = data.error || 'Login gagal. Periksa kembali email & password Anda.';
+        setError(errMsg);
+        toast.error(errMsg);
       }
     } catch (err: any) {
-      console.log('[v0] Error:', err);
-      setError('An error occurred. Please try again.');
+      setError('Terjadi kesalahan koneksi. Silakan coba lagi.');
+      toast.error('Gagal terhubung ke server. Silakan periksa jaringan Anda.');
     } finally {
       setLoading(false);
     }

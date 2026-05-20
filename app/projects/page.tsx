@@ -8,7 +8,8 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
-import { MapPin, Calendar, DollarSign, Plus, Trash2, Edit, X, FileText } from 'lucide-react';
+import { MapPin, Calendar, DollarSign, Plus, Trash2, Edit, X, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ProjectsPage() {
   const router = useRouter();
@@ -20,6 +21,10 @@ export default function ProjectsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
+
+  // Custom Delete Confirm Modal States
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
   // Form Fields - Create
   const [name, setName] = useState('');
@@ -107,10 +112,14 @@ export default function ProjectsPage() {
         setStartDate('');
         setEndDate('');
         setBudgetAmount('');
+        toast.success('Proyek baru berhasil dibuat!');
         fetchProjects(token!);
+      } else {
+        toast.error(data.error || 'Gagal membuat proyek.');
       }
     } catch (error) {
       console.error('Failed to create project:', error);
+      toast.error('Terjadi kesalahan koneksi saat membuat proyek.');
     } finally {
       setSubmitting(false);
     }
@@ -149,21 +158,25 @@ export default function ProjectsPage() {
       const data = await response.json();
       if (data.success) {
         setIsEditModalOpen(false);
+        toast.success('Detail proyek berhasil diperbarui.');
         fetchProjects(token!);
+      } else {
+        toast.error(data.error || 'Gagal memperbarui proyek.');
       }
     } catch (error) {
       console.error('Failed to update project:', error);
+      toast.error('Terjadi kesalahan koneksi saat memperbarui proyek.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleDeleteProject = async (projectId: string) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus proyek ini?')) return;
+  const confirmDeleteProject = async () => {
+    if (!projectToDelete) return;
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/projects/${projectId}`, {
+      const response = await fetch(`/api/projects/${projectToDelete}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -172,10 +185,17 @@ export default function ProjectsPage() {
 
       const data = await response.json();
       if (data.success) {
+        toast.success('Proyek berhasil dihapus secara permanen.');
         fetchProjects(token!);
+      } else {
+        toast.error(data.error || 'Gagal menghapus proyek.');
       }
     } catch (error) {
       console.error('Failed to delete project:', error);
+      toast.error('Terjadi kesalahan saat menghapus proyek.');
+    } finally {
+      setIsDeleteConfirmOpen(false);
+      setProjectToDelete(null);
     }
   };
 
@@ -294,7 +314,10 @@ export default function ProjectsPage() {
                         </Button>
                         <Button 
                           className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 h-8.5 px-3 border border-transparent hover:border-rose-100 bg-transparent"
-                          onClick={() => handleDeleteProject(project.id)}
+                          onClick={() => {
+                            setProjectToDelete(project.id);
+                            setIsDeleteConfirmOpen(true);
+                          }}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>
@@ -497,6 +520,43 @@ export default function ProjectsPage() {
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Delete Confirmation Modal */}
+      {isDeleteConfirmOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-slate-100 flex flex-col p-6 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-4 text-rose-600 mb-4">
+              <div className="p-3 bg-rose-50 rounded-full">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">Hapus Proyek Permanen?</h3>
+            </div>
+            
+            <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+              Tindakan ini tidak dapat dibatalkan. Semua data terkait proyek konstruksi ini akan dihapus secara permanen dari sistem VibeDesk.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                className="text-sm font-semibold h-10 px-4"
+                onClick={() => {
+                  setIsDeleteConfirmOpen(false);
+                  setProjectToDelete(null);
+                }}
+              >
+                Batal
+              </Button>
+              <Button
+                className="bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold h-10 px-5"
+                onClick={confirmDeleteProject}
+              >
+                Ya, Hapus
+              </Button>
+            </div>
           </div>
         </div>
       )}

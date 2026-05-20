@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { ArrowLeft, Send, Clock, User, Calendar, History, MessageSquare, ShieldAlert } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function TicketDetailPage() {
   const router = useRouter();
@@ -74,9 +75,13 @@ export default function TicketDetailPage() {
       const data = await response.json();
       if (data.success) {
         setTicket(data.data);
+        toast.success('Detail tiket berhasil diperbarui!');
+      } else {
+        toast.error(data.error || 'Gagal memperbarui tiket.');
       }
     } catch (error) {
       console.error('Field update failed:', error);
+      toast.error('Terjadi kesalahan koneksi saat memperbarui tiket.');
     } finally {
       setUpdatingField(false);
     }
@@ -107,9 +112,13 @@ export default function TicketDetailPage() {
         setTicket(data.data);
         setComment('');
         setIsInternalComment(false);
+        toast.success(isInternalComment ? 'Catatan internal berhasil disimpan.' : 'Respon/komentar berhasil dikirim.');
+      } else {
+        toast.error(data.error || 'Gagal mengirim komentar.');
       }
     } catch (error) {
       console.error('Add comment failed:', error);
+      toast.error('Terjadi kesalahan koneksi saat mengirim komentar.');
     } finally {
       setSubmitting(false);
     }

@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
-import { Plus, Filter, Search, Trash2, Eye, X, Calendar } from 'lucide-react';
+import { Plus, Filter, Search, Trash2, Eye, X, Calendar, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Ticket {
   id: string;
@@ -41,6 +42,10 @@ export default function TicketsPage() {
   const [newPriority, setNewPriority] = useState('MEDIUM');
   const [newDueDate, setNewDueDate] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // Custom Delete Confirm Modal States
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [ticketToDelete, setTicketToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -132,21 +137,25 @@ export default function TicketsPage() {
         setNewCategory('BUG');
         setNewPriority('MEDIUM');
         setNewDueDate('');
+        toast.success('Tiket baru berhasil dibuat!');
         fetchTickets(token!);
+      } else {
+        toast.error(data.error || 'Gagal membuat tiket.');
       }
     } catch (error) {
       console.error('Create ticket failed:', error);
+      toast.error('Terjadi kesalahan koneksi saat membuat tiket.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleDeleteTicket = async (ticketId: string) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus tiket ini?')) return;
+  const confirmDeleteTicket = async () => {
+    if (!ticketToDelete) return;
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/tickets/${ticketId}`, {
+      const response = await fetch(`/api/tickets/${ticketToDelete}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -155,10 +164,17 @@ export default function TicketsPage() {
 
       const data = await response.json();
       if (data.success) {
+        toast.success('Tiket berhasil dihapus secara permanen.');
         fetchTickets(token!);
+      } else {
+        toast.error(data.error || 'Gagal menghapus tiket.');
       }
     } catch (error) {
       console.error('Delete ticket failed:', error);
+      toast.error('Terjadi kesalahan saat menghapus tiket.');
+    } finally {
+      setIsDeleteConfirmOpen(false);
+      setTicketToDelete(null);
     }
   };
 
@@ -363,7 +379,10 @@ export default function TicketsPage() {
                                   variant="ghost"
                                   size="sm"
                                   className="h-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50 flex items-center gap-1.5"
-                                  onClick={() => handleDeleteTicket(ticket.id)}
+                                  onClick={() => {
+                                    setTicketToDelete(ticket.id);
+                                    setIsDeleteConfirmOpen(true);
+                                  }}
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                   Delete
@@ -542,6 +561,43 @@ export default function TicketsPage() {
               </div>
             </form>
 
+          </div>
+        </div>
+      )}
+
+      {/* Custom Delete Confirmation Modal */}
+      {isDeleteConfirmOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-slate-100 flex flex-col p-6 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-4 text-rose-600 mb-4">
+              <div className="p-3 bg-rose-50 rounded-full">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">Hapus Tiket Permanen?</h3>
+            </div>
+            
+            <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+              Tindakan ini tidak dapat dibatalkan. Tiket dukungan ini akan dihapus secara permanen dari basis data sistem VibeDesk.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                className="text-sm font-semibold h-10 px-4"
+                onClick={() => {
+                  setIsDeleteConfirmOpen(false);
+                  setTicketToDelete(null);
+                }}
+              >
+                Batal
+              </Button>
+              <Button
+                className="bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold h-10 px-5"
+                onClick={confirmDeleteTicket}
+              >
+                Ya, Hapus
+              </Button>
+            </div>
           </div>
         </div>
       )}
