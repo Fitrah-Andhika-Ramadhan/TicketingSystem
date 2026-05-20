@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
+import swal from '@/lib/swal';
 
 interface User {
   id: string;
@@ -100,7 +101,11 @@ export default function AdminUsersPage() {
 
   const handleAddUser = async () => {
     if (!formData.name || !formData.email) {
-      alert('Please fill in all required fields');
+      swal.fire({
+        icon: 'warning',
+        title: 'Input Tidak Lengkap',
+        text: 'Mohon isi semua bidang yang wajib diisi.',
+      });
       return;
     }
 
@@ -122,16 +127,39 @@ export default function AdminUsersPage() {
       department: '',
     });
     setShowForm(false);
+    swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: 'Pengguna baru berhasil ditambahkan.',
+    });
   };
 
-  const handleDeleteUser = (userId: string) => {
+  const handleDeleteUser = async (userId: string) => {
     if (userId === user.id) {
-      alert('You cannot delete your own account');
+      swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Anda tidak dapat menghapus akun Anda sendiri.',
+      });
       return;
     }
 
-    if (confirm('Are you sure you want to delete this user?')) {
+    const result = await swal.fire({
+      title: 'Apakah Anda yakin?',
+      text: 'Pengguna ini akan dihapus dari sistem!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal',
+    });
+
+    if (result.isConfirmed) {
       setUsers(users.filter(u => u.id !== userId));
+      swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Pengguna berhasil dihapus.',
+      });
     }
   };
 
@@ -346,7 +374,11 @@ export default function AdminUsersPage() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => alert('Edit user functionality coming soon')}
+                                onClick={() => swal.fire({
+                                  icon: 'info',
+                                  title: 'Informasi',
+                                  text: 'Fitur edit pengguna akan segera hadir!',
+                                })}
                               >
                                 <Edit2 className="w-4 h-4" />
                               </Button>

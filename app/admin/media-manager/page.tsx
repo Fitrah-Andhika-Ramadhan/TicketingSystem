@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
 import { Upload, Trash2, Edit2, Plus, Image as ImageIcon, Video, ExternalLink, Eye } from 'lucide-react';
+import swal from '@/lib/swal';
 
 interface Media {
   id: string;
@@ -110,7 +111,11 @@ export default function MediaManager() {
     const token = localStorage.getItem('token');
 
     if (!token) {
-      alert('Session expired. Please login again.');
+      swal.fire({
+        icon: 'error',
+        title: 'Sesi Berakhir',
+        text: 'Silakan login kembali.',
+      });
       return;
     }
 
@@ -133,18 +138,39 @@ export default function MediaManager() {
       if (data.success) {
         setShowForm(false);
         fetchMedia(token);
-        alert(editingId ? 'Media updated successfully' : 'Media added successfully');
+        swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: editingId ? 'Media berhasil diperbarui.' : 'Media berhasil ditambahkan.',
+        });
       } else {
-        alert(data.error || 'Failed to save media');
+        swal.fire({
+          icon: 'error',
+          title: 'Gagal',
+          text: data.error || 'Gagal menyimpan media.',
+        });
       }
     } catch (error) {
       console.error('Error saving media:', error);
-      alert('Failed to save media');
+      swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Gagal menyimpan media.',
+      });
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this media?')) return;
+    const result = await swal.fire({
+      title: 'Apakah Anda yakin?',
+      text: 'Media ini akan dihapus secara permanen!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal',
+    });
+
+    if (!result.isConfirmed) return;
 
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -159,13 +185,25 @@ export default function MediaManager() {
 
       if (data.success) {
         fetchMedia(token);
-        alert('Media deleted successfully');
+        swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: 'Media berhasil dihapus.',
+        });
       } else {
-        alert(data.error || 'Failed to delete media');
+        swal.fire({
+          icon: 'error',
+          title: 'Gagal',
+          text: data.error || 'Gagal menghapus media.',
+        });
       }
     } catch (error) {
       console.error('Error deleting media:', error);
-      alert('Failed to delete media');
+      swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Gagal menghapus media.',
+      });
     }
   };
 
