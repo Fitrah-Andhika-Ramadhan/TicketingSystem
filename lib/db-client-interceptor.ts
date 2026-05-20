@@ -90,9 +90,9 @@ const INITIAL_DB = {
   projects: [
     {
       id: '1',
-      name: 'Metro Paragon Residence',
+      name: 'FitrahPro',
       location: 'Jakarta, Indonesia',
-      description: 'Pembangunan Paragon Residence tahap kedua.',
+      description: 'Pembangunan platform FitrahPro.',
       status: 'In Progress',
       progress: 65,
       budgetAmount: 500000000,

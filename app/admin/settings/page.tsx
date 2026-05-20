@@ -8,14 +8,15 @@ import { Input } from '@/components/ui/input';
 import { Settings, Database, Lock, Bell, Save } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
+import { toast } from 'sonner';
 
 export default function AdminSettingsPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [settings, setSettings] = useState({
-    projectName: 'Metro Paragon Residence',
+    projectName: 'FitrahPro',
     location: 'Jakarta, Indonesia',
-    companyName: 'Nata Group',
+    companyName: 'FitrahPro',
     email: 'fitrahramdhan31@gmail.com',
     phone: '+62-21-XXXX-XXXX',
     budgetAlertThreshold: 85,
@@ -23,6 +24,17 @@ export default function AdminSettingsPage() {
     notificationsEnabled: true,
     emailNotifications: true,
   });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('vibedesk_settings');
+      if (stored) {
+        try {
+          setSettings(JSON.parse(stored));
+        } catch (e) {}
+      }
+    }
+  }, []);
 
   const [changed, setChanged] = useState(false);
 
@@ -60,8 +72,11 @@ export default function AdminSettingsPage() {
 
   const handleSave = () => {
     console.log('Saving settings:', settings);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('vibedesk_settings', JSON.stringify(settings));
+    }
     setChanged(false);
-    alert('Settings saved successfully!');
+    toast.success('Pengaturan sistem berhasil disimpan secara permanen!');
   };
 
   if (!user) {

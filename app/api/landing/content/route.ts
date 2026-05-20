@@ -4,9 +4,9 @@ import { verifyToken } from '@/lib/auth';
 // Mock landing page content
 let landingContent = {
   hero: {
-    title: 'Nata Group - Metro Paragon Residence',
-    subtitle: 'Premium Residential Development in the Heart of Jakarta',
-    description: 'Experience luxury living with our state-of-the-art residential complex featuring world-class amenities and modern architecture.',
+    title: 'FitrahPro',
+    subtitle: 'Sistem Manajemen Tiket & SLA Terbaik',
+    description: 'Sistem penanganan tiket dan pemantauan Service Level Agreement (SLA) terbaik untuk bisnis digital Anda.',
     ctaText: 'View Project',
     backgroundImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&h=600&fit=crop'
   },
@@ -49,8 +49,8 @@ let landingContent = {
     satisfaction: 98
   },
   about: {
-    title: 'About Nata Group',
-    description: 'With over 10 years of experience, Nata Group has established itself as a leading real estate developer in Indonesia, delivering premium residential and commercial projects.',
+    title: 'About FitrahPro',
+    description: 'Dengan pengalaman bertahun-tahun, FitrahPro menghadirkan solusi teknologi mutakhir untuk mempermudah operasional bisnis dan penanganan dukungan pelanggan di Indonesia.',
     mission: 'To create exceptional living spaces that enhance quality of life',
     vision: 'To be the most trusted real estate developer in Southeast Asia'
   }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -25,6 +25,21 @@ interface SidebarProps {
 export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(true);
+  const [projectName, setProjectName] = useState('FitrahPro');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('vibedesk_settings');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed.projectName) {
+            setProjectName(parsed.projectName);
+          }
+        } catch (e) {}
+      }
+    }
+  }, []);
 
   const menuItems = [
     {
@@ -175,8 +190,8 @@ export default function Sidebar({ user }: SidebarProps) {
 
         {/* Footer */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-blue-700 bg-blue-900">
-          <p className="text-xs text-blue-300 text-center">
-            Metro Paragon Residence
+          <p className="text-xs text-blue-300 text-center font-semibold truncate">
+            {projectName}
           </p>
           <p className="text-xs text-blue-400 text-center mt-1">v1.0.0</p>
         </div>

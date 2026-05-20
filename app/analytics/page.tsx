@@ -12,6 +12,21 @@ export default function AnalyticsPage() {
   const [user, setUser] = useState<any>(null);
   const [analyticsData, setAnalyticsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [projectName, setProjectName] = useState('FitrahPro');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('vibedesk_settings');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed.projectName) {
+            setProjectName(parsed.projectName);
+          }
+        } catch (e) {}
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -73,7 +88,7 @@ export default function AnalyticsPage() {
           <div className="p-8 max-w-7xl mx-auto">
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
-              <p className="text-gray-600 mt-1">Metro Paragon Residence - 90 Day Analysis</p>
+              <p className="text-gray-600 mt-1">{projectName} - 90 Day Analysis</p>
             </div>
 
             {/* KPI Cards */}
