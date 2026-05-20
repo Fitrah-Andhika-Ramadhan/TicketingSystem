@@ -30,6 +30,7 @@ export const metadata: Metadata = {
 }
 
 import { Toaster } from '@/components/ui/sonner'
+import ClientDbInitializer from '@/components/ClientDbInitializer'
 
 export default function RootLayout({
   children,
@@ -39,6 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
+        <ClientDbInitializer />
         {children}
         <Toaster richColors position="top-right" />
         {process.env.NODE_ENV === 'production' && <Analytics />}

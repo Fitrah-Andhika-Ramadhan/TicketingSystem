@@ -94,12 +94,20 @@ export default function Sidebar({ user }: SidebarProps) {
         } lg:translate-x-0 fixed lg:relative w-64 h-screen bg-gradient-to-b from-blue-900 to-blue-800 text-white transition-transform duration-300 overflow-y-auto z-40`}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-blue-700">
-          <h1 className="text-xl font-bold flex items-center gap-2">
-            <Ticket className="w-6 h-6" />
-            VibeDesk
-          </h1>
-          <p className="text-xs text-blue-200 mt-1">Ticket Management</p>
+        <div className="p-6 border-b border-blue-700/60">
+          <div className="flex items-center gap-3">
+            <img 
+              src="/icon.svg" 
+              alt="VibeDesk Logo" 
+              className="w-9 h-9 rounded-xl shadow-lg border border-blue-400/40 object-cover" 
+            />
+            <div>
+              <h1 className="text-lg font-extrabold tracking-wider bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent leading-none">
+                VibeDesk
+              </h1>
+              <p className="text-[10px] text-blue-300 font-semibold tracking-wide uppercase mt-1">Ticket Desk</p>
+            </div>
+          </div>
         </div>
 
         {/* User Info */}

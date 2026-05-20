@@ -64,10 +64,12 @@ export default function LoginPage() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] aspect-square rounded-full bg-blue-600/10 blur-[100px] pointer-events-none" />
         
         {/* Brand Header */}
-        <div className="relative z-10 flex items-center gap-2">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-violet-600 to-blue-500 flex items-center justify-center shadow-lg shadow-violet-600/20">
-            <span className="font-extrabold text-white text-lg">V</span>
-          </div>
+        <div className="relative z-10 flex items-center gap-2.5">
+          <img 
+            src="/icon.svg" 
+            alt="VibeDesk Logo" 
+            className="h-10 w-10 rounded-xl border border-violet-500/20 shadow-lg object-cover"
+          />
           <div>
             <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
               VibeDesk
