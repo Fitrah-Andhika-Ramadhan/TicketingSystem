@@ -94,7 +94,10 @@ export async function POST(request: NextRequest) {
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.split(' ')[1];
 
-    if (!token || !verifyToken(token)) {
+    console.log('[v0] POST ticket - token received:', token ? (token.substring(0, 10) + '...') : 'none');
+
+    if (!token) {
+      console.error('[v0] POST ticket - No token provided');
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -102,6 +105,14 @@ export async function POST(request: NextRequest) {
     }
 
     const decoded = verifyToken(token);
+    if (!decoded) {
+      console.error('[v0] POST ticket - Token verification failed. The JWT_SECRET might have changed or token is expired.');
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { title, description, category, priority, dueDate } = body;
 
