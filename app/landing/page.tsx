@@ -148,7 +148,7 @@ export default function Landing() {
             />
             <span className="bg-gradient-to-r from-blue-700 to-cyan-600 bg-clip-text text-transparent">VibeDesk</span>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-650">
+          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
             <a href="#features" className="hover:text-blue-600 transition">Features</a>
             <a href="#slider-showcase" className="hover:text-blue-600 transition">Showcase</a>
             <a href="#how-it-works" className="hover:text-blue-600 transition">How It Works</a>
@@ -181,17 +181,17 @@ export default function Landing() {
           
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 max-w-4xl mx-auto leading-[1.1]">
             Platform Modern untuk{' '}
-            <span className="block h-[1.2em] relative overflow-hidden text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500">
+            <span className="block h-[1.2em] relative overflow-hidden">
               <span 
                 key={rotatorIndex} 
-                className="absolute inset-x-0 top-0 animate-slide-up"
+                className="absolute inset-x-0 top-0 animate-slide-up text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500"
               >
                 {rotatorWords[rotatorIndex]}
               </span>
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-slate-650 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
             {c.hero.description}
           </p>
 
@@ -230,7 +230,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 space-y-3">
             <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Showcase Dasbor Admin</h2>
-            <p className="text-slate-650 text-sm max-w-lg mx-auto">Lihat langsung kemudahan alur kerja monitoring dan penyelesaian masalah di VibeDesk.</p>
+            <p className="text-slate-600 text-sm max-w-lg mx-auto">Lihat langsung kemudahan alur kerja monitoring dan penyelesaian masalah di VibeDesk.</p>
           </div>
 
           {/* Interactive Showcase Slider */}
@@ -366,7 +366,7 @@ export default function Landing() {
                           <span className="text-xs font-bold text-slate-800">Admin User</span>
                           <span className="text-[9px] text-slate-400">10:45 AM</span>
                         </div>
-                        <p className="text-xs text-slate-650">Saya telah melakukan reset API key di sisi staging. Tolong bantu verifikasi dari klien.</p>
+                        <p className="text-xs text-slate-600">Saya telah melakukan reset API key di sisi staging. Tolong bantu verifikasi dari klien.</p>
                       </div>
                     </div>
 
@@ -395,7 +395,7 @@ export default function Landing() {
             {/* Slider Controls (Arrow Buttons) */}
             <button 
               onClick={prevSlide}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full border border-slate-200 bg-white/80 hover:bg-slate-100 text-slate-650 cursor-pointer opacity-0 group-hover:opacity-100 transition shadow-md"
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full border border-slate-200 bg-white/80 hover:bg-slate-100 text-slate-600 cursor-pointer opacity-0 group-hover:opacity-100 transition shadow-md"
               aria-label="Previous Slide"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -403,7 +403,7 @@ export default function Landing() {
             
             <button 
               onClick={nextSlide}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full border border-slate-200 bg-white/80 hover:bg-slate-100 text-slate-650 cursor-pointer opacity-0 group-hover:opacity-100 transition shadow-md"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full border border-slate-200 bg-white/80 hover:bg-slate-100 text-slate-600 cursor-pointer opacity-0 group-hover:opacity-100 transition shadow-md"
               aria-label="Next Slide"
             >
               <ChevronRight className="w-5 h-5" />
@@ -432,7 +432,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Fitur Utama Platform</h2>
-            <p className="text-slate-650 text-base max-w-xl mx-auto">Semua utilitas esensial untuk melayani pelanggan dengan andal dan terstruktur.</p>
+            <p className="text-slate-600 text-base max-w-xl mx-auto">Semua utilitas esensial untuk melayani pelanggan dengan andal dan terstruktur.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -443,7 +443,7 @@ export default function Landing() {
                 <Ticket className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-slate-900">Manajemen Tiket</h3>
-              <p className="text-slate-650 text-sm leading-relaxed">
+              <p className="text-slate-600 text-sm leading-relaxed">
                 Pembuatan tiket, pelacakan riwayat aktivitas tiket secara audit, dan prioritas kendala terotomatisasi.
               </p>
               <ul className="space-y-2 pt-2 text-xs text-slate-500">
@@ -459,7 +459,7 @@ export default function Landing() {
                 <MessageSquare className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-slate-900">Kolaborasi Tim</h3>
-              <p className="text-slate-650 text-sm leading-relaxed">
+              <p className="text-slate-600 text-sm leading-relaxed">
                 Berbagi catatan rahasia khusus tim internal dan merespon langsung ke pelanggan di halaman tiket yang sama.
               </p>
               <ul className="space-y-2 pt-2 text-xs text-slate-500">
@@ -475,7 +475,7 @@ export default function Landing() {
                 <Clock className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-slate-900">Pemantauan SLA</h3>
-              <p className="text-slate-650 text-sm leading-relaxed">
+              <p className="text-slate-600 text-sm leading-relaxed">
                 Pengukuran performa penanganan kendala berdasarkan tenggat waktu tanggap (SLA) demi komitmen layanan.
               </p>
               <ul className="space-y-2 pt-2 text-xs text-slate-500">
@@ -494,7 +494,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Cara Kerja VibeDesk</h2>
-            <p className="text-slate-650 text-base max-w-lg mx-auto">Alur penanganan kendala yang ringkas dalam 3 langkah terencana.</p>
+            <p className="text-slate-600 text-base max-w-lg mx-auto">Alur penanganan kendala yang ringkas dalam 3 langkah terencana.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto">
@@ -541,14 +541,14 @@ export default function Landing() {
               </p>
               <div className="space-y-4 pt-2">
                 <div className="flex gap-4">
-                  <div className="h-6 w-6 rounded-full bg-emerald-100 text-emerald-650 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</div>
+                  <div className="h-6 w-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</div>
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm">Misi Kami</h4>
                     <p className="text-slate-550 text-xs mt-1">{c.about.mission}</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="h-6 w-6 rounded-full bg-emerald-100 text-emerald-650 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</div>
+                  <div className="h-6 w-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</div>
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm">Visi Kami</h4>
                     <p className="text-slate-550 text-xs mt-1">{c.about.vision}</p>
@@ -565,7 +565,7 @@ export default function Landing() {
                   <span className="text-xs font-bold text-slate-400">Pemberitahuan Sistem</span>
                   <span className="text-xs px-2.5 py-1 rounded-full bg-green-50 text-green-600 font-mono text-[10px]">active</span>
                 </div>
-                <div className="space-y-4 text-sm text-slate-650">
+                <div className="space-y-4 text-sm text-slate-600">
                   <p className="italic">"Sistem penanganan tiket FitrahPro memberikan peningkatan efisiensi operasional tim support hingga 40% dalam 30 hari pertama penggunaan."</p>
                   <div className="flex items-center gap-3 pt-2">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 text-white flex items-center justify-center font-bold">FP</div>
@@ -606,7 +606,7 @@ export default function Landing() {
           
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Hubungi Kami</h2>
-            <p className="text-slate-650 text-base">Butuh bantuan integrasi atau info kustomisasi? Kami siap mendampingi.</p>
+            <p className="text-slate-600 text-base">Butuh bantuan integrasi atau info kustomisasi? Kami siap mendampingi.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
@@ -631,7 +631,7 @@ export default function Landing() {
             </div>
 
             <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-6 text-center space-y-3.5 shadow-sm">
-              <div className="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-650 flex items-center justify-center mx-auto">
+              <div className="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
                 <MapPin className="w-5 h-5" />
               </div>
               <h3 className="font-bold text-slate-900">Kantor Pusat</h3>
