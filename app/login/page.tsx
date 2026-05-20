@@ -5,44 +5,12 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, Sparkles, Activity, ShieldCheck, HelpCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import { redirect } from 'next/navigation';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState('admin@fitrahpro.com');
-  const [password, setPassword] = useState('FitrahPro@2026');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showDemoHelp, setShowDemoHelp] = useState(true);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-
-        toast.success('Login Berhasil! Selamat datang di VibeDesk.');
-
-        // Redirect to dashboard
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 800);
-      } else {
-        const errMsg = data.error || 'Login gagal. Periksa kembali email & password Anda.';
-        setError(errMsg);
+  // Bypass login and redirect to dashboard
+  redirect('/dashboard');
+  return null;
         toast.error(errMsg);
       }
     } catch (err: any) {
