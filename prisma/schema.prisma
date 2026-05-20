@@ -222,3 +222,34 @@ model AuditLog {
   @@index([entityType])
   @@index([createdAt])
 }
+
+// Projects
+model Project {
+  id                  String   @id @default(cuid())
+  name                String
+  location            String
+  description         String?
+  status              String   @default("Planning")
+  progress            Int      @default(0)
+  budgetAmount        Float    @default(0)
+  spentAmount         Float    @default(0)
+  startDate           DateTime @default(now())
+  estimatedCompletion DateTime?
+  endDate             DateTime?
+  phases              Phase[]
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+// Phases of Projects
+model Phase {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name      String
+  progress  Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

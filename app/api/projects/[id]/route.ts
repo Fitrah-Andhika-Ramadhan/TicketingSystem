@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-import { readDB, writeDB, Project } from '@/lib/db-mock';
+import { prisma } from '@/lib/prisma';
 
 // Get project detail
 export async function GET(
@@ -18,10 +18,14 @@ export async function GET(
       );
     }
 
-    const db = readDB();
-    const project = db.projects.find(p => p.id === params.id);
+    const p = await prisma.project.findUnique({
+      where: { id: params.id },
+      include: {
+        phases: true,
+      },
+    });
 
-    if (!project) {
+    if (!p) {
       return NextResponse.json(
         { error: 'Project not found' },
         { status: 404 }
@@ -30,7 +34,22 @@ export async function GET(
 
     // Mix standard mock sub-fields for UI compatibility
     const projectDetail = {
-      ...project,
+      id: p.id,
+      name: p.name,
+      location: p.location,
+      description: p.description || undefined,
+      status: p.status,
+      progress: p.progress,
+      budgetAmount: p.budgetAmount,
+      spentAmount: p.spentAmount,
+      startDate: p.startDate.toISOString(),
+      estimatedCompletion: p.estimatedCompletion?.toISOString(),
+      endDate: p.endDate?.toISOString(),
+      phases: p.phases.map(ph => ({
+        id: ph.id,
+        name: ph.name,
+        progress: ph.progress,
+      })),
       documents: [
         { id: 'd1', title: 'Master Plan', docType: 'BLUEPRINT', uploadedAt: new Date().toISOString() },
         { id: 'd2', title: 'SPR Document', docType: 'SPR', uploadedAt: new Date().toISOString() },
@@ -71,33 +90,70 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const db = readDB();
-    const index = db.projects.findIndex(p => p.id === params.id);
 
-    if (index === -1) {
+    const currentProject = await prisma.project.findUnique({
+      where: { id: params.id }
+    });
+
+    if (!currentProject) {
       return NextResponse.json(
         { error: 'Project not found' },
         { status: 404 }
       );
     }
 
-    const project = db.projects[index];
+    const updateData: any = {};
+    if (body.name) updateData.name = body.name;
+    if (body.location) updateData.location = body.location;
+    if (body.status) updateData.status = body.status;
+    if (body.progress !== undefined) updateData.progress = Number(body.progress);
+    if (body.budgetAmount !== undefined) updateData.budgetAmount = Number(body.budgetAmount);
+    if (body.spentAmount !== undefined) updateData.spentAmount = Number(body.spentAmount);
 
-    // Update fields
-    if (body.name) project.name = body.name;
-    if (body.location) project.location = body.location;
-    if (body.status) project.status = body.status;
-    if (body.progress !== undefined) project.progress = Number(body.progress);
-    if (body.budgetAmount !== undefined) project.budgetAmount = Number(body.budgetAmount);
-    if (body.spentAmount !== undefined) project.spentAmount = Number(body.spentAmount);
-    if (body.phases) project.phases = body.phases;
+    if (body.phases && Array.isArray(body.phases)) {
+      for (const phase of body.phases) {
+        if (phase.id && phase.progress !== undefined) {
+          // If the phase ID is a mock ID starting with 'p', update by order or handle appropriately
+          await prisma.phase.update({
+            where: { id: phase.id },
+            data: { progress: Number(phase.progress) }
+          }).catch(err => {
+            console.warn(`Could not update phase ID: ${phase.id}`, err);
+          });
+        }
+      }
+    }
 
-    db.projects[index] = project;
-    writeDB(db);
+    const p = await prisma.project.update({
+      where: { id: params.id },
+      data: updateData,
+      include: {
+        phases: true,
+      },
+    });
+
+    const mappedProject = {
+      id: p.id,
+      name: p.name,
+      location: p.location,
+      description: p.description || undefined,
+      status: p.status,
+      progress: p.progress,
+      budgetAmount: p.budgetAmount,
+      spentAmount: p.spentAmount,
+      startDate: p.startDate.toISOString(),
+      estimatedCompletion: p.estimatedCompletion?.toISOString(),
+      endDate: p.endDate?.toISOString(),
+      phases: p.phases.map(ph => ({
+        id: ph.id,
+        name: ph.name,
+        progress: ph.progress,
+      })),
+    };
 
     return NextResponse.json({
       success: true,
-      data: project,
+      data: mappedProject,
     });
   } catch (error) {
     console.error('Update project error:', error);
@@ -124,18 +180,20 @@ export async function DELETE(
       );
     }
 
-    const db = readDB();
-    const index = db.projects.findIndex(p => p.id === params.id);
+    const currentProject = await prisma.project.findUnique({
+      where: { id: params.id }
+    });
 
-    if (index === -1) {
+    if (!currentProject) {
       return NextResponse.json(
         { error: 'Project not found' },
         { status: 404 }
       );
     }
 
-    db.projects.splice(index, 1);
-    writeDB(db);
+    await prisma.project.delete({
+      where: { id: params.id }
+    });
 
     return NextResponse.json({
       success: true,
