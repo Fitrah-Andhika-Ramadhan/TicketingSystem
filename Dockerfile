@@ -1,5 +1,5 @@
 # Stage 1: Dependencies
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 RUN npm install -g pnpm
 
 # Install dependencies only when needed
