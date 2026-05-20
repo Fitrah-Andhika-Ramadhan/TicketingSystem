@@ -16,7 +16,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Mock Login for local development without DB
-    if (process.env.NEXT_PUBLIC_USE_MOCK_DB === 'true') {
+    const useMockDb = process.env.NEXT_PUBLIC_USE_MOCK_DB === 'true' || process.env.USE_MOCK_DB === 'true';
+    if (useMockDb) {
       console.log('[v0] Mocking login for local development');
       // Accept demo passwords
       const allowedPasswords = ['FitrahPro@2026', 'VibeDesk-2026', 'NataGroup@2024', 'FitrahPro-2026', 'FitrahPro.2026'];
