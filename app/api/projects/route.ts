@@ -1,26 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-
-// Mock projects data
-const mockProjects = [
-  {
-    id: '1',
-    name: 'Metro Paragon Residence',
-    location: 'Jakarta, Indonesia',
-    status: 'In Progress',
-    progress: 65,
-    budgetAmount: 500000000,
-    spentAmount: 325000000,
-    startDate: new Date('2023-01-15'),
-    estimatedCompletion: new Date('2025-12-31'),
-    phases: [
-      { id: 'p1', name: 'Foundation & Basement', progress: 100 },
-      { id: 'p2', name: 'Main Structure', progress: 85 },
-      { id: 'p3', name: 'Finishing & Interior', progress: 40 },
-      { id: 'p4', name: 'Testing & Handover', progress: 0 },
-    ],
-  },
-];
+import { readDB, writeDB, Project } from '@/lib/db-mock';
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,9 +14,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const db = readDB();
+
     return NextResponse.json({
       success: true,
-      data: mockProjects,
+      data: db.projects,
     });
   } catch (error) {
     console.error('Get projects error:', error);
@@ -62,28 +44,37 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, location, description, startDate, endDate, budgetAmount } = body;
 
-    if (!name || !location || !startDate || !endDate || !budgetAmount) {
+    if (!name || !location || !startDate || !budgetAmount) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    const newProject = {
-      id: String(mockProjects.length + 1),
+    const db = readDB();
+    const newId = String(db.projects.length > 0 ? Math.max(...db.projects.map(p => Number(p.id))) + 1 : 1);
+
+    const newProject: Project = {
+      id: newId,
       name,
       location,
       description,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      budgetAmount,
+      startDate: new Date(startDate).toISOString(),
+      endDate: endDate ? new Date(endDate).toISOString() : undefined,
+      estimatedCompletion: endDate ? new Date(endDate).toISOString() : undefined,
+      budgetAmount: Number(budgetAmount),
       spentAmount: 0,
       status: 'Planning',
       progress: 0,
-      phases: [],
+      phases: [
+        { id: 'p1', name: 'Foundation', progress: 0 },
+        { id: 'p2', name: 'Structure', progress: 0 },
+        { id: 'p3', name: 'Finishing', progress: 0 },
+      ],
     };
 
-    mockProjects.push(newProject);
+    db.projects.push(newProject);
+    writeDB(db);
 
     return NextResponse.json(
       { success: true, data: newProject },

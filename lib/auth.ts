@@ -5,8 +5,8 @@ import jwt from 'jsonwebtoken';
 const mockUsers = [
   {
     id: '1',
-    email: 'fitrahramdhan31@gmail.com',
-    password: '$2a$10$Y9HS7OMm7hxNwI5Z0K9v.uJZz5K5K5K5K5K5K5K5K5K5K5K5K5K5K', // NataGroup@2024 hashed
+    email: 'admin@natagroup.com',
+    password: '$2a$10$Y9HS7OMm7hxNwI5Z0K9v.uJZz5K5K5K5K5K5K5K5K5K5K5K5K5K5K', // Mock hashed password
     name: 'Admin User',
     role: 'SUPER_ADMIN',
     department: 'Management',
@@ -88,7 +88,7 @@ export async function authenticateUser(
 
     // For demo, accept the password as-is
     // In production, you'd verify against hashed password
-    if (password !== 'NataGroup@2024') {
+    if (password !== 'NataGroup@2026') {
       return null;
     }
 

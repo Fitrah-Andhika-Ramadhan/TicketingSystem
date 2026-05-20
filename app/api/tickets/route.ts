@@ -1,43 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
+import { readDB, writeDB, Ticket } from '@/lib/db-mock';
 
-// Mock tickets database
-let mockTickets = [
-  {
-    id: '1',
-    ticketNumber: 'TICKET-001',
-    title: 'Login page not loading',
-    description: 'Users unable to access login page on mobile devices',
-    category: 'BUG',
-    priority: 'HIGH',
-    status: 'IN_PROGRESS',
-    createdBy: '1',
-    createdByName: 'Admin User',
-    assignedTo: '1',
-    assignedName: 'Admin User',
-    createdAt: new Date('2026-04-08'),
-    updatedAt: new Date('2026-04-09'),
-    resolutionTime: null,
-  },
-  {
-    id: '2',
-    ticketNumber: 'TICKET-002',
-    title: 'Add dark mode feature',
-    description: 'Implement dark mode throughout the application',
-    category: 'FEATURE_REQUEST',
-    priority: 'MEDIUM',
-    status: 'OPEN',
-    createdBy: '1',
-    createdByName: 'Admin User',
-    assignedTo: null,
-    assignedName: null,
-    createdAt: new Date('2026-04-09'),
-    updatedAt: new Date('2026-04-09'),
-    resolutionTime: null,
-  },
-];
-
-// Get all tickets or filter by user
+// Get all tickets or filter by search parameters
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -54,7 +19,8 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const priority = searchParams.get('priority');
 
-    let tickets = mockTickets;
+    const db = readDB();
+    let tickets = db.tickets;
 
     if (status) {
       tickets = tickets.filter(t => t.status === status);
@@ -89,8 +55,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const decoded = verifyToken(token);
     const body = await request.json();
-    const { title, description, category, priority } = body;
+    const { title, description, category, priority, dueDate } = body;
 
     if (!title || !description || !category) {
       return NextResponse.json(
@@ -99,24 +66,41 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newTicket = {
-      id: String(mockTickets.length + 1),
-      ticketNumber: `TICKET-${String(mockTickets.length + 1).padStart(3, '0')}`,
+    const db = readDB();
+    const newId = String(db.tickets.length > 0 ? Math.max(...db.tickets.map(t => Number(t.id))) + 1 : 1);
+    
+    const newTicket: Ticket = {
+      id: newId,
+      ticketNumber: `TICKET-${String(newId).padStart(3, '0')}`,
       title,
       description,
       category,
       priority: priority || 'MEDIUM',
       status: 'OPEN',
-      createdBy: '1',
+      createdBy: decoded?.userId || '1',
       createdByName: 'Admin User',
+      createdByEmail: decoded?.email || 'admin@natagroup.com',
       assignedTo: null,
       assignedName: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       resolutionTime: null,
+      dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
+      comments: [],
+      attachments: [],
+      history: [
+        {
+          id: 'h-' + Date.now(),
+          action: 'created',
+          oldValue: null,
+          newValue: `TICKET-${String(newId).padStart(3, '0')} created`,
+          changedAt: new Date().toISOString(),
+        }
+      ],
     };
 
-    mockTickets.push(newTicket);
+    db.tickets.push(newTicket);
+    writeDB(db);
 
     return NextResponse.json(
       { success: true, data: newTicket },

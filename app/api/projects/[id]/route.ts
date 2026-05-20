@@ -1,33 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
+import { readDB, writeDB, Project } from '@/lib/db-mock';
 
-// Mock project data
-const mockProjectDetail = {
-  id: '1',
-  name: 'Metro Paragon Residence',
-  location: 'Jakarta, Indonesia',
-  status: 'In Progress',
-  progress: 65,
-  budgetAmount: 500000000,
-  spentAmount: 325000000,
-  startDate: new Date('2023-01-15'),
-  estimatedCompletion: new Date('2025-12-31'),
-  phases: [
-    { id: 'p1', name: 'Foundation & Basement', progress: 100, status: 'Completed' },
-    { id: 'p2', name: 'Main Structure', progress: 85, status: 'In Progress' },
-    { id: 'p3', name: 'Finishing & Interior', progress: 40, status: 'In Progress' },
-    { id: 'p4', name: 'Testing & Handover', progress: 0, status: 'Planned' },
-  ],
-  documents: [
-    { id: 'd1', title: 'Master Plan', docType: 'BLUEPRINT', uploadedAt: new Date() },
-    { id: 'd2', title: 'SPR Document', docType: 'SPR', uploadedAt: new Date() },
-  ],
-  milestones: [
-    { id: 'm1', title: 'Structural Completion', dueDate: new Date(), status: 'Completed', priority: 'High' },
-  ],
-  analytics: [],
-};
-
+// Get project detail
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -43,16 +18,32 @@ export async function GET(
       );
     }
 
-    if (params.id !== '1') {
+    const db = readDB();
+    const project = db.projects.find(p => p.id === params.id);
+
+    if (!project) {
       return NextResponse.json(
         { error: 'Project not found' },
         { status: 404 }
       );
     }
 
+    // Mix standard mock sub-fields for UI compatibility
+    const projectDetail = {
+      ...project,
+      documents: [
+        { id: 'd1', title: 'Master Plan', docType: 'BLUEPRINT', uploadedAt: new Date().toISOString() },
+        { id: 'd2', title: 'SPR Document', docType: 'SPR', uploadedAt: new Date().toISOString() },
+      ],
+      milestones: [
+        { id: 'm1', title: 'Structural Completion', dueDate: new Date().toISOString(), status: 'Completed', priority: 'High' },
+      ],
+      analytics: [],
+    };
+
     return NextResponse.json({
       success: true,
-      data: mockProjectDetail,
+      data: projectDetail,
     });
   } catch (error) {
     console.error('Get project detail error:', error);
@@ -63,6 +54,7 @@ export async function GET(
   }
 }
 
+// Update project
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -79,19 +71,78 @@ export async function PATCH(
     }
 
     const body = await request.json();
+    const db = readDB();
+    const index = db.projects.findIndex(p => p.id === params.id);
 
-    // Mock update - just return updated project
-    const updatedProject = {
-      ...mockProjectDetail,
-      ...body,
-    };
+    if (index === -1) {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+
+    const project = db.projects[index];
+
+    // Update fields
+    if (body.name) project.name = body.name;
+    if (body.location) project.location = body.location;
+    if (body.status) project.status = body.status;
+    if (body.progress !== undefined) project.progress = Number(body.progress);
+    if (body.budgetAmount !== undefined) project.budgetAmount = Number(body.budgetAmount);
+    if (body.spentAmount !== undefined) project.spentAmount = Number(body.spentAmount);
+    if (body.phases) project.phases = body.phases;
+
+    db.projects[index] = project;
+    writeDB(db);
 
     return NextResponse.json({
       success: true,
-      data: updatedProject,
+      data: project,
     });
   } catch (error) {
     console.error('Update project error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// Delete project
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const authHeader = request.headers.get('authorization');
+    const token = authHeader?.split(' ')[1];
+
+    if (!token || !verifyToken(token)) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const db = readDB();
+    const index = db.projects.findIndex(p => p.id === params.id);
+
+    if (index === -1) {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+
+    db.projects.splice(index, 1);
+    writeDB(db);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Project deleted successfully',
+    });
+  } catch (error) {
+    console.error('Delete project error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

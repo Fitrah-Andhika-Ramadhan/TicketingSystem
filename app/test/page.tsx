@@ -15,8 +15,8 @@ export default function TestPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: 'fitrahramdhan31@gmail.com',
-          password: 'NataGroup@2024',
+          email: 'admin@natagroup.com',
+          password: 'NataGroup@2026',
         }),
       });
       const data = await response.json();
@@ -40,8 +40,8 @@ export default function TestPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: 'fitrahramdhan31@gmail.com',
-          password: 'NataGroup@2024',
+          email: 'admin@natagroup.com',
+          password: 'NataGroup@2026',
         }),
       });
       const loginData = await loginResponse.json();

@@ -8,8 +8,8 @@ import { Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, Sparkles, Activity, Shie
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('fitrahramdhan31@gmail.com');
-  const [password, setPassword] = useState('NataGroup@2024');
+  const [email, setEmail] = useState('admin@natagroup.com');
+  const [password, setPassword] = useState('NataGroup@2026');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -290,8 +290,8 @@ export default function LoginPage() {
               <div className="mt-3 pt-3 border-t border-slate-800/50 space-y-1.5 text-xs text-slate-400 text-left">
                 <p>Gunakan kredensial berikut untuk masuk sebagai administrator:</p>
                 <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/50 space-y-1 font-mono text-[11px] text-slate-300">
-                  <p><span className="text-slate-500">Email:</span> fitrahramdhan31@gmail.com</p>
-                  <p><span className="text-slate-500">Pass :</span> NataGroup@2024</p>
+                  <p><span className="text-slate-500">Email:</span> admin@natagroup.com</p>
+                  <p><span className="text-slate-500">Pass :</span> NataGroup@2026</p>
                 </div>
               </div>
             )}

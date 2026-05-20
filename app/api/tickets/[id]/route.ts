@@ -1,63 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
+import { readDB, writeDB, TicketComment, TicketHistory } from '@/lib/db-mock';
 
-// Mock ticket details
-const mockTicketDetails: any = {
-  '1': {
-    id: '1',
-    ticketNumber: 'TICKET-001',
-    title: 'Login page not loading',
-    description: 'Users unable to access login page on mobile devices. This is blocking new user registrations.',
-    category: 'BUG',
-    priority: 'HIGH',
-    status: 'IN_PROGRESS',
-    createdBy: '1',
-    createdByName: 'Admin User',
-    createdByEmail: 'fitrahramdhan31@gmail.com',
-    assignedTo: '1',
-    assignedName: 'Admin User',
-    createdAt: new Date('2026-04-08'),
-    updatedAt: new Date('2026-04-09'),
-    resolutionTime: null,
-    dueDate: new Date('2026-04-10'),
-    comments: [
-      {
-        id: 'c1',
-        content: 'Started investigating the issue',
-        userId: '1',
-        userName: 'Admin User',
-        isInternal: false,
-        createdAt: new Date('2026-04-09'),
-      },
-      {
-        id: 'c2',
-        content: 'Found bug in mobile responsive CSS',
-        userId: '1',
-        userName: 'Admin User',
-        isInternal: true,
-        createdAt: new Date('2026-04-09'),
-      },
-    ],
-    attachments: [],
-    history: [
-      {
-        id: 'h1',
-        action: 'created',
-        oldValue: null,
-        newValue: 'TICKET-001 created',
-        changedAt: new Date('2026-04-08'),
-      },
-      {
-        id: 'h2',
-        action: 'status_changed',
-        oldValue: 'OPEN',
-        newValue: 'IN_PROGRESS',
-        changedAt: new Date('2026-04-09'),
-      },
-    ],
-  },
-};
-
+// Get ticket details
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -73,7 +18,8 @@ export async function GET(
       );
     }
 
-    const ticket = mockTicketDetails[params.id];
+    const db = readDB();
+    const ticket = db.tickets.find(t => t.id === params.id);
 
     if (!ticket) {
       return NextResponse.json(
@@ -111,24 +57,86 @@ export async function PATCH(
       );
     }
 
+    const decoded = verifyToken(token);
     const body = await request.json();
-    const ticket = mockTicketDetails[params.id];
+    const db = readDB();
+    const ticketIndex = db.tickets.findIndex(t => t.id === params.id);
 
-    if (!ticket) {
+    if (ticketIndex === -1) {
       return NextResponse.json(
         { error: 'Ticket not found' },
         { status: 404 }
       );
     }
 
-    // Update ticket fields
-    if (body.status) ticket.status = body.status;
-    if (body.priority) ticket.priority = body.priority;
-    if (body.assignedTo) ticket.assignedTo = body.assignedTo;
-    if (body.title) ticket.title = body.title;
-    if (body.description) ticket.description = body.description;
+    const ticket = db.tickets[ticketIndex];
+    const history: TicketHistory[] = ticket.history || [];
 
-    ticket.updatedAt = new Date();
+    // Handle Comment Addition
+    if (body.comment) {
+      const newComment: TicketComment = {
+        id: 'c-' + Date.now(),
+        content: body.comment.content,
+        userId: decoded?.userId || '1',
+        userName: decoded?.email ? decoded.email.split('@')[0] : 'Admin',
+        isInternal: body.comment.isInternal || false,
+        createdAt: new Date().toISOString(),
+      };
+      ticket.comments = [newComment, ...(ticket.comments || [])];
+      
+      history.push({
+        id: 'h-' + Date.now(),
+        action: 'comment_added',
+        oldValue: null,
+        newValue: `Comment added: "${body.comment.content.substring(0, 30)}..."`,
+        changedAt: new Date().toISOString(),
+      });
+    }
+
+    // Update individual fields
+    if (body.status && body.status !== ticket.status) {
+      history.push({
+        id: 'h-' + Date.now() + '-status',
+        action: 'status_changed',
+        oldValue: ticket.status,
+        newValue: body.status,
+        changedAt: new Date().toISOString(),
+      });
+      ticket.status = body.status;
+    }
+
+    if (body.priority && body.priority !== ticket.priority) {
+      history.push({
+        id: 'h-' + Date.now() + '-priority',
+        action: 'priority_changed',
+        oldValue: ticket.priority,
+        newValue: body.priority,
+        changedAt: new Date().toISOString(),
+      });
+      ticket.priority = body.priority;
+    }
+
+    if (body.assignedTo && body.assignedTo !== ticket.assignedTo) {
+      const assignedName = body.assignedTo === '1' ? 'Admin User' : 'Support Agent';
+      history.push({
+        id: 'h-' + Date.now() + '-assignment',
+        action: 'assigned_to_changed',
+        oldValue: ticket.assignedName,
+        newValue: assignedName,
+        changedAt: new Date().toISOString(),
+      });
+      ticket.assignedTo = body.assignedTo;
+      ticket.assignedName = assignedName;
+    }
+
+    if (body.title && body.title !== ticket.title) ticket.title = body.title;
+    if (body.description && body.description !== ticket.description) ticket.description = body.description;
+
+    ticket.updatedAt = new Date().toISOString();
+    ticket.history = history;
+
+    db.tickets[ticketIndex] = ticket;
+    writeDB(db);
 
     return NextResponse.json({
       success: true,
@@ -136,6 +144,48 @@ export async function PATCH(
     });
   } catch (error) {
     console.error('Update ticket error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// Delete ticket
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const authHeader = request.headers.get('authorization');
+    const token = authHeader?.split(' ')[1];
+
+    if (!token || !verifyToken(token)) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const db = readDB();
+    const index = db.tickets.findIndex(t => t.id === params.id);
+
+    if (index === -1) {
+      return NextResponse.json(
+        { error: 'Ticket not found' },
+        { status: 404 }
+      );
+    }
+
+    db.tickets.splice(index, 1);
+    writeDB(db);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Ticket deleted successfully',
+    });
+  } catch (error) {
+    console.error('Delete ticket error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
