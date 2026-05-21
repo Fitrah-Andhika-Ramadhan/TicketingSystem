@@ -131,7 +131,7 @@ export default function DashboardPage() {
 
         <main className="flex-1 overflow-auto">
           <div className="p-8 max-w-7xl mx-auto w-full">
-            {user.role === 'USER' ? (
+            {user.role === 'VIEWER' ? (
               <UserDashboard user={user} tickets={tickets} />
             ) : (
               <>

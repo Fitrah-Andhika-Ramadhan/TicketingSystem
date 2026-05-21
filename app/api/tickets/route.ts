@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const where: any = {};
     
     // Non-admin users can only see their own tickets
-    if (decoded.role === 'USER') {
+    if (decoded.role === 'VIEWER') {
       where.createdBy = decoded.userId;
     }
     

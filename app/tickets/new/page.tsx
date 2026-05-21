@@ -97,7 +97,7 @@ export default function NewTicketPage() {
         <main className="flex-1 overflow-auto p-4 md:p-8">
           <div className="max-w-3xl mx-auto">
             <div className="mb-6 flex items-center gap-4">
-              <Button variant="outline" onClick={() => router.push(user.role === 'USER' ? '/dashboard' : '/tickets')} className="h-9 px-3">
+              <Button variant="outline" onClick={() => router.push(user.role === 'VIEWER' ? '/dashboard' : '/tickets')} className="h-9 px-3">
                 <ArrowLeft className="w-4 h-4 mr-1.5" /> Kembali
               </Button>
               <h1 className="text-2xl font-bold text-slate-800">Buat Tiket Baru</h1>
@@ -143,7 +143,7 @@ export default function NewTicketPage() {
                         <option value="FEATURE_REQUEST">Permintaan Fitur</option>
                       </select>
                     </div>
-                    {user.role !== 'USER' && (
+                    {user.role !== 'VIEWER' && (
                       <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-1.5">Prioritas</label>
                         <select
