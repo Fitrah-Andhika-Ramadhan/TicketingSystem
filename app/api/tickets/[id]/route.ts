@@ -204,11 +204,11 @@ export async function PATCH(
       updateData.progress = parseInt(body.progress);
     }
     
-    if (body.solution !== undefined && body.solution !== ticket.solution) {
+    if (body.solution !== undefined) {
       updateData.solution = body.solution;
     }
     
-    if (body.recommendation !== undefined && body.recommendation !== ticket.recommendation) {
+    if (body.recommendation !== undefined) {
       updateData.recommendation = body.recommendation;
     }
 
