@@ -345,7 +345,18 @@ export default function TicketDetailPage() {
                               rows={2}
                             />
                           </div>
-                          <div className="flex justify-end pt-2">
+                          <div className="flex justify-end gap-3 pt-2">
+                            <Button 
+                              variant="outline"
+                              onClick={() => handleUpdateTicketField({ 
+                                solution: localSolution, 
+                                recommendation: localRecommendation
+                              })}
+                              className="border-emerald-300 text-emerald-700 hover:bg-emerald-50 font-semibold"
+                              disabled={!localSolution.trim() || updatingField}
+                            >
+                              {updatingField ? 'Menyimpan...' : 'Simpan Draft'}
+                            </Button>
                             <Button 
                               onClick={() => handleUpdateTicketField({ 
                                 solution: localSolution, 
