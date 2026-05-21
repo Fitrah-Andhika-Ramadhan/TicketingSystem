@@ -135,10 +135,17 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-slate-800 font-sans antialiased overflow-x-hidden scroll-smooth selection:bg-blue-500/10 selection:text-blue-600">
+    <div className="min-h-screen relative bg-slate-50 text-slate-800 font-sans antialiased overflow-x-hidden scroll-smooth selection:bg-blue-500/10 selection:text-blue-600">
       
+      {/* Interactive UI Runner / Animated Background */}
+      <div className="fixed inset-0 z-[-3] bg-gradient-to-br from-indigo-50/50 via-white to-cyan-50/50"></div>
+      <div className="fixed inset-0 z-[-2] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      <div className="fixed left-0 right-0 top-0 z-[-1] m-auto h-[310px] w-[310px] rounded-full bg-blue-500 opacity-20 blur-[100px] animate-pulse"></div>
+      <div className="fixed bottom-0 right-0 z-[-1] h-[400px] w-[400px] rounded-full bg-purple-500 opacity-10 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className="fixed bottom-1/2 left-0 z-[-1] h-[300px] w-[300px] rounded-full bg-cyan-400 opacity-10 blur-[100px] animate-pulse" style={{ animationDelay: '4s' }}></div>
+
       {/* Navigation */}
-      <nav className="border-b border-slate-100/80 sticky top-0 bg-white/80 backdrop-blur-md z-50 shadow-sm shadow-slate-100/30 transition-all duration-200">
+      <nav className="border-b border-slate-200/50 sticky top-0 bg-white/60 backdrop-blur-xl z-50 shadow-sm shadow-slate-200/20 transition-all duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-slate-900 select-none">
             <img 

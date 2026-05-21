@@ -106,10 +106,13 @@ export default function Sidebar({ user }: SidebarProps) {
       <aside
         className={`${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 fixed lg:relative w-64 h-screen bg-gradient-to-b from-blue-900 to-blue-800 text-white transition-transform duration-300 overflow-y-auto z-40`}
+        } lg:translate-x-0 fixed lg:relative w-72 h-screen bg-slate-900 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] text-white transition-transform duration-300 overflow-y-auto z-40 border-r border-slate-800 shadow-2xl`}
       >
+        {/* Subtle Gradient Glow */}
+        <div className="absolute top-0 left-0 w-full h-64 bg-blue-600/20 blur-[80px] -z-10 pointer-events-none" />
+        
         {/* Logo */}
-        <div className="p-6 border-b border-blue-700/60">
+        <div className="p-6 border-b border-slate-800">
           <div className="flex items-center gap-3">
             <img 
               src="/icon.svg" 
@@ -147,14 +150,17 @@ export default function Sidebar({ user }: SidebarProps) {
             return (
               <Link key={item.href} href={item.href}>
                 <div
-                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
+                  className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 overflow-hidden mb-1 ${
                     active
-                      ? 'bg-blue-700 text-white'
-                      : 'text-blue-100 hover:bg-blue-700'
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-900/50'
+                      : 'text-blue-100 hover:bg-white/10 hover:text-white hover:translate-x-1'
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
-                  <span className="text-sm font-medium">{item.label}</span>
+                  {active && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                  )}
+                  <Icon className={`w-5 h-5 transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110 group-hover:rotate-3'}`} />
+                  <span className="text-sm font-medium tracking-wide">{item.label}</span>
                 </div>
               </Link>
             );
@@ -173,14 +179,17 @@ export default function Sidebar({ user }: SidebarProps) {
               return (
                 <Link key={item.href} href={item.href}>
                   <div
-                    className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
+                    className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 overflow-hidden mb-1 ${
                       active
-                        ? 'bg-blue-700 text-white'
-                        : 'text-blue-100 hover:bg-blue-700'
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-900/50'
+                        : 'text-blue-100 hover:bg-white/10 hover:text-white hover:translate-x-1'
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
-                    <span className="text-sm font-medium">{item.label}</span>
+                    {active && (
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                    )}
+                    <Icon className={`w-5 h-5 transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110 group-hover:-rotate-3'}`} />
+                    <span className="text-sm font-medium tracking-wide">{item.label}</span>
                   </div>
                 </Link>
               );
