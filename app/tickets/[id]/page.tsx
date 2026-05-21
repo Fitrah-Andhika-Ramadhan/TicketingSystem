@@ -77,6 +77,13 @@ export default function TicketDetailPage() {
     setUpdatingField(true);
     try {
       const token = localStorage.getItem('token');
+      
+      // Auto-include solution and recommendation if they are typed but not explicitly passed
+      if (ticket?.status === 'IN_PROGRESS' && fields.solution === undefined && localSolution.trim()) {
+        fields.solution = localSolution;
+        fields.recommendation = localRecommendation;
+      }
+      
       const response = await fetch(`/api/tickets/${ticketId}`, {
         method: 'PATCH',
         headers: {
