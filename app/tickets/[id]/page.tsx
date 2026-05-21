@@ -24,15 +24,10 @@ export default function TicketDetailPage() {
 
   // New local states for workflow
   const [localProgress, setLocalProgress] = useState(0);
-  const [localSolution, setLocalSolution] = useState('');
-  const [localRecommendation, setLocalRecommendation] = useState('');
 
-  // Update local states when ticket is loaded
   useEffect(() => {
     if (ticket) {
       setLocalProgress(ticket.progress || 0);
-      setLocalSolution(ticket.solution || '');
-      setLocalRecommendation(ticket.recommendation || '');
     }
   }, [ticket]);
 
@@ -79,12 +74,6 @@ export default function TicketDetailPage() {
     try {
       const token = localStorage.getItem('token');
       
-      // Auto-include solution and recommendation if they are typed but not explicitly passed
-      if (ticket?.status === 'IN_PROGRESS' && fields.solution === undefined && localSolution.trim()) {
-        fields.solution = localSolution;
-        fields.recommendation = localRecommendation;
-      }
-      
       const response = await fetch(`/api/tickets/${ticketId}`, {
         method: 'PATCH',
         headers: {
@@ -109,24 +98,31 @@ export default function TicketDetailPage() {
     }
   };
 
-  const handleAddComment = async () => {
+  const handleAddComment = async (resolveTicket: boolean = false) => {
     if (!comment.trim()) return;
 
     setSubmitting(true);
     try {
       const token = localStorage.getItem('token');
+      const bodyPayload: any = {
+        comment: {
+          content: comment,
+          isInternal: isInternalComment,
+        }
+      };
+      
+      if (resolveTicket) {
+        bodyPayload.status = 'RESOLVED';
+        bodyPayload.progress = 100;
+      }
+
       const response = await fetch(`/api/tickets/${ticketId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          comment: {
-            content: comment,
-            isInternal: isInternalComment,
-          }
-        }),
+        body: JSON.stringify(bodyPayload),
       });
 
       const data = await response.json();
@@ -134,12 +130,16 @@ export default function TicketDetailPage() {
         setTicket(data.data);
         setComment('');
         setIsInternalComment(false);
-        toast.success(isInternalComment ? 'Catatan internal berhasil disimpan.' : 'Respon/komentar berhasil dikirim.');
+        if (resolveTicket) {
+          toast.success('Komentar ditambahkan dan tiket berhasil diselesaikan!');
+        } else {
+          toast.success(isInternalComment ? 'Catatan internal berhasil disimpan.' : 'Respon/komentar berhasil dikirim.');
+        }
       } else {
         toast.error(data.error || 'Gagal mengirim komentar.');
       }
     } catch (error) {
-      console.error('Add comment failed:', error);
+      console.error('Comment failed:', error);
       toast.error('Terjadi kesalahan koneksi saat mengirim komentar.');
     } finally {
       setSubmitting(false);
@@ -317,86 +317,7 @@ export default function TicketDetailPage() {
                   </Card>
                 )}
 
-                {(ticket.status === 'IN_PROGRESS' || ticket.status === 'IN_REVIEW' || ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') && (
-                  <Card className="border-emerald-200 shadow-sm shadow-emerald-100 overflow-hidden">
-                    <CardHeader className="pb-3 border-b border-emerald-100 bg-emerald-50/80">
-                      <CardTitle className="text-base font-bold text-emerald-800 flex items-center gap-2">
-                        <MessageSquare className="w-5 h-5" /> Solusi & Rekomendasi
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-5 space-y-4 bg-white">
-                      {ticket.status === 'IN_PROGRESS' ? (
-                        <>
-                          <div>
-                            <label className="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Solusi Penyelesaian</label>
-                            <textarea 
-                              value={localSolution} onChange={(e) => setLocalSolution(e.target.value)}
-                              placeholder="Jelaskan apa yang telah diperbaiki..."
-                              className="w-full px-4 py-3 border border-emerald-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
-                              rows={3}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Rekomendasi (Opsional)</label>
-                            <textarea 
-                              value={localRecommendation} onChange={(e) => setLocalRecommendation(e.target.value)}
-                              placeholder="Saran tindak lanjut atau pencegahan..."
-                              className="w-full px-4 py-3 border border-emerald-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
-                              rows={2}
-                            />
-                          </div>
-                          <div className="flex justify-end gap-3 pt-2">
-                            <Button 
-                              variant="outline"
-                              onClick={() => handleUpdateTicketField({ 
-                                solution: localSolution, 
-                                recommendation: localRecommendation
-                              })}
-                              className="border-emerald-300 text-emerald-700 hover:bg-emerald-50 font-semibold"
-                              disabled={!localSolution.trim() || updatingField}
-                            >
-                              {updatingField ? 'Menyimpan...' : 'Simpan Draft'}
-                            </Button>
-                            <Button 
-                              onClick={() => handleUpdateTicketField({ 
-                                solution: localSolution, 
-                                recommendation: localRecommendation,
-                                status: 'IN_REVIEW',
-                                progress: 100
-                              })}
-                              className="bg-emerald-600 hover:bg-emerald-700 font-semibold shadow-sm shadow-emerald-600/20"
-                              disabled={!localSolution.trim() || updatingField}
-                            >
-                              {updatingField ? 'Menyimpan...' : 'Selesaikan & Kirim Review'}
-                            </Button>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="space-y-4">
-                          <div>
-                            <span className="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Solusi Penyelesaian</span>
-                            <p className="text-sm text-slate-700 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 whitespace-pre-wrap">{ticket.solution || localSolution || '-'}</p>
-                          </div>
-                          <div>
-                            <span className="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Rekomendasi</span>
-                            <p className="text-sm text-slate-700 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 whitespace-pre-wrap">{ticket.recommendation || localRecommendation || '-'}</p>
-                          </div>
-                          {ticket.status === 'IN_REVIEW' && (user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
-                            <div className="pt-5 mt-2 flex justify-end gap-3 border-t border-emerald-100">
-                              <Button variant="outline" onClick={() => handleUpdateTicketField({ status: 'IN_PROGRESS' })} className="border-orange-300 text-orange-700 hover:bg-orange-50 font-semibold">
-                                Reject (Kembalikan)
-                              </Button>
-                              <Button onClick={() => handleUpdateTicketField({ status: 'RESOLVED' })} className="bg-emerald-600 hover:bg-emerald-700 font-semibold shadow-sm shadow-emerald-600/20">
-                                Validate & Resolve
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-                
+
                 {/* Description Details Card */}
                 <Card>
                   <CardHeader className="pb-3 border-b border-slate-100">
@@ -451,7 +372,7 @@ export default function TicketDetailPage() {
                         </span>
                       </label>
 
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap justify-end mt-4 sm:mt-0">
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -463,13 +384,23 @@ export default function TicketDetailPage() {
                           Batal
                         </Button>
                         <Button
-                          onClick={handleAddComment}
+                          onClick={() => handleAddComment(false)}
                           disabled={!comment.trim() || submitting}
                           className="bg-blue-600 hover:bg-blue-700 flex items-center gap-1.5 text-xs font-medium h-9 px-4"
                         >
                           <Send className="w-3.5 h-3.5" />
                           {submitting ? 'Mengirim...' : 'Kirim Komentar'}
                         </Button>
+                        {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED' && (
+                          <Button
+                            onClick={() => handleAddComment(true)}
+                            disabled={!comment.trim() || submitting}
+                            className="bg-emerald-600 hover:bg-emerald-700 flex items-center gap-1.5 text-xs font-medium h-9 px-4 shadow-sm shadow-emerald-500/20"
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                            {submitting ? 'Menyelesaikan...' : 'Kirim & Selesaikan Tiket'}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </CardContent>
