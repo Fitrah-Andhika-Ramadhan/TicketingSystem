@@ -57,6 +57,7 @@ export default function TicketDetailPage() {
     try {
       setLoading(true);
       const response = await fetch(`/api/tickets/${ticketId}`, {
+        cache: 'no-store',
         headers: {
           Authorization: `Bearer ${token}`,
         },

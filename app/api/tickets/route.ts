@@ -3,6 +3,8 @@ import { verifyToken } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { TicketCategory, Priority, TicketStatus } from '@prisma/client';
 
+export const dynamic = 'force-dynamic';
+
 // Get all tickets or filter by search parameters
 export async function GET(request: NextRequest) {
   try {
