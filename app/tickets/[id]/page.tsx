@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
-import { ArrowLeft, Send, Clock, User, Calendar, History, MessageSquare, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, Send, Clock, User, Calendar, History, MessageSquare, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function TicketDetailPage() {
