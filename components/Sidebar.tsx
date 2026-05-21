@@ -104,53 +104,53 @@ export default function Sidebar({ user }: SidebarProps) {
 
       {/* Sidebar */}
       <aside
-        className={`${
+        className={`group ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 fixed lg:relative w-72 h-screen bg-slate-900 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] text-white transition-transform duration-300 overflow-y-auto z-40 border-r border-slate-800 shadow-2xl`}
+        } lg:translate-x-0 fixed lg:relative w-20 hover:w-72 h-screen bg-slate-900 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] text-white transition-all duration-300 overflow-hidden z-40 border-r border-slate-800 shadow-2xl flex flex-col`}
       >
         {/* Subtle Gradient Glow */}
         <div className="absolute top-0 left-0 w-full h-64 bg-blue-600/20 blur-[80px] -z-10 pointer-events-none" />
         
         {/* Logo */}
-        <div className="p-6 border-b border-slate-800">
-          <div className="flex items-center gap-3">
+        <div className="p-6 border-b border-slate-800 flex-shrink-0">
+          <div className="flex items-center gap-3 w-60">
             <img 
               src="/icon.svg" 
               alt="VibeDesk Logo" 
-              className="w-9 h-9 rounded-xl shadow-lg border border-blue-400/40 object-cover" 
+              className="w-9 h-9 min-w-9 rounded-xl shadow-lg border border-blue-400/40 object-cover" 
             />
-            <div>
-              <h1 className="text-lg font-extrabold tracking-wider bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent leading-none">
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 overflow-hidden">
+              <h1 className="text-lg font-extrabold tracking-wider bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent leading-none whitespace-nowrap">
                 VibeDesk
               </h1>
-              <p className="text-[10px] text-blue-300 font-semibold tracking-wide uppercase mt-1">Ticket Desk</p>
+              <p className="text-[10px] text-blue-300 font-semibold tracking-wide uppercase mt-1 whitespace-nowrap">Ticket Desk</p>
             </div>
           </div>
         </div>
 
         {/* User Info */}
-        <div className="p-4 border-b border-blue-700">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-300 text-blue-900 flex items-center justify-center font-bold">
+        <div className="p-4 border-b border-blue-700 flex-shrink-0">
+          <div className="flex items-center gap-3 w-60 overflow-hidden">
+            <div className="w-10 h-10 min-w-10 rounded-full bg-blue-300 text-blue-900 flex items-center justify-center font-bold">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate">{user?.name}</p>
-              <p className="text-xs text-blue-200 capitalize">{user?.role}</p>
+            <div className="flex-1 min-w-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <p className="text-sm font-semibold truncate whitespace-nowrap">{user?.name}</p>
+              <p className="text-xs text-blue-200 capitalize whitespace-nowrap">{user?.role}</p>
             </div>
           </div>
         </div>
 
         {/* Main Menu */}
-        <nav className="p-4 space-y-2">
-          <p className="text-xs font-semibold text-blue-200 uppercase px-2 mb-4">Main</p>
+        <nav className="p-4 space-y-2 flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide">
+          <p className="text-xs font-semibold text-blue-200 uppercase px-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap w-48">Main</p>
           {menuItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
             return (
               <Link key={item.href} href={item.href}>
                 <div
-                  className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 overflow-hidden mb-1 ${
+                  className={`group/item relative flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-300 overflow-hidden mb-1 w-60 ${
                     active
                       ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-900/50'
                       : 'text-blue-100 hover:bg-white/10 hover:text-white hover:translate-x-1'
@@ -159,8 +159,8 @@ export default function Sidebar({ user }: SidebarProps) {
                   {active && (
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                   )}
-                  <Icon className={`w-5 h-5 transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110 group-hover:rotate-3'}`} />
-                  <span className="text-sm font-medium tracking-wide">{item.label}</span>
+                  <Icon className={`w-6 h-6 min-w-6 transition-transform duration-300 ${active ? 'scale-110' : 'group-hover/item:scale-110 group-hover/item:rotate-3'}`} />
+                  <span className="text-sm font-medium tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">{item.label}</span>
                 </div>
               </Link>
             );
@@ -169,8 +169,8 @@ export default function Sidebar({ user }: SidebarProps) {
 
         {/* Admin Menu */}
         {isAdmin && (
-          <nav className="p-4 space-y-2 border-t border-blue-700">
-            <p className="text-xs font-semibold text-blue-200 uppercase px-2 mb-4">
+          <nav className="p-4 space-y-2 border-t border-blue-700 overflow-x-hidden flex-shrink-0">
+            <p className="text-xs font-semibold text-blue-200 uppercase px-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap w-48">
               Administration
             </p>
             {adminMenuItems.map((item) => {
@@ -179,7 +179,7 @@ export default function Sidebar({ user }: SidebarProps) {
               return (
                 <Link key={item.href} href={item.href}>
                   <div
-                    className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 overflow-hidden mb-1 ${
+                    className={`group/item relative flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-300 overflow-hidden mb-1 w-60 ${
                       active
                         ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-900/50'
                         : 'text-blue-100 hover:bg-white/10 hover:text-white hover:translate-x-1'
@@ -188,8 +188,8 @@ export default function Sidebar({ user }: SidebarProps) {
                     {active && (
                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                     )}
-                    <Icon className={`w-5 h-5 transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110 group-hover:-rotate-3'}`} />
-                    <span className="text-sm font-medium tracking-wide">{item.label}</span>
+                    <Icon className={`w-6 h-6 min-w-6 transition-transform duration-300 ${active ? 'scale-110' : 'group-hover/item:scale-110 group-hover/item:-rotate-3'}`} />
+                    <span className="text-sm font-medium tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">{item.label}</span>
                   </div>
                 </Link>
               );
@@ -198,7 +198,7 @@ export default function Sidebar({ user }: SidebarProps) {
         )}
 
         {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-blue-700 bg-blue-900">
+        <div className="p-4 border-t border-blue-700 bg-blue-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0 w-72">
           <p className="text-xs text-blue-300 text-center font-semibold truncate">
             {projectName}
           </p>

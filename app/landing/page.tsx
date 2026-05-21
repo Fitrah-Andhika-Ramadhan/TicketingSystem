@@ -135,7 +135,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen relative bg-slate-50 text-slate-800 font-sans antialiased overflow-x-hidden scroll-smooth selection:bg-blue-500/10 selection:text-blue-600">
+    <div className="min-h-screen relative text-slate-800 font-sans antialiased overflow-x-hidden scroll-smooth selection:bg-blue-500/10 selection:text-blue-600">
       
       {/* Interactive UI Runner / Animated Background */}
       <div className="fixed inset-0 z-[-3] bg-gradient-to-br from-indigo-50/50 via-white to-cyan-50/50"></div>
