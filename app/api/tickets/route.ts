@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
 
     const decoded = verifyToken(token);
     const body = await request.json();
-    const { title, description, category, priority, dueDate } = body;
+    const { title, description, category, priority, dueDate, attachments } = body;
 
     if (!title || !description || !category) {
       return NextResponse.json(
@@ -99,6 +99,14 @@ export async function POST(request: NextRequest) {
     const ticketNumber = `TICKET-${String(count + 1).padStart(3, '0')}`;
     const userId = decoded?.userId || '1';
 
+    const attachmentRecords = Array.isArray(attachments) ? attachments.map((fileUrl, idx) => ({
+      fileName: `attachment-${idx + 1}`,
+      fileUrl,
+      fileSize: 0,
+      fileType: 'image',
+      uploadedBy: userId,
+    })) : [];
+
     const newTicket = await prisma.ticket.create({
       data: {
         ticketNumber,
@@ -109,11 +117,15 @@ export async function POST(request: NextRequest) {
         status: 'PENDING_APPROVAL',
         createdBy: userId,
         dueDate: dueDate ? new Date(dueDate) : null,
+        attachments: {
+          create: attachmentRecords
+        }
       },
       include: {
         createdByUser: {
           select: { name: true, email: true }
-        }
+        },
+        attachments: true
       }
     });
 

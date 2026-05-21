@@ -317,6 +317,29 @@ export default function TicketDetailPage() {
                   </Card>
                 )}
 
+                {/* Attachments Card (if any) */}
+                {ticket.attachments && ticket.attachments.length > 0 && (
+                  <Card>
+                    <CardHeader className="pb-3 border-b border-slate-100">
+                      <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <ImageIcon className="w-5 h-5 text-blue-500" /> Lampiran
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-5 space-y-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {ticket.attachments.map((att: any) => (
+                          <div key={att.id} className="relative group rounded-lg overflow-hidden border border-slate-200">
+                            <img src={att.fileUrl} alt={att.fileName} className="w-full h-32 object-cover" />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <a href={att.fileUrl} target="_blank" rel="noreferrer" className="bg-white text-slate-900 text-xs font-bold py-1 px-3 rounded-full">Buka</a>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
 
                 {/* Description Details Card */}
                 <Card>
@@ -407,51 +430,56 @@ export default function TicketDetailPage() {
                 </Card>
 
                 {/* Feed (Comments and History) */}
-                <div className="space-y-4">
-                  <h3 className="text-base font-bold text-slate-800 flex items-center gap-1.5">
-                    <MessageSquare className="w-4 h-4 text-slate-500" /> Log Aktivitas & Percakapan
+                <div className="space-y-6 pt-4">
+                  <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <History className="w-5 h-5 text-slate-400" /> Log Aktivitas & Percakapan
                   </h3>
-
-                  {/* Combined Feed */}
-                  <div className="space-y-4">
-                    {/* Render comments */}
-                    {ticket.comments && ticket.comments.map((comment: any) => (
-                      <div 
-                        key={comment.id} 
-                        className={`rounded-xl p-4 border transition ${
-                          comment.isInternal 
-                            ? 'bg-rose-50/40 border-rose-100 text-rose-950 shadow-sm' 
-                            : 'bg-white border-slate-100 shadow-sm'
-                        }`}
-                      >
-                        <div className="flex justify-between items-start mb-2 text-xs">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-900">{comment.userName}</span>
-                            {comment.isInternal && (
-                              <span className="px-2 py-0.5 rounded bg-rose-500/10 text-rose-600 font-extrabold uppercase text-[9px] tracking-wider border border-rose-200/50">
-                                Internal Note
+                  
+                  <div className="space-y-6">
+                    {ticket.comments && ticket.comments.map((comment: any) => {
+                      const isMe = user?.id === comment.userId;
+                      return (
+                        <div key={comment.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                          <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-4 shadow-sm ${
+                            comment.isInternal 
+                              ? 'bg-rose-50 border border-rose-100 rounded-tl-none' 
+                              : isMe 
+                                ? 'bg-blue-600 text-white rounded-tr-none shadow-blue-500/20' 
+                                : 'bg-white border border-slate-100 rounded-tl-none'
+                          }`}>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className={`font-bold text-sm ${isMe ? 'text-blue-100' : 'text-slate-900'}`}>
+                                {comment.userName}
                               </span>
-                            )}
+                              {comment.isInternal && (
+                                <span className="bg-rose-100 text-rose-700 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 uppercase tracking-wider">
+                                  <ShieldAlert className="w-3 h-3" /> Internal
+                                </span>
+                              )}
+                            </div>
+                            <p className={`text-sm whitespace-pre-wrap leading-relaxed ${isMe ? 'text-white' : 'text-slate-700'}`}>
+                              {comment.content}
+                            </p>
                           </div>
-                          <span className="text-slate-400">
-                            {new Date(comment.createdAt).toLocaleString()}
+                          <span className="text-[10px] text-slate-400 font-medium mt-1.5 px-1">
+                            {new Date(comment.createdAt).toLocaleString('id-ID', {
+                              day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                            })}
                           </span>
                         </div>
-                        <p className="text-sm text-slate-700 whitespace-pre-wrap">{comment.content}</p>
-                      </div>
-                    ))}
-
-                    {/* Render history logs */}
-                    {ticket.history && ticket.history.map((log: any) => (
-                      <div key={log.id} className="bg-slate-50 rounded-xl p-3.5 border border-slate-200/40 flex items-start gap-2.5 text-xs">
-                        <History className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-                        <div className="flex-1">
-                          <p className="text-slate-600">
-                            Aksi: <span className="font-bold text-slate-800 uppercase font-mono text-[10px]">{log.action}</span>
-                          </p>
-                          <p className="text-slate-700 mt-1 font-medium">{log.newValue}</p>
-                          <span className="text-[10px] text-slate-400 block mt-1">
-                            {new Date(log.changedAt).toLocaleString()}
+                      );
+                    })}
+                    
+                    {ticket.history && ticket.history.map((hist: any) => (
+                      <div key={hist.id} className="flex justify-center my-4">
+                        <div className="bg-slate-100 text-slate-500 text-xs font-medium px-4 py-1.5 rounded-full flex items-center gap-2 border border-slate-200">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>Aksi: {hist.action}</span>
+                          {hist.newValue && <span className="font-bold text-slate-700">{hist.newValue}</span>}
+                          <span className="opacity-70 ml-2">
+                            {new Date(hist.changedAt).toLocaleString('id-ID', {
+                              day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+                            })}
                           </span>
                         </div>
                       </div>
@@ -462,7 +490,6 @@ export default function TicketDetailPage() {
                     )}
                   </div>
                 </div>
-
               </div>
 
               {/* Sidebar Controls */}
