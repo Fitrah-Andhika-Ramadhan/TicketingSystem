@@ -40,6 +40,49 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
       </div>
 
       <div className="flex items-center gap-4">
+        {/* Dev Role Switcher */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="flex items-center gap-2 border-dashed border-blue-400 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800">
+              <User className="w-4 h-4" />
+              <span className="hidden sm:inline">Role: {user?.role || 'Switch'}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel className="text-xs text-slate-500 uppercase">Dev Switch Role</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {['SUPER_ADMIN', 'ADMIN', 'USER'].map(role => (
+              <DropdownMenuItem 
+                key={role} 
+                className="cursor-pointer font-medium"
+                onClick={async () => {
+                  try {
+                    const token = localStorage.getItem('token');
+                    const res = await fetch('/api/auth/dev-switch-role', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                      },
+                      body: JSON.stringify({ role })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                      localStorage.setItem('token', data.data.token);
+                      localStorage.setItem('user', JSON.stringify(data.data.user));
+                      window.location.reload();
+                    }
+                  } catch (e) {
+                    console.error('Failed to switch role', e);
+                  }
+                }}
+              >
+                Switch to {role}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         {/* Preview Landing Page - For Admin */}
         <Link href="/landing" target="_blank">
           <Button variant="outline" className="flex items-center gap-2">
