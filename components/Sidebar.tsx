@@ -25,14 +25,14 @@ const MENUS: Record<string, {
 }[][]> = {
 
   ADMIN: [
-    // Main
+    // Main Admin
     [
-      { label: 'Dashboard', icon: Home, href: '/dashboard' },
-      { label: 'Semua Tiket', icon: Ticket, href: '/tickets' },
+      { label: 'Admin Dashboard', icon: Home, href: '/admin/dashboard' },
+      { label: 'Monitor Tiket', icon: Ticket, href: '/tickets' },
       { label: 'Analytics', icon: BarChart3, href: '/analytics' },
-      { label: 'Tim', icon: Users, href: '/team' },
+      { label: 'Manajemen Tim', icon: Users, href: '/team' },
     ],
-    // Administration
+    // Administration Tools
     [
       { label: 'Queue Management', icon: ListTodo, href: '/admin/queue' },
       { label: 'User Management', icon: Users, href: '/admin/users' },
@@ -90,8 +90,8 @@ const ROLE_META: Record<string, {
 }> = {
   ADMIN: {
     label: 'Admin',
-    sectionLabels: ['Menu Utama', 'Administrasi'],
-    gradient: 'from-blue-600 to-blue-800',
+    sectionLabels: ['Menu Utama', 'Alat Administrasi'],
+    gradient: 'from-blue-700 to-blue-900',
     accent: 'bg-blue-500/30',
     textAccent: 'text-blue-200',
   },
