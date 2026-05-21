@@ -370,56 +370,66 @@ export default function AdminQueuePage() {
 
             {/* Assign Modal */}
             {showAssignModal && selectedTicket && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <Card className="w-full max-w-md">
-                  <CardHeader>
-                    <CardTitle>Assign Ticket</CardTitle>
+              <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+                <Card className="w-full max-w-md shadow-2xl border-slate-200 rounded-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                  <div className="bg-gradient-to-r from-indigo-500 to-violet-600 h-2 w-full"></div>
+                  <CardHeader className="pb-4 border-b border-slate-100 bg-slate-50/50">
+                    <CardTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                      <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                      </div>
+                      Assign Ticket
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-700 mb-2">Ticket</p>
-                      <p className="text-gray-900">{selectedTicket.ticketNumber} - {selectedTicket.title}</p>
+                  <CardContent className="p-6 space-y-6 bg-white">
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Selected Ticket</p>
+                      <p className="text-sm font-semibold text-slate-900">{selectedTicket.ticketNumber} <span className="text-slate-400 font-normal mx-1">•</span> {selectedTicket.title}</p>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Assign To
-                      </label>
-                      <select
-                        value={newAssignee}
-                        onChange={(e) => setNewAssignee(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="">Select Agent</option>
-                        {agents.map((agent) => (
-                          <option key={agent.id} value={agent.id}>
-                            {agent.name}
-                          </option>
-                        ))}
-                      </select>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">
+                          Assign To
+                        </label>
+                        <select
+                          value={newAssignee}
+                          onChange={(e) => setNewAssignee(e.target.value)}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all cursor-pointer appearance-none"
+                          style={{ backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e")', backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
+                        >
+                          <option value="">Select Agent</option>
+                          {agents.map((agent) => (
+                            <option key={agent.id} value={agent.id}>
+                              {agent.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">
+                          Update Status <span className="text-slate-400 font-normal text-xs ml-1">(Optional)</span>
+                        </label>
+                        <select
+                          value={newStatus}
+                          onChange={(e) => setNewStatus(e.target.value)}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all cursor-pointer appearance-none"
+                          style={{ backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e")', backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
+                        >
+                          <option value="">Keep Current Status</option>
+                          <option value="OPEN">Open</option>
+                          <option value="IN_PROGRESS">In Progress</option>
+                          <option value="RESOLVED">Resolved</option>
+                          <option value="CLOSED">Closed</option>
+                        </select>
+                      </div>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Status
-                      </label>
-                      <select
-                        value={newStatus}
-                        onChange={(e) => setNewStatus(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="">Keep Current</option>
-                        <option value="OPEN">Open</option>
-                        <option value="IN_PROGRESS">In Progress</option>
-                        <option value="RESOLVED">Resolved</option>
-                        <option value="CLOSED">Closed</option>
-                      </select>
-                    </div>
-
-                    <div className="flex gap-3 pt-4">
+                    <div className="flex gap-3 pt-2">
                       <Button
                         variant="outline"
-                        className="flex-1"
+                        className="flex-1 py-6 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-semibold rounded-xl"
                         onClick={() => {
                           setShowAssignModal(false);
                           setSelectedTicket(null);
@@ -430,11 +440,11 @@ export default function AdminQueuePage() {
                         Cancel
                       </Button>
                       <Button
-                        className="flex-1 bg-blue-600 hover:bg-blue-700"
+                        className="flex-1 py-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md shadow-indigo-200 transition-all"
                         onClick={handleAssignTicket}
                         disabled={!newAssignee}
                       >
-                        Assign
+                        Confirm Assignment
                       </Button>
                     </div>
                   </CardContent>
