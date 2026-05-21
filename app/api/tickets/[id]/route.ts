@@ -31,9 +31,6 @@ export async function GET(
           orderBy: { createdAt: 'desc' }
         },
         history: {
-          include: {
-            user: { select: { name: true, email: true } }
-          },
           orderBy: { changedAt: 'desc' }
         },
         attachments: true
@@ -225,9 +222,6 @@ export async function PATCH(
           orderBy: { createdAt: 'desc' }
         },
         history: {
-          include: {
-            user: { select: { name: true, email: true } }
-          },
           orderBy: { changedAt: 'desc' }
         },
         attachments: true
