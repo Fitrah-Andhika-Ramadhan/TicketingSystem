@@ -45,7 +45,6 @@ const MENUS: Record<string, {
     [
       { label: 'Dashboard', icon: Home, href: '/dashboard' },
       { label: 'Panel Functional', icon: ClipboardList, href: '/functional' },
-      { label: 'Semua Tiket', icon: Ticket, href: '/tickets' },
       { label: 'Buat Tiket', icon: PlusCircle, href: '/tickets/new' },
       { label: 'Laporan', icon: LineChart, href: '/analytics' },
     ],
@@ -56,7 +55,6 @@ const MENUS: Record<string, {
       { label: 'Dashboard', icon: Home, href: '/dashboard' },
       { label: 'Developer Workspace', icon: Code2, href: '/developer' },
       { label: 'Tugas Saya', icon: Hammer, href: '/developer' },
-      { label: 'Semua Tiket', icon: LayoutList, href: '/tickets' },
       { label: 'Buat Tiket', icon: PlusCircle, href: '/tickets/new' },
     ],
   ],
@@ -66,7 +64,6 @@ const MENUS: Record<string, {
       { label: 'Dashboard', icon: Home, href: '/dashboard' },
       { label: 'QA Workspace', icon: TestTube2, href: '/qa' },
       { label: 'Antrian Pengujian', icon: FlaskConical, href: '/qa' },
-      { label: 'Semua Tiket', icon: LayoutList, href: '/tickets' },
       { label: 'Hasil QA', icon: ShieldCheck, href: '/qa' },
     ],
   ],
