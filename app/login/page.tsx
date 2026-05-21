@@ -78,13 +78,13 @@ export default function LoginPage() {
 
           <div className="relative z-10 my-auto pt-8">
             <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-6 backdrop-blur-sm border border-white/20">
-              <Sparkles className="w-4 h-4 text-white" />
+              <Sparkles className="w-4 h-4 text-cyan-300" />
             </div>
-            <h2 className="text-4xl font-serif font-bold leading-tight mb-4">
-              Integrated<br/>Support Center
+            <h2 className="text-3xl lg:text-4xl font-extrabold leading-tight mb-4">
+              Kelola kendala teknis dan tim dalam <span className="text-cyan-300">satu platform</span>.
             </h2>
             <p className="text-sm text-blue-100 max-w-sm leading-relaxed mb-8 opacity-90 font-light">
-              Layanan terpadu pelaporan kendala IT, Knowledge Base, dan dokumentasi operasional perusahaan.......
+              Pantau antrean tiket, tangani SLA secara real-time, dan tingkatkan kepuasan pengguna dengan VibeDesk Admin Portal.
             </p>
 
             {/* Stats Boxes */}
