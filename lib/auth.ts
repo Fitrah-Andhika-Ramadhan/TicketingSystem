@@ -168,32 +168,39 @@ export async function createUser(data: {
 /**
  * Verify admin role
  */
-export function isAdmin(role: string): boolean {
+export function isAdmin(role?: string): boolean {
+  if (!role) return false;
   return role === 'SUPER_ADMIN' || role === 'ADMIN';
 }
 
 /**
- * Verify manager role
+ * Check if user can manage tickets (assign, change status, etc)
  */
-export function isManager(role: string): boolean {
-  return role === 'SUPER_ADMIN' || role === 'ADMIN' || role === 'MANAGER';
+export function canManageTickets(role?: string): boolean {
+  if (!role) return false;
+  return ['SUPER_ADMIN', 'ADMIN', 'FUNCTIONAL_TEAM', 'DEVELOPER', 'QA'].includes(role);
 }
 
 /**
- * Check role permissions
+ * Role hierarchy for permission checks
+ * Higher number means higher privilege
+ */
+export const roleHierarchy: Record<string, number> = {
+  VIEWER: 1,
+  DEVELOPER: 2,
+  QA: 2,
+  FUNCTIONAL_TEAM: 3,
+  ADMIN: 4,
+  SUPER_ADMIN: 5,
+};
+
+/**
+ * Check if user has required role level
  */
 export function hasPermission(
   userRole: string,
   requiredRole: string
 ): boolean {
-  const roleHierarchy: Record<string, number> = {
-    SUPER_ADMIN: 5,
-    ADMIN: 4,
-    MANAGER: 3,
-    CONTRACTOR: 2,
-    VIEWER: 1,
-  };
-
   return (roleHierarchy[userRole] || 0) >= (roleHierarchy[requiredRole] || 0);
 }
 

@@ -51,7 +51,7 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuLabel className="text-xs text-slate-500 uppercase">Dev Switch Role</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {['SUPER_ADMIN', 'ADMIN', 'VIEWER'].map(role => (
+            {['SUPER_ADMIN', 'ADMIN', 'FUNCTIONAL_TEAM', 'DEVELOPER', 'QA', 'VIEWER'].map(role => (
               <DropdownMenuItem 
                 key={role} 
                 className="cursor-pointer font-medium"

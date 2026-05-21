@@ -33,7 +33,7 @@ export default function AdminUsersPage() {
     department: '',
   });
 
-  const roles = ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'VIEWER'];
+  const roles = ['SUPER_ADMIN', 'ADMIN', 'FUNCTIONAL_TEAM', 'DEVELOPER', 'QA', 'VIEWER'];
 
   // Mock users data
   const mockUsers: User[] = [
@@ -49,18 +49,18 @@ export default function AdminUsersPage() {
     {
       id: '2',
       email: 'agent1@natagroup.com',
-      name: 'Support Agent 1',
-      role: 'MANAGER',
-      department: 'Support',
+      name: 'Functional QA',
+      role: 'QA',
+      department: 'Testing',
       isActive: true,
       lastLogin: new Date(Date.now() - 3600000).toISOString(),
     },
     {
       id: '3',
       email: 'agent2@natagroup.com',
-      name: 'Support Agent 2',
-      role: 'MANAGER',
-      department: 'Support',
+      name: 'Backend Dev',
+      role: 'DEVELOPER',
+      department: 'Engineering',
       isActive: true,
       lastLogin: new Date(Date.now() - 7200000).toISOString(),
     },
@@ -350,7 +350,9 @@ export default function AdminUsersPage() {
                               <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                                 u.role === 'SUPER_ADMIN' ? 'bg-purple-100 text-purple-800' :
                                 u.role === 'ADMIN' ? 'bg-blue-100 text-blue-800' :
-                                u.role === 'MANAGER' ? 'bg-green-100 text-green-800' :
+                                u.role === 'FUNCTIONAL_TEAM' ? 'bg-indigo-100 text-indigo-800' :
+                                u.role === 'DEVELOPER' ? 'bg-green-100 text-green-800' :
+                                u.role === 'QA' ? 'bg-orange-100 text-orange-800' :
                                 'bg-gray-100 text-gray-800'
                               }`}>
                                 {u.role}

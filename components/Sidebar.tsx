@@ -41,6 +41,8 @@ export default function Sidebar({ user }: SidebarProps) {
     }
   }, []);
 
+  const isViewer = user?.role === 'VIEWER';
+
   const menuItems = [
     {
       label: 'Dashboard',
@@ -52,16 +54,18 @@ export default function Sidebar({ user }: SidebarProps) {
       icon: Ticket,
       href: '/tickets',
     },
-    {
-      label: 'Analytics',
-      icon: BarChart3,
-      href: '/analytics',
-    },
-    {
-      label: 'Team',
-      icon: Users,
-      href: '/team',
-    },
+    ...(!isViewer ? [
+      {
+        label: 'Analytics',
+        icon: BarChart3,
+        href: '/analytics',
+      },
+      {
+        label: 'Team',
+        icon: Users,
+        href: '/team',
+      }
+    ] : [])
   ];
 
   const adminMenuItems = [

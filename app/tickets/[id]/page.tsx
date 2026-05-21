@@ -263,7 +263,9 @@ export default function TicketDetailPage() {
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-8">
 
-                {/* Action Panels */}
+                {/* === ROLE-BASED ACTION PANELS === */}
+
+                {/* ADMIN/SUPER_ADMIN: Approve pending ticket */}
                 {ticket.status === 'PENDING_APPROVAL' && (user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
                   <Card className="border-orange-200 shadow-sm shadow-orange-100 overflow-hidden">
                     <CardHeader className="pb-3 border-b border-orange-100 bg-orange-50/80">
@@ -280,11 +282,101 @@ export default function TicketDetailPage() {
                   </Card>
                 )}
 
-                {(ticket.status === 'IN_PROGRESS' || ticket.status === 'APPROVED') && (
+                {/* FUNCTIONAL_TEAM: Analyze & assign ticket */}
+                {user?.role === 'FUNCTIONAL_TEAM' && (ticket.status === 'APPROVED' || ticket.status === 'OPEN' || ticket.status === 'PENDING_APPROVAL') && (
+                  <Card className="border-indigo-200 shadow-sm shadow-indigo-100 overflow-hidden">
+                    <CardHeader className="pb-3 border-b border-indigo-100 bg-indigo-50/80">
+                      <CardTitle className="text-base font-bold text-indigo-800 flex items-center gap-2">
+                        <User className="w-5 h-5" /> Analisis & Penugasan (Functional Team)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-5 space-y-3 bg-white">
+                      <p className="text-sm text-indigo-700/80">Sebagai Functional Team, Anda dapat menganalisis tiket dan menugaskannya ke Developer.</p>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Button onClick={() => handleUpdateTicketField({ status: 'APPROVED' })} variant="outline" className="border-indigo-300 text-indigo-700 hover:bg-indigo-50">
+                          Tandai Sudah Dianalisis
+                        </Button>
+                        <Button onClick={() => handleUpdateTicketField({ status: 'IN_PROGRESS' })} className="bg-indigo-600 hover:bg-indigo-700">
+                          Tugaskan ke Developer
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* DEVELOPER: Work on ticket */}
+                {user?.role === 'DEVELOPER' && (ticket.status === 'APPROVED' || ticket.status === 'IN_PROGRESS') && (
+                  <Card className="border-green-200 shadow-sm shadow-green-100 overflow-hidden">
+                    <CardHeader className="pb-3 border-b border-green-100 bg-green-50/80">
+                      <CardTitle className="text-base font-bold text-green-800 flex items-center gap-2">
+                        <History className="w-5 h-5" /> Panel Developer: Progress Pengerjaan
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-5 space-y-4 bg-white">
+                      <div>
+                        <div className="flex justify-between text-sm font-bold mb-2 text-green-900">
+                          <span>Progres Pengerjaan</span>
+                          <span className="bg-green-100 text-green-800 px-2.5 py-0.5 rounded-full text-xs">{localProgress}%</span>
+                        </div>
+                        <input
+                          type="range" min="0" max="100" step="5"
+                          value={localProgress}
+                          onChange={(e) => setLocalProgress(parseInt(e.target.value))}
+                          className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
+                        />
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                        <Button
+                          onClick={() => handleUpdateTicketField({ status: 'IN_PROGRESS', progress: localProgress })}
+                          variant="outline" className="border-green-300 text-green-700 hover:bg-green-50 font-semibold"
+                        >
+                          Update Progress
+                        </Button>
+                        <Button
+                          onClick={() => handleUpdateTicketField({ status: 'IN_REVIEW', progress: 100 })}
+                          className="bg-green-600 hover:bg-green-700 font-semibold"
+                        >
+                          <CheckCircle2 className="w-4 h-4 mr-1.5" /> Selesai, Minta Review QA
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* QA: Review & close ticket */}
+                {user?.role === 'QA' && ticket.status === 'IN_REVIEW' && (
+                  <Card className="border-amber-200 shadow-sm shadow-amber-100 overflow-hidden">
+                    <CardHeader className="pb-3 border-b border-amber-100 bg-amber-50/80">
+                      <CardTitle className="text-base font-bold text-amber-800 flex items-center gap-2">
+                        <ShieldAlert className="w-5 h-5" /> Panel QA: Pengujian & Verifikasi
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-5 space-y-3 bg-white">
+                      <p className="text-sm text-amber-700/80">Tiket ini telah selesai dikerjakan Developer dan menunggu pengujian QA Anda.</p>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Button
+                          onClick={() => handleUpdateTicketField({ status: 'IN_PROGRESS', progress: 70 })}
+                          variant="outline" className="border-rose-300 text-rose-700 hover:bg-rose-50 font-semibold"
+                        >
+                          Reject — Kembalikan ke Developer
+                        </Button>
+                        <Button
+                          onClick={() => handleUpdateTicketField({ status: 'RESOLVED', progress: 100 })}
+                          className="bg-amber-600 hover:bg-amber-700 font-semibold"
+                        >
+                          <CheckCircle2 className="w-4 h-4 mr-1.5" /> Lulus QA — Resolve Tiket
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* General ADMIN/SUPER_ADMIN progress tracker (non-pending) */}
+                {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (ticket.status === 'IN_PROGRESS' || ticket.status === 'APPROVED') && (
                   <Card className="border-blue-200 shadow-sm shadow-blue-100 overflow-hidden">
                     <CardHeader className="pb-3 border-b border-blue-100 bg-blue-50/80">
                       <CardTitle className="text-base font-bold text-blue-800 flex items-center gap-2">
-                        <History className="w-5 h-5" /> Progress Pengerjaan
+                        <History className="w-5 h-5" /> Progress Pengerjaan (Admin View)
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-5 space-y-4 bg-white">
@@ -293,20 +385,19 @@ export default function TicketDetailPage() {
                           <span>Status Progress</span>
                           <span className="bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full text-xs">{localProgress}%</span>
                         </div>
-                        <input 
-                          type="range" 
-                          min="0" max="100" step="5" 
-                          value={localProgress} 
+                        <input
+                          type="range" min="0" max="100" step="5"
+                          value={localProgress}
                           onChange={(e) => setLocalProgress(parseInt(e.target.value))}
                           className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                         />
                       </div>
                       <div className="flex justify-end pt-2">
-                        <Button 
+                        <Button
                           onClick={() => {
                             if (ticket.status !== 'IN_PROGRESS') handleUpdateTicketField({ status: 'IN_PROGRESS', progress: localProgress });
                             else handleUpdateTicketField({ progress: localProgress });
-                          }} 
+                          }}
                           disabled={localProgress === ticket.progress && ticket.status === 'IN_PROGRESS'}
                           variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50 font-semibold"
                         >
@@ -414,7 +505,8 @@ export default function TicketDetailPage() {
                           <Send className="w-3.5 h-3.5" />
                           {submitting ? 'Mengirim...' : 'Kirim Komentar'}
                         </Button>
-                        {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED' && (
+                        {/* Resolve button: admin or developer only */}
+                        {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' || user?.role === 'DEVELOPER') && ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED' && (
                           <Button
                             onClick={() => handleAddComment(true)}
                             disabled={!comment.trim() || submitting}
@@ -501,20 +593,27 @@ export default function TicketDetailPage() {
                     <CardTitle className="text-xs font-bold text-slate-500 uppercase tracking-wider">Status Tiket</CardTitle>
                   </CardHeader>
                   <CardContent className="pt-4">
-                    <select
-                      value={ticket.status}
-                      disabled={updatingField}
-                      onChange={(e) => handleUpdateTicketField({ status: e.target.value })}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
-                    >
-                      <option value="PENDING_APPROVAL">Pending Approval</option>
-                      <option value="APPROVED">Approved</option>
-                      <option value="OPEN">Open</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="IN_REVIEW">In Review</option>
-                      <option value="RESOLVED">Resolved</option>
-                      <option value="CLOSED">Closed</option>
-                    </select>
+                    {/* Status selector: restricted by role */}
+                    {user?.role === 'VIEWER' ? (
+                      <div className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700">
+                        {ticket.status.replace(/_/g, ' ')}
+                      </div>
+                    ) : (
+                      <select
+                        value={ticket.status}
+                        disabled={updatingField}
+                        onChange={(e) => handleUpdateTicketField({ status: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                      >
+                        <option value="PENDING_APPROVAL">Pending Approval</option>
+                        <option value="APPROVED">Approved</option>
+                        <option value="OPEN">Open</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="IN_REVIEW">In Review</option>
+                        <option value="RESOLVED">Resolved</option>
+                        <option value="CLOSED">Closed</option>
+                      </select>
+                    )}
                   </CardContent>
                 </Card>
 
