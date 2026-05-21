@@ -9,7 +9,8 @@ export async function GET(request: NextRequest) {
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.split(' ')[1];
 
-    if (!token || !verifyToken(token)) {
+    const decoded = verifyToken(token);
+    if (!token || !decoded) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -21,6 +22,12 @@ export async function GET(request: NextRequest) {
     const priority = searchParams.get('priority');
 
     const where: any = {};
+    
+    // Non-admin users can only see their own tickets
+    if (decoded.role === 'USER') {
+      where.createdBy = decoded.userId;
+    }
+    
     if (status) {
       where.status = status as TicketStatus;
     }

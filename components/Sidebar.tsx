@@ -53,11 +53,6 @@ export default function Sidebar({ user }: SidebarProps) {
       href: '/tickets',
     },
     {
-      label: 'My Tickets',
-      icon: FileText,
-      href: '/my-tickets',
-    },
-    {
       label: 'Analytics',
       icon: BarChart3,
       href: '/analytics',
