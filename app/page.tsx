@@ -7,16 +7,8 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('token');
-    
-    if (token) {
-      // If logged in, go to dashboard
-      router.push('/dashboard');
-    } else {
-      // If not logged in, show landing page
-      router.push('/landing');
-    }
+    // Always show landing page as the initial entry point
+    router.push('/landing');
   }, [router]);
 
   return (

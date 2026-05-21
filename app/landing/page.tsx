@@ -26,6 +26,7 @@ import {
 export default function Landing() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [content, setContent] = useState<any>(null);
   const [sysSettings, setSysSettings] = useState<any>({
     email: 'support@fitrahpro.com',
@@ -160,15 +161,15 @@ export default function Landing() {
             <a href="#slider-showcase" className="hover:text-blue-600 transition-all duration-200 hover:-translate-y-[1px]">Showcase</a>
             <a href="#how-it-works" className="hover:text-blue-600 transition-all duration-200 hover:-translate-y-[1px]">How It Works</a>
             <a href="#contact" className="hover:text-blue-600 transition-all duration-200 hover:-translate-y-[1px]">Contact</a>
-            <Link href="/login">
+            <Link href={isLoggedIn ? "/dashboard" : "/login"}>
               <Button className="bg-blue-600 hover:bg-blue-700 border-0 text-white font-semibold rounded-lg shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-200 active:scale-[0.98]">
-                Login Portal
+                {isLoggedIn ? "Masuk Dashboard" : "Login Portal"}
               </Button>
             </Link>
           </div>
-          <Link href="/login" className="md:hidden">
+          <Link href={isLoggedIn ? "/dashboard" : "/login"} className="md:hidden">
             <Button size="sm" className="bg-blue-600 hover:bg-blue-700 border-0 text-white font-semibold rounded-lg">
-              Login
+              {isLoggedIn ? "Dashboard" : "Login"}
             </Button>
           </Link>
         </div>
@@ -599,9 +600,9 @@ export default function Landing() {
           <p className="text-base text-blue-50 hover:text-white max-w-lg mx-auto opacity-90">
             Bergabunglah dengan tim yang mengedepankan performa respon dan penyelesaian tiket yang terstruktur.
           </p>
-          <Link href="/login">
+          <Link href={isLoggedIn ? "/dashboard" : "/login"}>
             <Button size="lg" className="bg-white hover:bg-slate-50 text-blue-700 font-semibold shadow-xl active:scale-[0.98] transition px-8 py-6 rounded-lg cursor-pointer border-0">
-              Masuk Dashboard Admin
+              {isLoggedIn ? "Masuk Dashboard Admin" : "Login Portal Admin"}
             </Button>
           </Link>
         </div>
