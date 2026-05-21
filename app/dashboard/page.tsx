@@ -8,6 +8,7 @@ import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { AlertCircle, Clock, CheckCircle2, TrendingUp, Users } from 'lucide-react';
+import UserDashboard from '@/components/UserDashboard';
 
 interface Ticket {
   id: string;
@@ -130,14 +131,18 @@ export default function DashboardPage() {
 
         <main className="flex-1 overflow-auto">
           <div className="p-8 max-w-7xl mx-auto w-full">
-            {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Ticketing System Dashboard</h1>
-              <p className="text-gray-600 mt-2">Welcome back, {user.name}. Here's your ticket overview.</p>
-            </div>
+            {user.role === 'USER' ? (
+              <UserDashboard user={user} tickets={tickets} />
+            ) : (
+              <>
+                {/* Header */}
+                <div className="mb-8">
+                  <h1 className="text-3xl font-bold text-gray-900">Ticketing System Dashboard</h1>
+                  <p className="text-gray-600 mt-2">Welcome back, {user.name}. Here's your ticket overview.</p>
+                </div>
 
-            {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                {/* KPI Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
               <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between">
@@ -322,6 +327,8 @@ export default function DashboardPage() {
                 )}
               </CardContent>
             </Card>
+            </>
+            )}
           </div>
         </main>
       </div>
