@@ -12,12 +12,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+import { useRouter } from 'next/navigation';
+
 interface NavbarProps {
   user: any;
-  onLogout: () => void;
+  onLogout?: () => void;
 }
 
 export default function Navbar({ user, onLogout }: NavbarProps) {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    } else {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      router.push('/login');
+    }
+  };
   return (
     <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
       <div className="flex-1">
@@ -60,7 +73,7 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
               <span>Settings</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onLogout} className="cursor-pointer text-red-600">
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
               <LogOut className="w-4 h-4 mr-2" />
               <span>Logout</span>
             </DropdownMenuItem>
