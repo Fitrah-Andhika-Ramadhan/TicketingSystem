@@ -315,13 +315,10 @@ export default function TicketDetailPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-5 space-y-3 bg-white">
-                      <p className="text-sm text-indigo-700/80">Sebagai Functional Team, Anda dapat menganalisis tiket dan menugaskannya ke Developer.</p>
+                      <p className="text-sm text-indigo-700/80">Sebagai Functional Team, Anda hanya dapat mengubah status ke <b>In Progress</b> untuk ditugaskan ke Developer.</p>
                       <div className="flex flex-col sm:flex-row gap-3">
-                        <Button onClick={() => handleUpdateTicketField({ status: 'APPROVED' })} variant="outline" className="border-indigo-300 text-indigo-700 hover:bg-indigo-50">
-                          Tandai Sudah Dianalisis
-                        </Button>
                         <Button onClick={() => handleUpdateTicketField({ status: 'IN_PROGRESS' })} className="bg-indigo-600 hover:bg-indigo-700">
-                          Tugaskan ke Developer
+                          Tugaskan ke Developer (In Progress)
                         </Button>
                       </div>
                     </CardContent>
@@ -351,16 +348,16 @@ export default function TicketDetailPage() {
                       </div>
                       <div className="flex flex-col sm:flex-row gap-3 pt-2">
                         <Button
-                          onClick={() => handleUpdateTicketField({ status: 'IN_PROGRESS', progress: localProgress })}
+                          onClick={() => handleUpdateTicketField({ progress: localProgress })}
                           variant="outline" className="border-green-300 text-green-700 hover:bg-green-50 font-semibold"
                         >
-                          Update Progress
+                          Update Progress Saja
                         </Button>
                         <Button
                           onClick={() => handleUpdateTicketField({ status: 'IN_REVIEW', progress: 100 })}
                           className="bg-green-600 hover:bg-green-700 font-semibold"
                         >
-                          <CheckCircle2 className="w-4 h-4 mr-1.5" /> Selesai, Minta Review QA
+                          <CheckCircle2 className="w-4 h-4 mr-1.5" /> Selesai, Ubah ke In Review
                         </Button>
                       </div>
                     </CardContent>
@@ -376,19 +373,19 @@ export default function TicketDetailPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-5 space-y-3 bg-white">
-                      <p className="text-sm text-amber-700/80">Tiket ini telah selesai dikerjakan Developer dan menunggu pengujian QA Anda.</p>
+                      <p className="text-sm text-amber-700/80">Sebagai QA, Anda hanya dapat mengubah status ke <b>Resolved</b> atau <b>Closed</b>.</p>
                       <div className="flex flex-col sm:flex-row gap-3">
                         <Button
-                          onClick={() => handleUpdateTicketField({ status: 'IN_PROGRESS', progress: 70 })}
-                          variant="outline" className="border-rose-300 text-rose-700 hover:bg-rose-50 font-semibold"
+                          onClick={() => handleUpdateTicketField({ status: 'RESOLVED', progress: 100 })}
+                          className="bg-amber-600 hover:bg-amber-700 font-semibold text-white"
                         >
-                          Reject — Kembalikan ke Developer
+                          <CheckCircle2 className="w-4 h-4 mr-1.5" /> Lulus QA — Resolve
                         </Button>
                         <Button
-                          onClick={() => handleUpdateTicketField({ status: 'RESOLVED', progress: 100 })}
-                          className="bg-amber-600 hover:bg-amber-700 font-semibold"
+                          onClick={() => handleUpdateTicketField({ status: 'CLOSED' })}
+                          variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold"
                         >
-                          <CheckCircle2 className="w-4 h-4 mr-1.5" /> Lulus QA — Resolve Tiket
+                          Tutup Tiket (Closed)
                         </Button>
                       </div>
                     </CardContent>
@@ -645,13 +642,33 @@ export default function TicketDetailPage() {
                         onChange={(e) => handleUpdateTicketField({ status: e.target.value })}
                         className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                       >
-                        <option value="PENDING_APPROVAL">Pending Approval</option>
-                        <option value="APPROVED">Approved</option>
-                        <option value="OPEN">Open</option>
-                        <option value="IN_PROGRESS">In Progress</option>
-                        <option value="IN_REVIEW">In Review</option>
-                        <option value="RESOLVED">Resolved</option>
-                        <option value="CLOSED">Closed</option>
+                        {/* Selalu tampilkan status saat ini sebagai opsi agar tidak error/blank */}
+                        <option value={ticket.status}>{ticket.status.replace(/_/g, ' ')}</option>
+                        
+                        {(user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
+                          <>
+                            {ticket.status !== 'PENDING_APPROVAL' && <option value="PENDING_APPROVAL">Pending Approval</option>}
+                            {ticket.status !== 'APPROVED' && <option value="APPROVED">Approved</option>}
+                            {ticket.status !== 'OPEN' && <option value="OPEN">Open</option>}
+                            {ticket.status !== 'IN_PROGRESS' && <option value="IN_PROGRESS">In Progress</option>}
+                            {ticket.status !== 'IN_REVIEW' && <option value="IN_REVIEW">In Review</option>}
+                            {ticket.status !== 'RESOLVED' && <option value="RESOLVED">Resolved</option>}
+                            {ticket.status !== 'CLOSED' && <option value="CLOSED">Closed</option>}
+                          </>
+                        )}
+                        {user?.role === 'FUNCTIONAL_TEAM' && ticket.status !== 'IN_PROGRESS' && (
+                          <option value="IN_PROGRESS">In Progress</option>
+                        )}
+                        {user?.role === 'DEVELOPER' && ticket.status !== 'IN_REVIEW' && (
+                          <option value="IN_REVIEW">In Review (Submit ke QA)</option>
+                        )}
+                        {user?.role === 'QA' && (
+                          <>
+                            {ticket.status !== 'RESOLVED' && <option value="RESOLVED">Resolved (Lulus QA)</option>}
+                            {ticket.status !== 'CLOSED' && <option value="CLOSED">Closed</option>}
+                            {/* Tambahan opsional: QA biasanya bisa reject ke IN_PROGRESS, tapi instruksi bilang hanya RESOLVED/CLOSED */}
+                          </>
+                        )}
                       </select>
                     )}
                   </CardContent>
@@ -663,17 +680,23 @@ export default function TicketDetailPage() {
                     <CardTitle className="text-xs font-bold text-slate-500 uppercase tracking-wider">Prioritas</CardTitle>
                   </CardHeader>
                   <CardContent className="pt-4">
-                    <select
-                      value={ticket.priority}
-                      disabled={updatingField}
-                      onChange={(e) => handleUpdateTicketField({ priority: e.target.value })}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
-                    >
-                      <option value="LOW">Low</option>
-                      <option value="MEDIUM">Medium</option>
-                      <option value="HIGH">High</option>
-                      <option value="CRITICAL">Critical</option>
-                    </select>
+                    {user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' || user?.role === 'FUNCTIONAL_TEAM' ? (
+                      <select
+                        value={ticket.priority}
+                        disabled={updatingField}
+                        onChange={(e) => handleUpdateTicketField({ priority: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                      >
+                        <option value="LOW">Low</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="HIGH">High</option>
+                        <option value="CRITICAL">Critical</option>
+                      </select>
+                    ) : (
+                      <div className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700">
+                        {ticket.priority}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -683,16 +706,23 @@ export default function TicketDetailPage() {
                     <CardTitle className="text-xs font-bold text-slate-500 uppercase tracking-wider">Petugas Ditugaskan</CardTitle>
                   </CardHeader>
                   <CardContent className="pt-4">
-                    <select
-                      value={ticket.assignedTo || ''}
-                      disabled={updatingField}
-                      onChange={(e) => handleUpdateTicketField({ assignedTo: e.target.value || null })}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Belum Ditugaskan (Unassigned)</option>
-                      <option value="1">Admin User</option>
-                      <option value="2">Support Agent</option>
-                    </select>
+                    {user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' || user?.role === 'FUNCTIONAL_TEAM' ? (
+                      <select
+                        value={ticket.assignedTo || ''}
+                        disabled={updatingField}
+                        onChange={(e) => handleUpdateTicketField({ assignedTo: e.target.value || null })}
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Belum Ditugaskan (Unassigned)</option>
+                        {/* Di sistem aslinya harusnya fetch user list, ini hardcode sebagai contoh */}
+                        <option value="1">Admin User</option>
+                        <option value="2">Support Agent</option>
+                      </select>
+                    ) : (
+                      <div className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700">
+                        {ticket.assignedUser?.name || 'Belum Ditugaskan'}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
