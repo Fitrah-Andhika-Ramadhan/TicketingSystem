@@ -59,7 +59,14 @@ export default function TeamPage() {
         return;
       }
 
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      // Team page is for admin only
+      if (parsedUser.role !== 'SUPER_ADMIN' && parsedUser.role !== 'ADMIN') {
+        router.push('/dashboard');
+        return;
+      }
+
+      setUser(parsedUser);
       fetchTeamMembers(token);
     };
 

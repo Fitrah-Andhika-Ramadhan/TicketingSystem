@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
-import { ArrowLeft, Send, Clock, User, Calendar, History, MessageSquare, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Send, Clock, User, Calendar, History, MessageSquare, ShieldAlert, CheckCircle2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function TicketDetailPage() {
@@ -24,6 +24,7 @@ export default function TicketDetailPage() {
 
   // New local states for workflow
   const [localProgress, setLocalProgress] = useState(0);
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
 
   useEffect(() => {
     if (ticket) {
@@ -95,6 +96,29 @@ export default function TicketDetailPage() {
       toast.error('Terjadi kesalahan koneksi saat memperbarui tiket.');
     } finally {
       setUpdatingField(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!confirm('Hapus komentar ini?')) return;
+    setDeletingCommentId(commentId);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Komentar berhasil dihapus.');
+        fetchTicket(token!);
+      } else {
+        toast.error(data.error || 'Gagal menghapus komentar.');
+      }
+    } catch (e) {
+      toast.error('Terjadi kesalahan saat menghapus komentar.');
+    } finally {
+      setDeletingCommentId(null);
     }
   };
 
@@ -530,15 +554,31 @@ export default function TicketDetailPage() {
                   <div className="space-y-6">
                     {ticket.comments && ticket.comments.map((comment: any) => {
                       const isMe = user?.id === comment.userId;
+                      const canDelete = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' || isMe;
                       return (
-                        <div key={comment.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                          <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-4 shadow-sm ${
+                        <div key={comment.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} group`}>
+                          <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl p-4 shadow-sm relative ${
                             comment.isInternal 
                               ? 'bg-rose-50 border border-rose-100 rounded-tl-none' 
                               : isMe 
                                 ? 'bg-blue-600 text-white rounded-tr-none shadow-blue-500/20' 
                                 : 'bg-white border border-slate-100 rounded-tl-none'
                           }`}>
+                            {/* Delete button - appears on hover */}
+                            {canDelete && (
+                              <button
+                                onClick={() => handleDeleteComment(comment.id)}
+                                disabled={deletingCommentId === comment.id}
+                                className={`absolute -top-2 ${isMe ? '-left-2' : '-right-2'} w-6 h-6 rounded-full bg-rose-500 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center shadow-md hover:bg-rose-600`}
+                                title="Hapus komentar"
+                              >
+                                {deletingCommentId === comment.id ? (
+                                  <span className="text-[8px]">...</span>
+                                ) : (
+                                  <Trash2 className="w-3 h-3" />
+                                )}
+                              </button>
+                            )}
                             <div className="flex items-center gap-2 mb-2">
                               <span className={`font-bold text-sm ${isMe ? 'text-blue-100' : 'text-slate-900'}`}>
                                 {comment.userName}
