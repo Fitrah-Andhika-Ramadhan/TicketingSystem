@@ -24,7 +24,8 @@ interface Ticket {
   priority: string;
   status: string;
   createdAt: string;
-  assignedTo?: { name: string } | null;
+  assignedTo: string | null;
+  assignedName?: string | null;
   createdBy?: { name: string } | null;
 }
 
@@ -269,8 +270,8 @@ export default function QAPage() {
                             </td>
                             <td className="px-6 py-4">
                               <p className="font-semibold text-gray-800 text-sm truncate max-w-xs">{ticket.title}</p>
-                              {ticket.assignedTo && (
-                                <p className="text-xs text-gray-400 mt-0.5">Dikerjakan oleh: {ticket.assignedTo.name}</p>
+                              {ticket.assignedName && (
+                                <p className="text-xs text-gray-400 mt-0.5">Dikerjakan oleh: {ticket.assignedName}</p>
                               )}
                             </td>
                             <td className="px-6 py-4">

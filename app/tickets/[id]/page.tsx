@@ -25,6 +25,7 @@ export default function TicketDetailPage() {
   // New local states for workflow
   const [localProgress, setLocalProgress] = useState(0);
   const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
+  const [usersList, setUsersList] = useState<any[]>([]);
 
   useEffect(() => {
     if (ticket) {
@@ -42,14 +43,15 @@ export default function TicketDetailPage() {
         return;
       }
 
-      setUser(JSON.parse(storedUser));
-      fetchTicket(token);
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      fetchTicket(token, parsedUser);
     };
 
     checkAuth();
   }, [router]);
 
-  const fetchTicket = async (token: string) => {
+  const fetchTicket = async (token: string, currentUser?: any) => {
     try {
       setLoading(true);
       const response = await fetch(`/api/tickets/${ticketId}`, {
@@ -62,6 +64,20 @@ export default function TicketDetailPage() {
       const data = await response.json();
       if (data.success) {
         setTicket(data.data);
+      }
+
+      // Gunakan passed currentUser atau fallback ke localStorage
+      const activeUser = currentUser || JSON.parse(localStorage.getItem('user') || '{}');
+
+      // Fetch users list for assignee dropdown
+      if (['ADMIN', 'SUPER_ADMIN', 'FUNCTIONAL_TEAM'].includes(activeUser.role)) {
+        const usersRes = await fetch('/api/users', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const usersData = await usersRes.json();
+        if (usersData.success) {
+          setUsersList(usersData.data);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch ticket:', error);
@@ -714,9 +730,11 @@ export default function TicketDetailPage() {
                         className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="">Belum Ditugaskan (Unassigned)</option>
-                        {/* Di sistem aslinya harusnya fetch user list, ini hardcode sebagai contoh */}
-                        <option value="1">Admin User</option>
-                        <option value="2">Support Agent</option>
+                        {usersList.map((u) => (
+                          <option key={u.id} value={u.id}>
+                            {u.name} ({u.role})
+                          </option>
+                        ))}
                       </select>
                     ) : (
                       <div className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700">

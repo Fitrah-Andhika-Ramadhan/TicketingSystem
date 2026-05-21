@@ -27,7 +27,8 @@ interface Ticket {
   status: string;
   progress?: number;
   createdAt: string;
-  assignedTo?: { id: string; name: string } | null;
+  assignedTo: string | null;
+  assignedName?: string | null;
   createdBy?: { name: string } | null;
 }
 
@@ -146,12 +147,12 @@ export default function DeveloperPage() {
   const myTickets = tickets.filter(
     (t) =>
       (t.status === 'IN_PROGRESS' || t.status === 'APPROVED') &&
-      (t.assignedTo?.id === user.id || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')
+      (t.assignedTo === user.id || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')
   );
   const inReviewTickets = tickets.filter(
     (t) =>
       t.status === 'IN_REVIEW' &&
-      (t.assignedTo?.id === user.id || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')
+      (t.assignedTo === user.id || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')
   );
   const thisMonth = new Date().getMonth();
   const thisYear = new Date().getFullYear();
@@ -161,7 +162,7 @@ export default function DeveloperPage() {
       t.status === 'RESOLVED' &&
       d.getMonth() === thisMonth &&
       d.getFullYear() === thisYear &&
-      (t.assignedTo?.id === user.id || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')
+      (t.assignedTo === user.id || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')
     );
   }).length;
 
