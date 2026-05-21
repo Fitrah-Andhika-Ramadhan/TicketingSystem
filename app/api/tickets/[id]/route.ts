@@ -191,6 +191,27 @@ export async function PATCH(
     if (body.title && body.title !== ticket.title) updateData.title = body.title;
     if (body.description && body.description !== ticket.description) updateData.description = body.description;
 
+    if (body.progress !== undefined && body.progress !== ticket.progress) {
+      await prisma.ticketHistory.create({
+        data: {
+          ticketId: ticket.id,
+          action: 'progress_changed',
+          oldValue: ticket.progress?.toString() || '0',
+          newValue: body.progress.toString(),
+          changedBy: userId,
+        }
+      });
+      updateData.progress = parseInt(body.progress);
+    }
+    
+    if (body.solution !== undefined && body.solution !== ticket.solution) {
+      updateData.solution = body.solution;
+    }
+    
+    if (body.recommendation !== undefined && body.recommendation !== ticket.recommendation) {
+      updateData.recommendation = body.recommendation;
+    }
+
     const updatedTicket = await prisma.ticket.update({
       where: { id: params.id },
       data: updateData,

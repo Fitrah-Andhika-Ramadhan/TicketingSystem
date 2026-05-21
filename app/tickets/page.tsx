@@ -21,6 +21,7 @@ interface Ticket {
   createdByName: string;
   assignedTo: string | null;
   assignedName: string | null;
+  progress: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -180,14 +181,20 @@ export default function TicketsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case 'PENDING_APPROVAL':
+        return 'bg-orange-100 text-orange-800 border border-orange-200';
+      case 'APPROVED':
+        return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+      case 'IN_REVIEW':
+        return 'bg-purple-100 text-purple-800 border border-purple-200';
       case 'OPEN':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 text-blue-800 border border-blue-200';
       case 'IN_PROGRESS':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
       case 'RESOLVED':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 border border-green-200';
       case 'CLOSED':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 border border-gray-200';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -267,8 +274,11 @@ export default function TicketsPage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
                     >
                       <option value="">All Status</option>
+                      <option value="PENDING_APPROVAL">Pending Approval</option>
+                      <option value="APPROVED">Approved</option>
                       <option value="OPEN">Open</option>
                       <option value="IN_PROGRESS">In Progress</option>
+                      <option value="IN_REVIEW">In Review</option>
                       <option value="RESOLVED">Resolved</option>
                       <option value="CLOSED">Closed</option>
                     </select>
@@ -356,9 +366,16 @@ export default function TicketsPage() {
                               {ticket.priority}
                             </td>
                             <td className="py-3.5 px-4">
-                              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(ticket.status)}`}>
-                                {ticket.status}
-                              </span>
+                              <div className="flex flex-col gap-1.5">
+                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold w-fit ${getStatusColor(ticket.status)}`}>
+                                  {ticket.status.replace('_', ' ')}
+                                </span>
+                                {ticket.status === 'IN_PROGRESS' && ticket.progress !== undefined && (
+                                  <div className="w-full max-w-[100px] h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                    <div className="h-full bg-blue-600 rounded-full" style={{ width: `${ticket.progress}%` }}></div>
+                                  </div>
+                                )}
+                              </div>
                             </td>
                             <td className="py-3.5 px-4 text-gray-600">{ticket.assignedName || '-'}</td>
                             <td className="py-3.5 px-4 text-gray-500">

@@ -74,6 +74,11 @@ model Ticket {
   // Metrics
   resolutionTime  Int?     // in minutes
   
+  // Workflow & Execution
+  progress        Int      @default(0)
+  solution        String?  @db.Text
+  recommendation  String?  @db.Text
+  
   // Relations
   comments        Comment[]
   attachments     Attachment[]
@@ -100,8 +105,11 @@ enum TicketCategory {
 }
 
 enum TicketStatus {
+  PENDING_APPROVAL
+  APPROVED
   OPEN
   IN_PROGRESS
+  IN_REVIEW
   WAITING_CUSTOMER
   WAITING_SUPPORT
   RESOLVED

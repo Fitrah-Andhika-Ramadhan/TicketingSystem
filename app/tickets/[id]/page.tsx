@@ -22,6 +22,20 @@ export default function TicketDetailPage() {
   const [submitting, setSubmitting] = useState(false);
   const [updatingField, setUpdatingField] = useState(false);
 
+  // New local states for workflow
+  const [localProgress, setLocalProgress] = useState(0);
+  const [localSolution, setLocalSolution] = useState('');
+  const [localRecommendation, setLocalRecommendation] = useState('');
+
+  // Update local states when ticket is loaded
+  useEffect(() => {
+    if (ticket) {
+      setLocalProgress(ticket.progress || 0);
+      setLocalSolution(ticket.solution || '');
+      setLocalRecommendation(ticket.recommendation || '');
+    }
+  }, [ticket]);
+
   useEffect(() => {
     const checkAuth = () => {
       const storedUser = localStorage.getItem('user');
@@ -126,6 +140,12 @@ export default function TicketDetailPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case 'PENDING_APPROVAL':
+        return 'bg-orange-100 text-orange-800 border border-orange-200';
+      case 'APPROVED':
+        return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+      case 'IN_REVIEW':
+        return 'bg-purple-100 text-purple-800 border border-purple-200';
       case 'OPEN':
         return 'bg-blue-100 text-blue-800 border border-blue-200';
       case 'IN_PROGRESS':
@@ -197,10 +217,166 @@ export default function TicketDetailPage() {
               </div>
             </div>
 
+            {/* Status Timeline Stepper */}
+            <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+              <div className="flex items-center justify-between relative min-w-[600px]">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1.5 bg-slate-100 -z-10 rounded-full"></div>
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1.5 bg-blue-500 transition-all duration-500 -z-10 rounded-full" 
+                     style={{ width: ticket.status === 'PENDING_APPROVAL' ? '0%' : ticket.status === 'APPROVED' ? '25%' : ticket.status === 'IN_PROGRESS' ? '50%' : ticket.status === 'IN_REVIEW' ? '75%' : '100%' }}></div>
+                
+                {['PENDING_APPROVAL', 'APPROVED', 'IN_PROGRESS', 'IN_REVIEW', 'RESOLVED/CLOSED'].map((step, idx) => {
+                  let isActive = false;
+                  let isPast = false;
+                  const currentIndex = ['PENDING_APPROVAL', 'APPROVED', 'IN_PROGRESS', 'IN_REVIEW', 'RESOLVED', 'CLOSED'].indexOf(ticket.status);
+                  const stepIndex = step === 'RESOLVED/CLOSED' ? 4 : idx;
+                  
+                  if (currentIndex === stepIndex || (currentIndex === 5 && stepIndex === 4)) isActive = true;
+                  else if (currentIndex > stepIndex) isPast = true;
+
+                  return (
+                    <div key={step} className="flex flex-col items-center gap-2 bg-white px-4">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-[3px] transition-all duration-300 ${
+                        isActive ? 'border-blue-500 bg-blue-500 text-white shadow-lg shadow-blue-500/30 scale-110' : 
+                        isPast ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-slate-200 bg-slate-50 text-slate-400'
+                      }`}>
+                        {idx + 1}
+                      </div>
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${isActive ? 'text-blue-700' : isPast ? 'text-slate-700' : 'text-slate-400'}`}>
+                        {step.replace('_', ' ')}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-8">
+
+                {/* Action Panels */}
+                {ticket.status === 'PENDING_APPROVAL' && (user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
+                  <Card className="border-orange-200 shadow-sm shadow-orange-100 overflow-hidden">
+                    <CardHeader className="pb-3 border-b border-orange-100 bg-orange-50/80">
+                      <CardTitle className="text-base font-bold text-orange-800 flex items-center gap-2">
+                        <ShieldAlert className="w-5 h-5" /> Tindakan Admin: Persetujuan Tiket
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-5 flex flex-col sm:flex-row items-center justify-between bg-white gap-4">
+                      <p className="text-sm text-orange-800/80 font-medium text-center sm:text-left">Tiket ini menunggu validasi Anda sebelum dapat dikerjakan.</p>
+                      <Button onClick={() => handleUpdateTicketField({ status: 'APPROVED' })} className="bg-orange-600 hover:bg-orange-700 shadow-sm shadow-orange-600/20 whitespace-nowrap">
+                        Approve Ticket
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {(ticket.status === 'IN_PROGRESS' || ticket.status === 'APPROVED') && (
+                  <Card className="border-blue-200 shadow-sm shadow-blue-100 overflow-hidden">
+                    <CardHeader className="pb-3 border-b border-blue-100 bg-blue-50/80">
+                      <CardTitle className="text-base font-bold text-blue-800 flex items-center gap-2">
+                        <History className="w-5 h-5" /> Progress Pengerjaan
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-5 space-y-4 bg-white">
+                      <div>
+                        <div className="flex justify-between text-sm font-bold mb-2 text-blue-900">
+                          <span>Status Progress</span>
+                          <span className="bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full text-xs">{localProgress}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="0" max="100" step="5" 
+                          value={localProgress} 
+                          onChange={(e) => setLocalProgress(parseInt(e.target.value))}
+                          className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                        />
+                      </div>
+                      <div className="flex justify-end pt-2">
+                        <Button 
+                          onClick={() => {
+                            if (ticket.status !== 'IN_PROGRESS') handleUpdateTicketField({ status: 'IN_PROGRESS', progress: localProgress });
+                            else handleUpdateTicketField({ progress: localProgress });
+                          }} 
+                          disabled={localProgress === ticket.progress && ticket.status === 'IN_PROGRESS'}
+                          variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50 font-semibold"
+                        >
+                          Update Progress
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {(ticket.status === 'IN_PROGRESS' || ticket.status === 'IN_REVIEW' || ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') && (
+                  <Card className="border-emerald-200 shadow-sm shadow-emerald-100 overflow-hidden">
+                    <CardHeader className="pb-3 border-b border-emerald-100 bg-emerald-50/80">
+                      <CardTitle className="text-base font-bold text-emerald-800 flex items-center gap-2">
+                        <MessageSquare className="w-5 h-5" /> Solusi & Rekomendasi
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-5 space-y-4 bg-white">
+                      {ticket.status === 'IN_PROGRESS' ? (
+                        <>
+                          <div>
+                            <label className="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Solusi Penyelesaian</label>
+                            <textarea 
+                              value={localSolution} onChange={(e) => setLocalSolution(e.target.value)}
+                              placeholder="Jelaskan apa yang telah diperbaiki..."
+                              className="w-full px-4 py-3 border border-emerald-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                              rows={3}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Rekomendasi (Opsional)</label>
+                            <textarea 
+                              value={localRecommendation} onChange={(e) => setLocalRecommendation(e.target.value)}
+                              placeholder="Saran tindak lanjut atau pencegahan..."
+                              className="w-full px-4 py-3 border border-emerald-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                              rows={2}
+                            />
+                          </div>
+                          <div className="flex justify-end pt-2">
+                            <Button 
+                              onClick={() => handleUpdateTicketField({ 
+                                solution: localSolution, 
+                                recommendation: localRecommendation,
+                                status: 'IN_REVIEW',
+                                progress: 100
+                              })}
+                              className="bg-emerald-600 hover:bg-emerald-700 font-semibold shadow-sm shadow-emerald-600/20"
+                              disabled={!localSolution.trim()}
+                            >
+                              Selesaikan & Kirim Review
+                            </Button>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="space-y-4">
+                          <div>
+                            <span className="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Solusi Penyelesaian</span>
+                            <p className="text-sm text-slate-700 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 whitespace-pre-wrap">{ticket.solution || '-'}</p>
+                          </div>
+                          <div>
+                            <span className="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Rekomendasi</span>
+                            <p className="text-sm text-slate-700 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 whitespace-pre-wrap">{ticket.recommendation || '-'}</p>
+                          </div>
+                          {ticket.status === 'IN_REVIEW' && (user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
+                            <div className="pt-5 mt-2 flex justify-end gap-3 border-t border-emerald-100">
+                              <Button variant="outline" onClick={() => handleUpdateTicketField({ status: 'IN_PROGRESS' })} className="border-orange-300 text-orange-700 hover:bg-orange-50 font-semibold">
+                                Reject (Kembalikan)
+                              </Button>
+                              <Button onClick={() => handleUpdateTicketField({ status: 'RESOLVED' })} className="bg-emerald-600 hover:bg-emerald-700 font-semibold shadow-sm shadow-emerald-600/20">
+                                Validate & Resolve
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
                 
                 {/* Description Details Card */}
                 <Card>
@@ -354,8 +530,11 @@ export default function TicketDetailPage() {
                       onChange={(e) => handleUpdateTicketField({ status: e.target.value })}
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                     >
+                      <option value="PENDING_APPROVAL">Pending Approval</option>
+                      <option value="APPROVED">Approved</option>
                       <option value="OPEN">Open</option>
                       <option value="IN_PROGRESS">In Progress</option>
+                      <option value="IN_REVIEW">In Review</option>
                       <option value="RESOLVED">Resolved</option>
                       <option value="CLOSED">Closed</option>
                     </select>

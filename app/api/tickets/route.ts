@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
         description,
         category: category as TicketCategory,
         priority: (priority || 'MEDIUM') as Priority,
-        status: 'OPEN',
+        status: 'PENDING_APPROVAL',
         createdBy: userId,
         dueDate: dueDate ? new Date(dueDate) : null,
       },
