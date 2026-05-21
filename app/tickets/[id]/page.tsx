@@ -354,9 +354,9 @@ export default function TicketDetailPage() {
                                 progress: 100
                               })}
                               className="bg-emerald-600 hover:bg-emerald-700 font-semibold shadow-sm shadow-emerald-600/20"
-                              disabled={!localSolution.trim()}
+                              disabled={!localSolution.trim() || updatingField}
                             >
-                              Selesaikan & Kirim Review
+                              {updatingField ? 'Menyimpan...' : 'Selesaikan & Kirim Review'}
                             </Button>
                           </div>
                         </>
@@ -364,11 +364,11 @@ export default function TicketDetailPage() {
                         <div className="space-y-4">
                           <div>
                             <span className="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Solusi Penyelesaian</span>
-                            <p className="text-sm text-slate-700 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 whitespace-pre-wrap">{ticket.solution || '-'}</p>
+                            <p className="text-sm text-slate-700 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 whitespace-pre-wrap">{ticket.solution || localSolution || '-'}</p>
                           </div>
                           <div>
                             <span className="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Rekomendasi</span>
-                            <p className="text-sm text-slate-700 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 whitespace-pre-wrap">{ticket.recommendation || '-'}</p>
+                            <p className="text-sm text-slate-700 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 whitespace-pre-wrap">{ticket.recommendation || localRecommendation || '-'}</p>
                           </div>
                           {ticket.status === 'IN_REVIEW' && (user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') && (
                             <div className="pt-5 mt-2 flex justify-end gap-3 border-t border-emerald-100">
