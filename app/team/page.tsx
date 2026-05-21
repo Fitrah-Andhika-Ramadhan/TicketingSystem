@@ -8,6 +8,16 @@ import { Users, Mail, Phone, MapPin, Edit, Trash2, Plus } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
 import swal from '@/lib/swal';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface TeamMember {
   id: string;
@@ -27,6 +37,17 @@ export default function TeamPage() {
   const [user, setUser] = useState<any>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal States
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentMember, setCurrentMember] = useState<TeamMember | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    position: '',
+    email: '',
+    department: 'IT Support'
+  });
 
   useEffect(() => {
     const checkAuth = () => {
@@ -133,101 +154,51 @@ export default function TeamPage() {
   };
 
   const handleAddMemberClick = () => {
-    swal.fire({
-      title: 'Tambah Anggota Tim',
-      html:
-        '<input id="swal-input-name" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama Lengkap">' +
-        '<input id="swal-input-position" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Jabatan">' +
-        '<input id="swal-input-email" type="email" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Email">' +
-        '<select id="swal-input-department" class="swal2-input border border-gray-250 p-2.5 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500">' +
-          '<option value="IT Support">IT Support</option>' +
-          '<option value="Quality Assurance">Quality Assurance</option>' +
-          '<option value="IT Security">IT Security</option>' +
-          '<option value="Management">Management</option>' +
-          '<option value="Administration">Administration</option>' +
-        '</select>',
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Tambah',
-      cancelButtonText: 'Batal',
-      preConfirm: () => {
-        const name = (document.getElementById('swal-input-name') as HTMLInputElement).value;
-        const position = (document.getElementById('swal-input-position') as HTMLInputElement).value;
-        const email = (document.getElementById('swal-input-email') as HTMLInputElement).value;
-        const department = (document.getElementById('swal-input-department') as HTMLSelectElement).value;
-        if (!name || !position || !email) {
-          swal.showValidationMessage('Semua kolom harus diisi!');
-          return false;
-        }
-        return { name, position, email, department };
-      }
-    }).then((result) => {
-      if (result.isConfirmed && result.value) {
-        const val = result.value;
-        const newMember: TeamMember = {
-          id: String(teamMembers.length + 1),
-          name: val.name,
-          role: 'CONTRACTOR',
-          position: val.position,
-          email: val.email,
-          phone: '+62812' + Math.floor(10000000 + Math.random() * 90000000),
-          department: val.department,
-          status: 'Active',
-          joinDate: new Date(),
-          avatar: val.name.charAt(0).toUpperCase(),
-        };
-        setTeamMembers([...teamMembers, newMember]);
-        swal.fire({
-          icon: 'success',
-          title: 'Berhasil!',
-          text: 'Anggota tim baru berhasil ditambahkan.',
-        });
-      }
-    });
+    setIsEditing(false);
+    setCurrentMember(null);
+    setFormData({ name: '', position: '', email: '', department: 'IT Support' });
+    setIsModalOpen(true);
   };
 
   const handleEditMember = (member: TeamMember) => {
-    swal.fire({
-      title: 'Edit Anggota Tim',
-      html:
-        `<input id="swal-input-name" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" value="${member.name}" placeholder="Nama Lengkap">` +
-        `<input id="swal-input-position" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" value="${member.position}" placeholder="Jabatan">` +
-        `<input id="swal-input-email" type="email" class="swal2-input placeholder-gray-450 border border-gray-250 p-2.5 rounded-lg w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" value="${member.email}" placeholder="Email">` +
-        `<select id="swal-input-department" class="swal2-input border border-gray-250 p-2.5 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500">` +
-          `<option value="IT Support" ${member.department === 'IT Support' ? 'selected' : ''}>IT Support</option>` +
-          `<option value="Quality Assurance" ${member.department === 'Quality Assurance' ? 'selected' : ''}>Quality Assurance</option>` +
-          `<option value="IT Security" ${member.department === 'IT Security' ? 'selected' : ''}>IT Security</option>` +
-          `<option value="Management" ${member.department === 'Management' ? 'selected' : ''}>Management</option>` +
-          `<option value="Administration" ${member.department === 'Administration' ? 'selected' : ''}>Administration</option>` +
-        `</select>`,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Simpan',
-      cancelButtonText: 'Batal',
-      preConfirm: () => {
-        const name = (document.getElementById('swal-input-name') as HTMLInputElement).value;
-        const position = (document.getElementById('swal-input-position') as HTMLInputElement).value;
-        const email = (document.getElementById('swal-input-email') as HTMLInputElement).value;
-        const department = (document.getElementById('swal-input-department') as HTMLSelectElement).value;
-        if (!name || !position || !email) {
-          swal.showValidationMessage('Semua kolom harus diisi!');
-          return false;
-        }
-        return { name, position, email, department };
-      }
-    }).then((result) => {
-      if (result.isConfirmed && result.value) {
-        const val = result.value;
-        setTeamMembers(teamMembers.map(m =>
-          m.id === member.id ? { ...m, name: val.name, position: val.position, email: val.email, department: val.department, avatar: val.name.charAt(0).toUpperCase() } : m
-        ));
-        swal.fire({
-          icon: 'success',
-          title: 'Berhasil!',
-          text: 'Data anggota tim berhasil diperbarui.',
-        });
-      }
+    setIsEditing(true);
+    setCurrentMember(member);
+    setFormData({
+      name: member.name,
+      position: member.position,
+      email: member.email,
+      department: member.department,
     });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveMember = () => {
+    if (!formData.name || !formData.position || !formData.email) {
+      swal.fire({ icon: 'error', title: 'Error', text: 'Semua kolom harus diisi!' });
+      return;
+    }
+
+    if (isEditing && currentMember) {
+      setTeamMembers(teamMembers.map(m =>
+        m.id === currentMember.id 
+          ? { ...m, ...formData, avatar: formData.name.charAt(0).toUpperCase() } 
+          : m
+      ));
+      swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Data anggota tim berhasil diperbarui.', timer: 1500, showConfirmButton: false });
+    } else {
+      const newMember: TeamMember = {
+        id: String(Date.now()),
+        ...formData,
+        role: 'CONTRACTOR',
+        phone: '+62812' + Math.floor(10000000 + Math.random() * 90000000),
+        status: 'Active',
+        joinDate: new Date(),
+        avatar: formData.name.charAt(0).toUpperCase(),
+      };
+      setTeamMembers([...teamMembers, newMember]);
+      swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Anggota tim baru berhasil ditambahkan.', timer: 1500, showConfirmButton: false });
+    }
+    setIsModalOpen(false);
   };
 
   const handleDeleteMember = (id: string, name: string) => {
@@ -444,6 +415,81 @@ export default function TeamPage() {
           </div>
         </main>
       </div>
+
+      {/* Member Dialog */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-white rounded-2xl border-0 shadow-2xl">
+          <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-6 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold tracking-tight text-white">
+                {isEditing ? 'Edit Anggota Tim' : 'Tambah Anggota Tim'}
+              </DialogTitle>
+              <DialogDescription className="text-blue-100/80 mt-1.5">
+                {isEditing 
+                  ? 'Perbarui informasi anggota tim ini.' 
+                  : 'Masukkan detail anggota tim baru untuk ditambahkan ke proyek.'}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="p-6 space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-semibold text-slate-700">Nama Lengkap</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="John Doe"
+                className="focus-visible:ring-blue-500/50 bg-slate-50/50 border-slate-200"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="position" className="text-sm font-semibold text-slate-700">Jabatan</Label>
+              <Input
+                id="position"
+                value={formData.position}
+                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                placeholder="Senior IT Support"
+                className="focus-visible:ring-blue-500/50 bg-slate-50/50 border-slate-200"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-semibold text-slate-700">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="john@fitrahpro.com"
+                className="focus-visible:ring-blue-500/50 bg-slate-50/50 border-slate-200"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="department" className="text-sm font-semibold text-slate-700">Departemen</Label>
+              <select
+                id="department"
+                value={formData.department}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                className="flex h-10 w-full rounded-md border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="IT Support">IT Support</option>
+                <option value="Quality Assurance">Quality Assurance</option>
+                <option value="IT Security">IT Security</option>
+                <option value="Management">Management</option>
+                <option value="Administration">Administration</option>
+              </select>
+            </div>
+          </div>
+          <DialogFooter className="p-6 bg-slate-50 border-t border-slate-100 sm:justify-end gap-2">
+            <Button variant="outline" onClick={() => setIsModalOpen(false)} className="border-slate-200 text-slate-600 hover:bg-slate-100 w-full sm:w-auto">
+              Batal
+            </Button>
+            <Button onClick={handleSaveMember} className="bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-500/20 w-full sm:w-auto">
+              {isEditing ? 'Simpan Perubahan' : 'Tambahkan'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
