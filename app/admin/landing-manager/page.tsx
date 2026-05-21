@@ -153,7 +153,7 @@ export default function LandingManager() {
             </div>
 
             {/* Quick Access Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {/* Preview Landing */}
               <Card className="bg-blue-50 border-blue-200">
                 <CardHeader>
@@ -173,24 +173,6 @@ export default function LandingManager() {
                 </CardContent>
               </Card>
 
-              {/* Media Manager */}
-              <Card className="bg-purple-50 border-purple-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Eye className="w-5 h-5" />
-                    Media Gallery
-                  </CardTitle>
-                  <CardDescription>Manage images and videos</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Link href="/admin/media-manager">
-                    <Button className="w-full bg-purple-600 hover:bg-purple-700 flex items-center justify-center gap-2">
-                      <ExternalLink className="w-4 h-4" />
-                      Go to Media Manager
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
 
               {/* Statistics */}
               <Card className="bg-green-50 border-green-200">
