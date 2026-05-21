@@ -13,6 +13,7 @@ interface Ticket {
   id: string;
   ticketNumber: string;
   title: string;
+  category: string;
   status: string;
   priority: string;
   createdAt: Date;
@@ -24,30 +25,54 @@ export default function DashboardPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Mock data for charts
-  const ticketsOverTime = [
-    { date: 'Mon', tickets: 12, resolved: 8 },
-    { date: 'Tue', tickets: 15, resolved: 10 },
-    { date: 'Wed', tickets: 10, resolved: 8 },
-    { date: 'Thu', tickets: 18, resolved: 14 },
-    { date: 'Fri', tickets: 20, resolved: 16 },
-    { date: 'Sat', tickets: 8, resolved: 7 },
-    { date: 'Sun', tickets: 5, resolved: 5 },
-  ];
-
   const priorityDistribution = [
-    { name: 'Critical', value: 5, color: '#dc2626' },
-    { name: 'High', value: 15, color: '#f97316' },
-    { name: 'Medium', value: 28, color: '#3b82f6' },
-    { name: 'Low', value: 12, color: '#10b981' },
-  ];
+    { name: 'Critical', value: tickets.filter(t => t.priority === 'CRITICAL').length, color: '#dc2626' },
+    { name: 'High', value: tickets.filter(t => t.priority === 'HIGH').length, color: '#f97316' },
+    { name: 'Medium', value: tickets.filter(t => t.priority === 'MEDIUM').length, color: '#3b82f6' },
+    { name: 'Low', value: tickets.filter(t => t.priority === 'LOW').length, color: '#10b981' },
+  ].filter(item => item.value > 0);
 
-  const categoryDistribution = [
-    { name: 'Bug', value: 25, color: '#ef4444' },
-    { name: 'Feature', value: 18, color: '#3b82f6' },
-    { name: 'Support', value: 20, color: '#f59e0b' },
-    { name: 'Inquiry', value: 12, color: '#8b5cf6' },
-  ];
+  const categoryDistributionMap = tickets.reduce((acc, ticket) => {
+    acc[ticket.category] = (acc[ticket.category] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const categoryColors: Record<string, string> = {
+    BUG: '#ef4444',
+    FEATURE_REQUEST: '#3b82f6',
+    MAINTENANCE: '#f59e0b',
+    ACCESS_ISSUE: '#8b5cf6',
+    OTHER: '#10b981'
+  };
+
+  const categoryDistribution = Object.keys(categoryDistributionMap).map(key => ({
+    name: key,
+    value: categoryDistributionMap[key],
+    color: categoryColors[key] || '#64748b'
+  }));
+
+  const ticketsOverTime = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toLocaleDateString('en-US', { weekday: 'short' });
+    
+    const createdOnDate = tickets.filter(t => {
+      const tDate = new Date(t.createdAt);
+      return tDate.getDate() === d.getDate() && tDate.getMonth() === d.getMonth() && tDate.getFullYear() === d.getFullYear();
+    }).length;
+    
+    const resolvedOnDate = tickets.filter(t => {
+      const tDate = new Date(t.createdAt);
+      return (t.status === 'RESOLVED' || t.status === 'CLOSED') && tDate.getDate() === d.getDate() && tDate.getMonth() === d.getMonth();
+    }).length;
+
+    ticketsOverTime.push({
+      date: dateStr,
+      tickets: createdOnDate,
+      resolved: resolvedOnDate
+    });
+  }
 
   useEffect(() => {
     const checkAuth = () => {
