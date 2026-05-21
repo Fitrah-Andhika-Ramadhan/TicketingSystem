@@ -85,7 +85,24 @@ export default function DashboardPage() {
         return;
       }
 
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+
+      // Redirect specific roles to their isolated workspaces
+      if (parsedUser.role === 'SUPER_ADMIN' || parsedUser.role === 'ADMIN') {
+        router.push('/admin/dashboard');
+        return;
+      } else if (parsedUser.role === 'FUNCTIONAL_TEAM') {
+        router.push('/functional');
+        return;
+      } else if (parsedUser.role === 'DEVELOPER') {
+        router.push('/developer');
+        return;
+      } else if (parsedUser.role === 'QA') {
+        router.push('/qa');
+        return;
+      }
+
+      setUser(parsedUser);
       fetchTickets(token);
     };
 
