@@ -29,33 +29,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden: Only Admins can switch roles' }, { status: 403 });
     }
 
-    // Try to update DB, but fallback to static user if DB fails (e.g. demo mode)
-    let updatedUser: any;
-    try {
-      if (decoded.userId !== '1') {
-        updatedUser = await prisma.user.update({
-          where: { id: decoded.userId },
-          data: { role: role as Role },
-          select: { id: true, name: true, email: true, role: true, department: true }
-        });
-      } else {
-        throw new Error('Static user'); // Force fallback
-      }
-    } catch (dbError) {
-      // Fallback for demo / static user
-      updatedUser = {
-        id: decoded.userId || '1',
-        name: 'User',
-        email: 'user@demo.com',
-        role: role,
-        department: 'Demo'
-      };
-      if (decoded.userId === '1') {
-        updatedUser.name = 'Admin User';
-        updatedUser.email = 'admin@fitrahpro.com';
-        updatedUser.department = 'Management';
-      }
-    }
+    const updatedUser = await prisma.user.update({
+      where: { id: decoded.userId },
+      data: { role: role as Role },
+      select: { id: true, name: true, email: true, role: true, department: true }
+    });
 
     // Generate new token
     const newToken = generateToken({
