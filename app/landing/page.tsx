@@ -370,7 +370,7 @@ export default function Landing() {
                         </div>
                         <div>
                           <h4 className="text-sm font-bold text-slate-800">SLA Breach Warning: #VD-4821</h4>
-                          <p className="text-xs text-slate-400 mt-0.5">Kendala: Gagal bayar payment gateway • Admin NataGroup</p>
+                          <p className="text-xs text-slate-400 mt-0.5">Kendala: Gagal bayar payment gateway • Admin VibeDesk</p>
                         </div>
                       </div>
                       <span className="text-[10px] px-3 py-1.5 rounded-lg bg-rose-50 border border-rose-100 text-rose-600 font-bold font-mono shadow-sm">12 mnt tersisa</span>
