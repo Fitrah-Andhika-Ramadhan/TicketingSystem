@@ -251,7 +251,7 @@ export default function TicketDetailPage() {
             
             {/* Header */}
             <div className="mb-8 flex items-center gap-4">
-              <Button variant="outline" onClick={() => router.push('/tickets')} className="h-9 px-3">
+              <Button variant="outline" onClick={() => router.push('/tickets-demo')} className="h-9 px-3">
                 <ArrowLeft className="w-4 h-4 mr-1.5" /> Kembali
               </Button>
               <div>

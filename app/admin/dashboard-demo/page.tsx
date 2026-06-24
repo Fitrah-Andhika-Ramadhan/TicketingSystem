@@ -12,6 +12,7 @@ import {
   ListTodo, Image as ImageIcon, Activity, TrendingUp, AlertTriangle,
   CheckCircle2, Clock, XCircle, ChevronRight,
 } from 'lucide-react';
+import { useRealtime } from '@/hooks/useRealtime';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -29,39 +30,44 @@ export default function AdminDashboard() {
       router.push('/dashboard'); return;
     }
     setUser(parsedUser);
-    fetchStats();
+    fetchStats(token);
   }, [router]);
 
-  const fetchStats = async () => {
-    // Demo data
-    setStats({
-      total: 1248,
-      pending: 45,
-      open: 120,
-      inProgress: 350,
-      inReview: 85,
-      resolved: 500,
-      closed: 148,
-    });
-    setRecentTickets([
-      { id: '1', ticketNumber: 'VD-1045', title: 'Error integrasi Payment Gateway', status: 'IN_PROGRESS', priority: 'HIGH', createdAt: new Date().toISOString() },
-      { id: '2', ticketNumber: 'VD-1044', title: 'Update logo perusahaan di invoice', status: 'PENDING_APPROVAL', priority: 'MEDIUM', createdAt: new Date(Date.now() - 86400000).toISOString() },
-      { id: '3', ticketNumber: 'VD-1043', title: 'Database connection timeout', status: 'IN_REVIEW', priority: 'CRITICAL', createdAt: new Date(Date.now() - 172800000).toISOString() },
-      { id: '4', ticketNumber: 'VD-1042', title: 'Request akses VPN baru', status: 'RESOLVED', priority: 'LOW', createdAt: new Date(Date.now() - 259200000).toISOString() },
-      { id: '5', ticketNumber: 'VD-1041', title: 'Bug pada halaman checkout', status: 'IN_PROGRESS', priority: 'HIGH', createdAt: new Date(Date.now() - 345600000).toISOString() },
-    ]);
-    setLoading(false);
+  useRealtime('Ticket', () => {
+    const token = localStorage.getItem('token');
+    if (token) fetchStats(token);
+  });
+
+  const fetchStats = async (token: string) => {
+    try {
+      const res = await fetch('/api/tickets', { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (data.success) {
+        const all: any[] = data.data;
+        setStats({
+          total: all.length,
+          pending: all.filter(t => t.status === 'PENDING_APPROVAL').length,
+          open: all.filter(t => t.status === 'OPEN' || t.status === 'APPROVED').length,
+          inProgress: all.filter(t => t.status === 'IN_PROGRESS').length,
+          inReview: all.filter(t => t.status === 'IN_REVIEW').length,
+          resolved: all.filter(t => t.status === 'RESOLVED').length,
+          closed: all.filter(t => t.status === 'CLOSED').length,
+        });
+        setRecentTickets(all.slice(0, 6));
+      }
+    } catch (e) { console.error(e); }
+    finally { setLoading(false); }
   };
 
   if (!user) return null;
 
   const adminTools = [
-    { label: 'User Management', desc: 'Kelola akun & peran pengguna', icon: UserCog, href: '/admin/users', color: 'from-blue-500 to-blue-600', badge: null },
-    { label: 'Queue Management', desc: 'Pantau antrian tiket masuk', icon: ListTodo, href: '/admin/queue', color: 'from-indigo-500 to-indigo-600', badge: stats.pending > 0 ? stats.pending : null },
-    { label: 'Landing Manager', desc: 'Edit konten halaman publik', icon: ImageIcon, href: '/admin/landing-manager', color: 'from-purple-500 to-purple-600', badge: null },
-    { label: 'Pengaturan Sistem', desc: 'Konfigurasi aplikasi & notifikasi', icon: Settings, href: '/admin/settings', color: 'from-slate-500 to-slate-700', badge: null },
-    { label: 'Analytics', desc: 'Laporan & metrik sistem', icon: BarChart3, href: '/analytics', color: 'from-cyan-500 to-cyan-600', badge: null },
-    { label: 'Manajemen Tim', desc: 'Kelola anggota & departemen', icon: Users, href: '/team', color: 'from-emerald-500 to-emerald-600', badge: null },
+    { label: 'User Management', desc: 'Kelola akun & peran pengguna', icon: UserCog, href: '/admin/users-demo', color: 'from-blue-500 to-blue-600', badge: null },
+    { label: 'Queue Management', desc: 'Pantau antrian tiket masuk', icon: ListTodo, href: '/admin/queue-demo', color: 'from-indigo-500 to-indigo-600', badge: stats.pending > 0 ? stats.pending : null },
+    { label: 'Landing Manager', desc: 'Edit konten halaman publik', icon: ImageIcon, href: '/admin/landing-manager-demo', color: 'from-purple-500 to-purple-600', badge: null },
+    { label: 'Pengaturan Sistem', desc: 'Konfigurasi aplikasi & notifikasi', icon: Settings, href: '/admin/settings-demo', color: 'from-slate-500 to-slate-700', badge: null },
+    { label: 'Analytics', desc: 'Laporan & metrik sistem', icon: BarChart3, href: '/analytics-demo', color: 'from-cyan-500 to-cyan-600', badge: null },
+    { label: 'Manajemen Tim', desc: 'Kelola anggota & departemen', icon: Users, href: '/team-demo', color: 'from-emerald-500 to-emerald-600', badge: null },
   ];
 
   const pipeline = [
@@ -174,7 +180,7 @@ export default function AdminDashboard() {
                 <CardTitle className="text-sm font-bold text-slate-600 flex items-center gap-2">
                   <Ticket className="w-4 h-4" /> Monitor Tiket Terbaru
                 </CardTitle>
-                <Link href="/tickets">
+                <Link href="/tickets-demo">
                   <Button variant="ghost" size="sm" className="text-xs text-blue-600 hover:text-blue-700 h-7 px-2">
                     Lihat Semua <ChevronRight className="w-3 h-3 ml-1" />
                   </Button>
@@ -198,7 +204,7 @@ export default function AdminDashboard() {
                     </thead>
                     <tbody>
                       {recentTickets.map((t, i) => (
-                        <tr key={t.id} onClick={() => router.push(`/tickets/${t.id}`)} className="border-b border-slate-50 hover:bg-blue-50/40 cursor-pointer transition-colors">
+                        <tr key={t.id} onClick={() => router.push(`/tickets-demo/${t.id}`)} className="border-b border-slate-50 hover:bg-blue-50/40 cursor-pointer transition-colors">
                           <td className="px-5 py-3 font-mono text-xs font-bold text-blue-600">{t.ticketNumber}</td>
                           <td className="px-5 py-3 font-medium text-slate-800 max-w-xs truncate">{t.title}</td>
                           <td className="px-5 py-3">

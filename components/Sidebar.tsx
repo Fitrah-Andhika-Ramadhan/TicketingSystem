@@ -247,9 +247,40 @@ export default function Sidebar({ user }: SidebarProps) {
 
         {/* Footer */}
         <div className="p-4 border-t border-white/10 flex-shrink-0 relative">
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-60">
-            <p className="text-[10px] text-white/40 text-center font-semibold truncate">{projectName}</p>
-            <p className="text-[10px] text-white/30 text-center mt-0.5">v1.0.0</p>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-60 flex flex-col gap-3">
+            {user?.email === 'demo@fitrahpro.com' && (
+              <div className="bg-white/10 rounded-lg p-2 border border-white/20">
+                <p className="text-[10px] text-white/60 font-bold uppercase mb-1">Simulasi Role Demo</p>
+                <select
+                  className="w-full bg-slate-800 text-white text-xs border-none rounded py-1 px-2 focus:ring-0 outline-none cursor-pointer"
+                  value={user?.role}
+                  onChange={async (e) => {
+                    const newRole = e.target.value;
+                    const res = await fetch('/api/auth/demo-switch-role', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ role: newRole })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                      localStorage.setItem('token', data.data.token);
+                      localStorage.setItem('user', JSON.stringify(data.data.user));
+                      window.location.reload();
+                    }
+                  }}
+                >
+                  <option value="SUPER_ADMIN">Admin (Semua Akses)</option>
+                  <option value="FUNCTIONAL_TEAM">Functional Team</option>
+                  <option value="DEVELOPER">IT Support / Dev</option>
+                  <option value="QA">Quality Assurance</option>
+                  <option value="VIEWER">Viewer (End User)</option>
+                </select>
+              </div>
+            )}
+            <div>
+              <p className="text-[10px] text-white/40 text-center font-semibold truncate">{projectName}</p>
+              <p className="text-[10px] text-white/30 text-center mt-0.5">v1.0.0</p>
+            </div>
           </div>
         </div>
       </aside>

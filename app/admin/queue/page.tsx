@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { Filter, Download } from 'lucide-react';
+import { useRealtime } from '@/hooks/useRealtime';
 
 interface Ticket {
   id: string;
@@ -101,6 +102,13 @@ export default function AdminQueuePage() {
       setLoading(false);
     }
   };
+
+  useRealtime('Ticket', () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchTickets(token);
+    }
+  });
 
   const handleAssignTicket = async () => {
     if (!selectedTicket || !newAssignee) return;

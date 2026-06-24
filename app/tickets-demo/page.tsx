@@ -8,6 +8,7 @@ import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { Plus, Filter, Search, Trash2, Eye, X, Calendar, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useRealtime } from '@/hooks/useRealtime';
 
 interface Ticket {
   id: string;
@@ -107,6 +108,13 @@ export default function TicketsPage() {
       fetchTickets(token);
     }
   }, [statusFilter, priorityFilter, searchQuery]);
+
+  useRealtime('Ticket', () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchTickets(token);
+    }
+  });
 
   const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -352,12 +360,12 @@ export default function TicketsPage() {
                         {tickets.map((ticket) => (
                           <tr key={ticket.id} className="border-b hover:bg-gray-50/50 transition">
                             <td className="py-3.5 px-4 font-medium">
-                              <a href={`/tickets/${ticket.id}`} className="text-blue-600 hover:underline">
+                              <a href={`/tickets-demo/${ticket.id}`} className="text-blue-600 hover:underline">
                                 {ticket.ticketNumber}
                               </a>
                             </td>
                             <td className="py-3.5 px-4 text-gray-900 font-medium">
-                              <a href={`/tickets/${ticket.id}`} className="hover:underline">
+                              <a href={`/tickets-demo/${ticket.id}`} className="hover:underline">
                                 {ticket.title}
                               </a>
                             </td>
@@ -387,7 +395,7 @@ export default function TicketsPage() {
                                   variant="outline"
                                   size="sm"
                                   className="h-8 flex items-center gap-1.5"
-                                  onClick={() => router.push(`/tickets/${ticket.id}`)}
+                                  onClick={() => router.push(`/tickets-demo/${ticket.id}`)}
                                 >
                                   <Eye className="w-3.5 h-3.5" />
                                   View
