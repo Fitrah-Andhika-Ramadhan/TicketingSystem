@@ -54,10 +54,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#4252f5] p-4 font-sans antialiased">
+    <div className="min-h-screen bg-[#4252f5] p-4 sm:p-8 font-sans antialiased flex flex-col justify-center">
       
       {/* Main Container */}
-      <div className="flex flex-col md:flex-row w-full max-w-[1000px] bg-white rounded-3xl overflow-hidden shadow-2xl min-h-[600px]">
+      <div className="flex flex-col md:flex-row w-full max-w-[1000px] mx-auto bg-white rounded-3xl overflow-hidden shadow-2xl my-auto">
         
         {/* LEFT SIDE: Brand Presentation */}
         <div className="relative hidden md:flex md:w-1/2 p-10 flex-col justify-between bg-gradient-to-b from-blue-500 to-indigo-800 text-white overflow-hidden">
@@ -110,7 +110,7 @@ export default function LoginPage() {
         </div>
 
         {/* RIGHT SIDE: Login Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-white relative">
+        <div className="w-full md:w-1/2 p-6 sm:p-8 md:p-12 flex flex-col justify-center bg-white relative">
           
           <div className="mb-8">
             <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Welcome Back!</p>
