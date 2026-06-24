@@ -20,14 +20,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { role } = body;
 
-    if (!role || !Object.values(Role).includes(role as Role)) {
+    const validRoles = ['SUPER_ADMIN', 'ADMIN', 'FUNCTIONAL_TEAM', 'DEVELOPER', 'QA', 'VIEWER'];
+    if (!role || !validRoles.includes(role)) {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 
     // Try to update DB, but fallback to static user if DB fails (e.g. demo mode)
     let updatedUser: any;
     try {
-      if (decoded.userId !== '1') {
+      if (decoded.userId !== '1' && decoded.userId !== 'demo-1') {
         updatedUser = await prisma.user.update({
           where: { id: decoded.userId },
           data: { role: role as Role },
@@ -49,6 +50,10 @@ export async function POST(request: NextRequest) {
         updatedUser.name = 'Admin User';
         updatedUser.email = 'admin@fitrahpro.com';
         updatedUser.department = 'Management';
+      } else if (decoded.userId === 'demo-1') {
+        updatedUser.name = 'Admin Demo';
+        updatedUser.email = 'demo@fitrahpro.com';
+        updatedUser.department = 'Management';
       }
     }
 
@@ -59,13 +64,22 @@ export async function POST(request: NextRequest) {
       role: updatedUser.role,
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: {
         user: updatedUser,
         token: newToken,
       }
     });
+
+    response.cookies.set('token', newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+    });
+
+    return response;
   } catch (error) {
     console.error('Switch role error:', error);
     return NextResponse.json(
