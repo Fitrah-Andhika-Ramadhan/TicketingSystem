@@ -188,7 +188,6 @@ export default function RealLoginPage() {
                     <option value="FUNCTIONAL_TEAM">Functional Team (Support)</option>
                     <option value="DEVELOPER">Developer (Teknis)</option>
                     <option value="QA">Quality Assurance (QA)</option>
-                    <option value="ADMIN">Administrator</option>
                   </select>
                   <p className="text-[10px] text-slate-500 mt-1">
                     *Pilih <strong>Pengguna Biasa</strong> jika Anda hanya ingin membuat laporan atau tiket kendala.
