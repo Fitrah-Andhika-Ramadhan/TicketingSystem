@@ -12,6 +12,7 @@ import {
   ListTodo, Image as ImageIcon, Activity, TrendingUp, AlertTriangle,
   CheckCircle2, Clock, XCircle, ChevronRight,
 } from 'lucide-react';
+import { useRealtime } from '@/hooks/useRealtime';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -31,6 +32,11 @@ export default function AdminDashboard() {
     setUser(parsedUser);
     fetchStats(token);
   }, [router]);
+
+  useRealtime('Ticket', () => {
+    const token = localStorage.getItem('token');
+    if (token) fetchStats(token);
+  });
 
   const fetchStats = async (token: string) => {
     try {
