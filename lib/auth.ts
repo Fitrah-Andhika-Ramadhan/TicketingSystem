@@ -65,6 +65,16 @@ const STATIC_USERS = [
     phoneNumber: '+62812345678',
     isActive: true,
   },
+  {
+    id: 'demo-1',
+    email: 'demo@fitrahpro.com',
+    password: 'FitrahPro@2026',
+    name: 'Admin Demo',
+    role: 'SUPER_ADMIN',
+    department: 'Management',
+    phoneNumber: '+62812345678',
+    isActive: true,
+  },
 ];
 
 /**
