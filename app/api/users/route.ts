@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
         role: true,
         isActive: true,
         department: true,
-        lastLoginAt: true,
+        lastLogin: true,
       },
       orderBy: {
         name: 'asc',
