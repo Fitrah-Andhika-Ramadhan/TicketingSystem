@@ -58,7 +58,7 @@ const STATIC_USERS = [
   {
     id: '1',
     email: 'admin@fitrahpro.com',
-    password: 'FitrahPro@2026',
+    password: 'fitrahdindaaja@123',
     name: 'Admin User',
     role: 'SUPER_ADMIN',
     department: 'Management',
