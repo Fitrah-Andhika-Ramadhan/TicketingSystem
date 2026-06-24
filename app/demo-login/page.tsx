@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('admin@fitrahpro.com');
+  const [email, setEmail] = useState('demo@fitrahpro.com');
   const [password, setPassword] = useState('FitrahPro@2026');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -211,7 +211,7 @@ export default function LoginPage() {
              </button>
              {showDemoHelp && (
                <div className="mt-3 bg-slate-50 p-3 rounded-lg border border-slate-200/60 font-mono text-[10px] text-slate-600 space-y-1">
-                 <p>Email: admin@fitrahpro.com</p>
+                 <p>Email: demo@fitrahpro.com</p>
                  <p>Pass : FitrahPro@2026</p>
                </div>
              )}
