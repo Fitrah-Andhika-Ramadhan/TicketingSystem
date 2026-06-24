@@ -151,8 +151,17 @@ export default function Sidebar({ user }: SidebarProps) {
     let targetHref = item.href;
     
     // Append -demo to href if it's a demo user and doesn't already have it
-    if (isDemoUser && !targetHref.endsWith('-demo') && targetHref !== '/') {
-      targetHref = `${targetHref}-demo`;
+    if (isDemoUser && !targetHref.includes('-demo') && targetHref !== '/') {
+      const parts = targetHref.split('/');
+      if (parts.length === 2) {
+        targetHref = `${targetHref}-demo`;
+      } else if (parts.length >= 3) {
+        if (parts[1] === 'admin') {
+          targetHref = `/admin/${parts[2]}-demo${parts.length > 3 ? '/' + parts.slice(3).join('/') : ''}`;
+        } else {
+          targetHref = `/${parts[1]}-demo/${parts.slice(2).join('/')}`;
+        }
+      }
     }
 
     const active = isActive(targetHref);
