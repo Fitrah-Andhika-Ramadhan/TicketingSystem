@@ -141,7 +141,14 @@ export default function RealLoginPage() {
         {/* RIGHT SIDE: Form */}
         <div className="w-full md:w-1/2 p-6 sm:p-8 md:p-12 flex flex-col justify-center bg-white relative">
           
-          <div className="mb-8">
+          <button
+            onClick={() => router.push('/landing')}
+            className="absolute top-6 right-6 md:top-8 md:right-8 flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-blue-600 transition"
+          >
+            ← Kembali ke Landing
+          </button>
+
+          <div className="mb-8 mt-4 md:mt-0">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-500 bg-emerald-50 px-2 py-1 rounded-md">Live Database</span>
             </div>
