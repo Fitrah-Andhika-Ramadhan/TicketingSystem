@@ -55,9 +55,10 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
     if (onLogout) {
       onLogout();
     } else {
+      const isDemo = user?.email === 'demo@fitrahpro.com';
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      router.push('/login');
+      router.push(isDemo ? '/demo-login' : '/login');
     }
   };
 

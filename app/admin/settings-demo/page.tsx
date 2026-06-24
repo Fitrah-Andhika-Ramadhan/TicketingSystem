@@ -59,7 +59,7 @@ export default function AdminSettingsPage() {
       const token = localStorage.getItem('token');
 
       if (!token || !storedUser) {
-        router.push('/login');
+        router.push('/demo-login');
         return;
       }
 
@@ -67,7 +67,7 @@ export default function AdminSettingsPage() {
       
       // Only allow SUPER_ADMIN and ADMIN roles
       if (!['SUPER_ADMIN', 'ADMIN'].includes(parsedUser.role)) {
-        router.push('/dashboard');
+        router.push('/dashboard-demo');
         return;
       }
 

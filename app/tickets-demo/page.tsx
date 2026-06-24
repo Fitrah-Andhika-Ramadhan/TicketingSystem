@@ -55,7 +55,7 @@ export default function TicketsPage() {
       const token = localStorage.getItem('token');
 
       if (!token || !storedUser) {
-        router.push('/login');
+        router.push('/demo-login');
         return;
       }
 

@@ -82,7 +82,7 @@ export default function DashboardPage() {
       const token = localStorage.getItem('token');
 
       if (!token || !storedUser) {
-        router.push('/login');
+        router.push('/demo-login');
         return;
       }
 
@@ -90,16 +90,16 @@ export default function DashboardPage() {
 
       // Redirect specific roles to their isolated workspaces
       if (parsedUser.role === 'SUPER_ADMIN' || parsedUser.role === 'ADMIN') {
-        router.push('/admin/dashboard');
+        router.push('/admin/dashboard-demo');
         return;
       } else if (parsedUser.role === 'FUNCTIONAL_TEAM') {
-        router.push('/functional');
+        router.push('/functional-demo');
         return;
       } else if (parsedUser.role === 'DEVELOPER') {
-        router.push('/developer');
+        router.push('/developer-demo');
         return;
       } else if (parsedUser.role === 'QA') {
-        router.push('/qa');
+        router.push('/qa-demo');
         return;
       }
 

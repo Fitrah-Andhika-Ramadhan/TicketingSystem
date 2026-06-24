@@ -45,13 +45,13 @@ export default function LandingManager() {
       const token = localStorage.getItem('token');
 
       if (!token || !storedUser) {
-        router.push('/login');
+        router.push('/demo-login');
         return;
       }
 
       const parsedUser = JSON.parse(storedUser);
       if (parsedUser.role !== 'SUPER_ADMIN' && parsedUser.role !== 'ADMIN') {
-        router.push('/dashboard');
+        router.push('/dashboard-demo');
         return;
       }
 

@@ -55,14 +55,14 @@ export default function TeamPage() {
       const token = localStorage.getItem('token');
 
       if (!token || !storedUser) {
-        router.push('/login');
+        router.push('/demo-login');
         return;
       }
 
       const parsedUser = JSON.parse(storedUser);
       // Team page is for admin only
       if (parsedUser.role !== 'SUPER_ADMIN' && parsedUser.role !== 'ADMIN') {
-        router.push('/dashboard');
+        router.push('/dashboard-demo');
         return;
       }
 

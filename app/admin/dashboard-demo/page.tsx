@@ -24,10 +24,10 @@ export default function AdminDashboard() {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('token');
-    if (!token || !storedUser) { router.push('/login'); return; }
+    if (!token || !storedUser) { router.push('/demo-login'); return; }
     const parsedUser = JSON.parse(storedUser);
     if (parsedUser.role !== 'ADMIN' && parsedUser.role !== 'SUPER_ADMIN') {
-      router.push('/dashboard'); return;
+      router.push('/dashboard-demo'); return;
     }
     setUser(parsedUser);
     fetchStats(token);

@@ -26,7 +26,7 @@ export default function NewTicketPage() {
     const token = localStorage.getItem('token');
 
     if (!token || !storedUser) {
-      router.push('/login');
+      router.push('/demo-login');
       return;
     }
 
@@ -74,8 +74,8 @@ export default function NewTicketPage() {
 
       const data = await response.json();
       if (data.success) {
-        toast.success('Tiket baru berhasil dibuat!');
-        router.push('/tickets');
+        toast.success('Tiket berhasil dibuat!');
+        router.push('/tickets-demo');
       } else {
         toast.error(data.error || 'Gagal membuat tiket.');
       }
@@ -97,7 +97,7 @@ export default function NewTicketPage() {
         <main className="flex-1 overflow-auto p-4 md:p-8">
           <div className="max-w-3xl mx-auto">
             <div className="mb-6 flex items-center gap-4">
-              <Button variant="outline" onClick={() => router.push(user.role === 'VIEWER' ? '/dashboard' : '/tickets')} className="h-9 px-3">
+              <Button variant="outline" onClick={() => router.push(user.role === 'VIEWER' ? '/dashboard-demo' : '/tickets-demo')} className="h-9 px-3">
                 <ArrowLeft className="w-4 h-4 mr-1.5" /> Kembali
               </Button>
               <h1 className="text-2xl font-bold text-slate-800">Buat Tiket Baru</h1>

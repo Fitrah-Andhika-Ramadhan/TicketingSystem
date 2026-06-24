@@ -53,7 +53,7 @@ export default function DeveloperPage() {
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('token');
     if (!token || !storedUser) {
-      router.push('/login');
+      router.push('/demo-login');
       return;
     }
     const parsedUser = JSON.parse(storedUser);
@@ -62,7 +62,7 @@ export default function DeveloperPage() {
       parsedUser.role !== 'ADMIN' &&
       parsedUser.role !== 'SUPER_ADMIN'
     ) {
-      router.push('/dashboard');
+      router.push('/dashboard-demo');
       return;
     }
     setUser(parsedUser);

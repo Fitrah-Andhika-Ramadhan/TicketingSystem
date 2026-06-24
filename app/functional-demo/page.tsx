@@ -20,10 +20,10 @@ export default function FunctionalPage() {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('token');
-    if (!token || !storedUser) { router.push('/login'); return; }
+    if (!token || !storedUser) { router.push('/demo-login'); return; }
     const parsedUser = JSON.parse(storedUser);
     if (!['FUNCTIONAL_TEAM', 'ADMIN', 'SUPER_ADMIN'].includes(parsedUser.role)) {
-      router.push('/dashboard'); return;
+      router.push('/dashboard-demo'); return;
     }
     setUser(parsedUser);
     fetchTickets(token);
