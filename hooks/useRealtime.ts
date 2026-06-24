@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Buat client hanya jika env vars tersedia (menghindari error saat Vercel build/prerender)
+const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey) 
+  : null;
 
 export function useRealtime(
   table: string,
@@ -12,7 +15,7 @@ export function useRealtime(
   filter?: string
 ) {
   useEffect(() => {
-    if (!supabaseUrl || !supabaseAnonKey) {
+    if (!supabase) {
       console.warn('Supabase URL or Anon Key missing. Realtime disabled.');
       return;
     }
