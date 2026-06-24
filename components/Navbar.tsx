@@ -62,25 +62,6 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
     }
   };
 
-  const switchRole = async (role: string) => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/auth/dev-switch-role', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ role }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        localStorage.setItem('token', data.data.token);
-        localStorage.setItem('user', JSON.stringify(data.data.user));
-        window.location.reload();
-      }
-    } catch (e) {
-      console.error('Failed to switch role', e);
-    }
-  };
-
   // Normalize SUPER_ADMIN to ADMIN for display
   const displayRole = user?.role === 'SUPER_ADMIN' ? 'ADMIN' : user?.role;
   const guide = ROLE_GUIDE[displayRole] || null;
@@ -93,43 +74,12 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
 
       <div className="flex items-center gap-3">
 
-        {/* Role Switcher + Guide */}
+        {/* Role Display + Guide */}
         <div className="flex items-center gap-1">
-          {user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2 border-dashed border-blue-400 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 h-9 px-3">
-                  <User className="w-4 h-4" />
-                  <span className="hidden sm:inline text-xs font-bold">Role: {displayRole || 'Switch'}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-52">
-                <DropdownMenuLabel className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Simulasi Role (Admin Only)</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {[
-                  { label: 'ADMIN', value: 'ADMIN', color: 'text-blue-700 bg-blue-50' },
-                  { label: 'FUNCTIONAL_TEAM', value: 'FUNCTIONAL_TEAM', color: 'text-indigo-700 bg-indigo-50' },
-                  { label: 'DEVELOPER', value: 'DEVELOPER', color: 'text-green-700 bg-green-50' },
-                  { label: 'QA', value: 'QA', color: 'text-amber-700 bg-amber-50' },
-                  { label: 'VIEWER', value: 'VIEWER', color: 'text-slate-700 bg-slate-50' },
-                ].map(r => (
-                  <DropdownMenuItem
-                    key={r.value}
-                    className={`cursor-pointer font-semibold text-xs flex items-center justify-between rounded-md mx-1 my-0.5 ${displayRole === r.label ? r.color + ' font-bold' : ''}`}
-                    onClick={() => switchRole(r.value)}
-                  >
-                    <span>{r.label}</span>
-                    {displayRole === r.label && <span className="text-[10px] text-slate-400">● Aktif</span>}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <div className="flex items-center gap-2 border border-slate-200 bg-slate-50 text-slate-700 h-9 px-3 rounded-md">
-              <User className="w-4 h-4 text-slate-500" />
-              <span className="hidden sm:inline text-xs font-bold">Role: {displayRole}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 border border-slate-200 bg-slate-50 text-slate-700 h-9 px-3 rounded-md">
+            <User className="w-4 h-4 text-slate-500" />
+            <span className="hidden sm:inline text-xs font-bold">Role: {displayRole}</span>
+          </div>
 
           {/* Role Guide Button */}
           <Button
