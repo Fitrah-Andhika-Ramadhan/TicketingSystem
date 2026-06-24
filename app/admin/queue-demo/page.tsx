@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { Filter, Download } from 'lucide-react';
+import { useRealtime } from '@/hooks/useRealtime';
 
 interface Ticket {
   id: string;
@@ -91,6 +92,13 @@ export default function AdminQueuePage() {
       setLoading(false);
     }
   };
+
+  useRealtime('Ticket', () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchTickets(token);
+    }
+  });
 
   const handleAssignTicket = async () => {
     if (!selectedTicket || !newAssignee) return;
@@ -310,7 +318,7 @@ export default function AdminQueuePage() {
                           <tr key={ticket.id} className="border-b hover:bg-gray-50">
                             <td className="py-3 px-4">
                               <a 
-                                href={`/tickets/${ticket.id}`}
+                                href={`/tickets-demo/${ticket.id}`}
                                 className="text-blue-600 hover:underline font-semibold"
                               >
                                 {ticket.ticketNumber}
@@ -354,7 +362,7 @@ export default function AdminQueuePage() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => router.push(`/tickets/${ticket.id}`)}
+                                onClick={() => router.push(`/tickets-demo/${ticket.id}`)}
                               >
                                 View
                               </Button>

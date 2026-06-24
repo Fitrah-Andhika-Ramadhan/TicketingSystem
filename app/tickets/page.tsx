@@ -8,6 +8,7 @@ import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { Plus, Filter, Search, Trash2, Eye, X, Calendar, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useRealtime } from '@/hooks/useRealtime';
 
 interface Ticket {
   id: string;
@@ -107,6 +108,13 @@ export default function TicketsPage() {
       fetchTickets(token);
     }
   }, [statusFilter, priorityFilter, searchQuery]);
+
+  useRealtime('Ticket', () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchTickets(token);
+    }
+  });
 
   const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();

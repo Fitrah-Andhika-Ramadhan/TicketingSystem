@@ -112,7 +112,14 @@ export default function LoginPage() {
         {/* RIGHT SIDE: Login Form */}
         <div className="w-full md:w-1/2 p-6 sm:p-8 md:p-12 flex flex-col justify-center bg-white relative">
           
-          <div className="mb-8">
+          <button
+            onClick={() => router.push('/landing')}
+            className="absolute top-6 right-6 md:top-8 md:right-8 flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-blue-600 transition"
+          >
+            ← Kembali ke Landing
+          </button>
+
+          <div className="mb-8 mt-4 md:mt-0">
             <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Welcome Back!</p>
             <h2 className="text-3xl font-serif font-bold text-slate-900 mb-2">Login Admin</h2>
             <p className="text-sm text-slate-500">Masuk ke dashboard monitoring VibeDesk.</p>
