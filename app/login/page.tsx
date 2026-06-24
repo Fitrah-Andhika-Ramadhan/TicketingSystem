@@ -13,6 +13,7 @@ export default function RealLoginPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('VIEWER');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -50,14 +51,22 @@ export default function RealLoginPage() {
         }
       } else {
         // Real Register Logic - Supabase or API
-        // For now, we mock the register success or use an existing endpoint if any
-        // Assuming we mock success and ask user to login, or login automatically
-        setTimeout(() => {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name, password, role }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
           toast.success('Registrasi berhasil! Silakan login (Terkoneksi ke Database).');
           setIsLogin(true);
-          setLoading(false);
-        }, 1000);
-        return; // wait for timeout
+        } else {
+          const errMsg = data.error || 'Registrasi gagal. Silakan periksa data Anda.';
+          setError(errMsg);
+          toast.error(errMsg);
+        }
       }
     } catch (err) {
       setError('Terjadi kesalahan koneksi database. Silakan coba lagi.');
@@ -147,21 +156,43 @@ export default function RealLoginPage() {
             )}
 
             {!isLogin && (
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Full Name</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-4 w-4 text-slate-400" />
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700">Full Name</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-4 w-4 text-slate-400" />
+                    </div>
+                    <Input
+                      type="text"
+                      placeholder="Nama Lengkap"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      disabled={loading}
+                      className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-all rounded-lg text-sm"
+                      required={!isLogin}
+                    />
                   </div>
-                  <Input
-                    type="text"
-                    placeholder="Nama Lengkap"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                </div>
+                
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700">Pilih Role / Peran</label>
+                  <select
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
                     disabled={loading}
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-all rounded-lg text-sm"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 text-slate-900 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-all rounded-lg text-sm appearance-none outline-none"
                     required={!isLogin}
-                  />
+                  >
+                    <option value="VIEWER">🌟 Pengguna Biasa (User) - Disarankan</option>
+                    <option value="FUNCTIONAL_TEAM">Functional Team (Support)</option>
+                    <option value="DEVELOPER">Developer (Teknis)</option>
+                    <option value="QA">Quality Assurance (QA)</option>
+                    <option value="ADMIN">Administrator</option>
+                  </select>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    *Pilih <strong>Pengguna Biasa</strong> jika Anda hanya ingin membuat laporan atau tiket kendala.
+                  </p>
                 </div>
               </div>
             )}
