@@ -48,7 +48,7 @@ export default function AdminUsersPage() {
     },
     {
       id: '2',
-      email: 'agent1@natagroup.com',
+      email: 'agent1@vibedesk.com',
       name: 'Functional QA',
       role: 'QA',
       department: 'Testing',
@@ -57,7 +57,7 @@ export default function AdminUsersPage() {
     },
     {
       id: '3',
-      email: 'agent2@natagroup.com',
+      email: 'agent2@vibedesk.com',
       name: 'Backend Dev',
       role: 'DEVELOPER',
       department: 'Engineering',
@@ -66,7 +66,7 @@ export default function AdminUsersPage() {
     },
     {
       id: '4',
-      email: 'viewer@natagroup.com',
+      email: 'viewer@vibedesk.com',
       name: 'Viewer User',
       role: 'VIEWER',
       department: 'Management',
