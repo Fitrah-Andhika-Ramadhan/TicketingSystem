@@ -60,8 +60,14 @@ export default function RealLoginPage() {
         const data = await response.json();
 
         if (data.success) {
-          toast.success('Registrasi berhasil! Silakan login (Terkoneksi ke Database).');
-          setIsLogin(true);
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          
+          toast.success('Registrasi Berhasil! Mengalihkan ke Dashboard.');
+          
+          setTimeout(() => {
+            router.push('/admin/dashboard');
+          }, 800);
         } else {
           const errMsg = data.error || 'Registrasi gagal. Silakan periksa data Anda.';
           setError(errMsg);
