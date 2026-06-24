@@ -20,6 +20,7 @@ export default function NewTicketPage() {
   const [priority, setPriority] = useState('MEDIUM');
   const [submitting, setSubmitting] = useState(false);
   const [attachment, setAttachment] = useState<string | null>(null);
+  const [fileToUpload, setFileToUpload] = useState<File | null>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -43,6 +44,8 @@ export default function NewTicketPage() {
       return;
     }
 
+    setFileToUpload(file);
+
     const reader = new FileReader();
     reader.onloadend = () => {
       setAttachment(reader.result as string);
@@ -57,6 +60,29 @@ export default function NewTicketPage() {
     setSubmitting(true);
     try {
       const token = localStorage.getItem('token');
+      let finalAttachmentUrl = attachment;
+
+      if (fileToUpload) {
+        try {
+          const { supabase } = await import('@/lib/supabase');
+          const fileExt = fileToUpload.name.split('.').pop();
+          const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+          const filePath = `ticket-attachments/${fileName}`;
+
+          const { data, error } = await supabase.storage.from('attachments').upload(filePath, fileToUpload);
+          
+          if (error) {
+            console.error('Supabase upload error:', error);
+            toast.error('Gagal upload ke Supabase, menggunakan mode base64 (fallback)');
+          } else {
+            const { data: publicUrlData } = supabase.storage.from('attachments').getPublicUrl(filePath);
+            finalAttachmentUrl = publicUrlData.publicUrl;
+          }
+        } catch (uploadErr) {
+          console.error('Storage upload exception:', uploadErr);
+        }
+      }
+
       const response = await fetch('/api/tickets', {
         method: 'POST',
         headers: {
@@ -68,7 +94,7 @@ export default function NewTicketPage() {
           description,
           category,
           priority,
-          attachments: attachment ? [attachment] : []
+          attachments: finalAttachmentUrl ? [finalAttachmentUrl] : []
         }),
       });
 
@@ -167,7 +193,10 @@ export default function NewTicketPage() {
                         <img src={attachment} alt="Preview" className="h-32 object-contain rounded" />
                         <button
                           type="button"
-                          onClick={() => setAttachment(null)}
+                          onClick={() => {
+                            setAttachment(null);
+                            setFileToUpload(null);
+                          }}
                           className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full p-1 shadow hover:bg-rose-600 transition"
                         >
                           <X className="w-3.5 h-3.5" />

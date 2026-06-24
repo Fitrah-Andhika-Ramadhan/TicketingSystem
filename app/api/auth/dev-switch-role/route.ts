@@ -24,6 +24,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 
+    // SECURITY FIX: Only allow ADMIN or SUPER_ADMIN to switch roles
+    if (decoded.role !== 'ADMIN' && decoded.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Only Admins can switch roles' }, { status: 403 });
+    }
+
     // Try to update DB, but fallback to static user if DB fails (e.g. demo mode)
     let updatedUser: any;
     try {
