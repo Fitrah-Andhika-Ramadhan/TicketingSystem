@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateToken } from '@/lib/auth';
+import { generateToken, createUser } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,16 +14,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Mock user creation - just return success
-    const user = {
-      id: String(Date.now()),
+    // Real user creation in Supabase via Prisma
+    const user = await createUser({
       email,
       name,
+      password,
       role,
       department,
-      phoneNumber,
-      isActive: true,
-    };
+      phoneNumber
+    });
 
     const token = generateToken({
       userId: user.id,
