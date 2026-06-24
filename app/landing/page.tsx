@@ -30,7 +30,7 @@ export default function Landing() {
   const [content, setContent] = useState<any>(null);
   const [sysSettings, setSysSettings] = useState<any>({
     email: 'support@fitrahpro.com',
-    phone: '+62 (21) 567-8900',
+    phone: '081289886013',
     location: 'Jakarta, Indonesia'
   });
   

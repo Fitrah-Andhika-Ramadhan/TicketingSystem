@@ -7,7 +7,7 @@ const defaultSettings = {
   location: 'Jakarta, Indonesia',
   companyName: 'FitrahPro',
   email: 'support@fitrahpro.com',
-  phone: '+62 (21) 567-8900',
+  phone: '081289886013',
   budgetAlertThreshold: 85,
   delayAlertDays: 5,
   notificationsEnabled: true,
