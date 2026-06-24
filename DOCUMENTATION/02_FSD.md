@@ -1,5 +1,5 @@
 # FUNCTIONAL SPECIFICATION DOCUMENT (FSD)
-## Nata Group - Metro Paragon Residence Monitoring System
+## VibeDesk - Ticketing & IT Support Management System
 
 ---
 
@@ -35,113 +35,78 @@
 ```sql
 - id (UUID, PK)
 - email (VARCHAR, UNIQUE)
-- password_hash (VARCHAR)
-- full_name (VARCHAR)
-- role (ENUM: admin, manager, supervisor, viewer, finance)
+- password (VARCHAR)
+- name (VARCHAR)
+- role (ENUM: SUPER_ADMIN, ADMIN, FUNCTIONAL_TEAM, DEVELOPER, QA, VIEWER)
 - department (VARCHAR)
+- phone_number (VARCHAR)
 - is_active (BOOLEAN)
 - created_at (TIMESTAMP)
 - updated_at (TIMESTAMP)
 ```
 
-#### projects
+#### tickets
 ```sql
 - id (UUID, PK)
-- name (VARCHAR)
+- ticket_number (VARCHAR, UNIQUE)
+- title (VARCHAR)
 - description (TEXT)
-- location (VARCHAR)
-- start_date (DATE)
-- planned_end_date (DATE)
-- actual_end_date (DATE)
-- total_budget (DECIMAL)
-- status (ENUM: planning, active, completed, on-hold)
-- created_at (TIMESTAMP)
-- updated_at (TIMESTAMP)
-```
-
-#### blocks
-```sql
-- id (UUID, PK)
-- project_id (UUID, FK)
-- block_name (VARCHAR)
-- unit_count (INTEGER)
-- description (TEXT)
-- status (ENUM: planning, foundation, structure, finishing, completed)
-- completion_percentage (INTEGER: 0-100)
-- planned_start (DATE)
-- planned_end (DATE)
-- created_at (TIMESTAMP)
-- updated_at (TIMESTAMP)
-```
-
-#### phases
-```sql
-- id (UUID, PK)
-- project_id (UUID, FK)
-- phase_name (VARCHAR)
-- phase_number (INTEGER)
-- description (TEXT)
-- status (ENUM: pending, in-progress, completed, delayed)
-- planned_start (DATE)
-- planned_end (DATE)
-- actual_start (DATE)
-- actual_end (DATE)
-- created_at (TIMESTAMP)
-```
-
-#### milestones
-```sql
-- id (UUID, PK)
-- phase_id (UUID, FK)
-- milestone_name (VARCHAR)
-- description (TEXT)
-- status (ENUM: pending, in-progress, completed, delayed)
-- planned_date (DATE)
-- actual_date (DATE)
-- priority (ENUM: critical, high, medium, low)
+- category (ENUM: BUG, FEATURE_REQUEST, MAINTENANCE, ACCESS_ISSUE, OTHER)
+- priority (ENUM: CRITICAL, HIGH, MEDIUM, LOW)
+- status (ENUM: PENDING_APPROVAL, APPROVED, OPEN, IN_PROGRESS, IN_REVIEW, RESOLVED, CLOSED, REJECTED)
+- progress (INTEGER: 0-100)
+- solution (TEXT)
+- recommendation (TEXT)
+- due_date (TIMESTAMP)
+- created_by (UUID, FK users)
 - assigned_to (UUID, FK users)
 - created_at (TIMESTAMP)
-```
-
-#### budget_lines
-```sql
-- id (UUID, PK)
-- project_id (UUID, FK)
-- category (VARCHAR: materials, labor, equipment, others)
-- description (VARCHAR)
-- allocated_amount (DECIMAL)
-- spent_amount (DECIMAL)
-- status (ENUM: pending, in-progress, completed)
-- created_at (TIMESTAMP)
 - updated_at (TIMESTAMP)
 ```
 
-#### documents
+#### comments
 ```sql
 - id (UUID, PK)
-- project_id (UUID, FK)
-- file_name (VARCHAR)
-- file_path (VARCHAR)
-- file_type (VARCHAR: spr, drawing, report, other)
-- document_version (INTEGER)
-- uploaded_by (UUID, FK users)
-- uploaded_at (TIMESTAMP)
-- is_approved (BOOLEAN)
-- approved_by (UUID, FK users)
-- approved_at (TIMESTAMP)
-- metadata (JSONB)
+- ticket_id (UUID, FK tickets)
+- user_id (UUID, FK users)
+- content (TEXT)
+- is_internal (BOOLEAN)
+- created_at (TIMESTAMP)
 ```
 
-#### metrics_data
+#### ticket_history
 ```sql
 - id (UUID, PK)
-- project_id (UUID, FK)
-- metric_type (VARCHAR: temperature, safety_incidents, equipment_status, workers_count, etc)
-- metric_value (VARCHAR/NUMERIC)
-- recorded_by (VARCHAR)
-- recorded_at (TIMESTAMP)
-- source (VARCHAR: sensor, manual_input, api)
-- metadata (JSONB)
+- ticket_id (UUID, FK tickets)
+- action (VARCHAR)
+- old_value (VARCHAR)
+- new_value (VARCHAR)
+- changed_by (UUID, FK users)
+- changed_at (TIMESTAMP)
+```
+
+#### attachments
+```sql
+- id (UUID, PK)
+- ticket_id (UUID, FK tickets)
+- file_name (VARCHAR)
+- file_url (VARCHAR)
+- file_size (INTEGER)
+- file_type (VARCHAR)
+- uploaded_by (UUID, FK users)
+- uploaded_at (TIMESTAMP)
+```
+
+#### system_settings
+```sql
+- id (VARCHAR, PK)
+- phone (VARCHAR)
+- email (VARCHAR)
+- address (TEXT)
+- landing_hero_title (VARCHAR)
+- landing_hero_subtitle (TEXT)
+- created_at (TIMESTAMP)
+- updated_at (TIMESTAMP)
 ```
 
 #### audit_logs
@@ -217,162 +182,91 @@ GET    /api/auth/me
 **Feature**: Executive Dashboard dengan KPI Overview
 
 **Key Metrics Displayed**:
-- Overall project completion (%)
-- Budget status (spent vs allocated)
-- Timeline status (on-track/delayed)
-- Active phases count
-- Total units/blocks
-- Current active workers
-- Pending approvals count
-- Recent alerts/notifications
+- Total Tickets
+- Open / Pending Tickets
+- In Progress Tickets
+- Resolved / Closed Tickets
+- Critical Tickets Alert
+- SLA Compliance
 
 **Components**:
-- KPI Cards (4x2 grid)
-- Progress bar chart
-- Timeline visualization
-- Recent activity feed
-- Alerts & notifications widget
+- KPI Cards (5 grid)
+- Priority Distribution (Pie Chart)
+- Ticket Category Distribution (Bar Chart)
+- Tickets Over Time (Line Chart)
+- Recent Tickets Table
 
-**Real-time Updates**: Via WebSocket, max 30-second refresh
+**Real-time Updates**: Via API polling / WebSockets
 
 ---
 
-### 3.3 PROJECT MONITORING
+### 3.3 TICKETING PIPELINE
 
-**Feature**: Real-time Progress Tracking
+**Feature**: End-to-end Ticket Management
 
 **Sections**:
 
-#### A. Progress Overview
-- Project-wide progress meter (%)
-- Block-by-block breakdown
-- Phase status summary
-- Visual timeline
+#### A. Ticket Triage (Functional Team)
+- Pending Approval list
+- Validation and Assignment to Developer
+- Priority adjustment
 
-#### B. Block Management
-- List view dengan filtering & sorting
-- Card view dengan progress indicators
-- Drill-down untuk detail per block
-- Photo gallery per block
-- Worker assignment view
+#### B. Developer / IT Support Workspace
+- Assigned tickets tracking
+- Progress update (0-100%)
+- Solution formulation
+- Marking ticket as RESOLVED
 
-#### C. Phase & Milestone Tracking
-- Gantt chart untuk phases
-- Milestone checklist
-- Status indicators (color-coded)
-- Completion percentage per phase
-- Historical timeline view
+#### C. QA Workspace
+- Reviewing RESOLVED tickets
+- Testing and Validation
+- Marking ticket as CLOSED or REJECTED (back to Developer)
 
 **Filters Available**:
 - By status
 - By priority
-- By responsible person
+- By category
+- By assignee
 - By date range
-- By block/phase
 
 ---
 
-### 3.4 FINANCIAL ANALYTICS
+### 3.4 COLLABORATION & COMMUNICATION
 
-**Feature**: Budget Monitoring & Financial Reporting
+**Feature**: Komentar dan Rekam Jejak Tiket
 
 **Sections**:
 
-#### A. Budget Dashboard
-- Budget vs Actual chart (bar/line chart)
-- Category breakdown pie chart
-- Variance analysis (red/yellow/green indicators)
-- Remaining budget projection
-- Cost per unit calculation
+#### A. Comments Thread
+- Public comments (visible to reporter)
+- Internal notes (visible to IT team only)
+- File attachments
 
-#### B. Spending Report
-- Detailed transaction list
-- Monthly/quarterly aggregation
-- Department-wise breakdown
-- Supplier/vendor analysis
-- Cash flow projection
-
-#### C. Variance Analysis
-- Budget deviation alerts (>5% threshold)
-- Root cause analysis
-- Forecast vs Actual
-- Trend analysis
-
-**Export Options**: PDF, Excel, CSV
+#### B. Audit Trail (History)
+- Tracking setiap perubahan status
+- Log perubahan priority / assignee
+- Timestamp dan nama user pengubah
 
 ---
 
-### 3.5 DOCUMENT MANAGEMENT (SPR)
+### 3.5 DEMO PORTAL (ISOLATED ENVIRONMENT)
 
-**Feature**: Centralized Document Storage & Versioning
+**Feature**: Lingkungan khusus untuk mendemonstrasikan sistem tanpa merusak data asli.
 
 **Sections**:
 
-#### A. Document Upload
-- Drag-drop upload interface
-- Multi-file support
-- Document categorization (SPR, drawing, report, other)
-- Automatic metadata extraction
-- File preview (PDF, images, documents)
+#### A. Demo Login
+- Preset credentials (`demo@fitrahpro.com`)
+- Redirect otomatis ke `/admin/dashboard-demo`
 
-#### B. Document Library
-- Tree view organization by type/phase
-- Search functionality (full-text search)
-- Filter by:
-  - Document type
-  - Upload date
-  - Status (approved/pending)
-  - Responsible person
+#### B. Mock API Bypasses
+- Ticket updates (PATCH) di-mock untuk user ID `demo-1`
+- Mock fetching (GET) untuk menghindari error RecordNotFound
+- Role Simulator (`dev-switch-role`) untuk simulasi role berbeda (QA, Developer, Functional) di dalam Demo portal.
 
-#### C. Version Control
-- Version history tracking
-- Compare versions (diff view)
-- Rollback capability
-- Change log per document
-
-#### D. Approval Workflow
-- Request approval functionality
-- Approval status tracking
-- Comment & annotation
-- Sign-off capability
-- Audit trail
-
-**Access Control**: 
-- Public documents (shared view)
-- Private documents (role-based)
-- Document expiration alerts
-
----
-
-### 3.6 LIVE DATA & MONITORING
-
-**Feature**: Real-time Data from Field
-
-**Data Sources**:
-- IoT sensors (temperature, humidity, etc.)
-- Manual field input forms
-- Third-party API integrations
-- Photo uploads from field
-
-**Metrics Tracked**:
-- Environmental data (temperature, weather)
-- Safety incidents count
-- Equipment status & utilization
-- Worker count on-site
-- Material delivery status
-
-**Alert System**:
-- Threshold-based alerts
-- Anomaly detection
-- Email notifications untuk critical alerts
-- Alert dashboard dengan filtering
-- Alert history & resolution tracking
-
-**Real-time Visualization**:
-- Live metric dashboard
-- Time-series charts
-- Gauges & indicators
-- Map view untuk lokasi-specific data
+#### C. System Boundaries
+- Operasi create user, update global settings dicegah atau disimulasikan untuk user Demo.
+- Tampilan `Dashboard Demo` menggunakan data statis yang impresif (1000+ tiket) untuk menampilkan kapabilitas UI analitik.
 
 ---
 

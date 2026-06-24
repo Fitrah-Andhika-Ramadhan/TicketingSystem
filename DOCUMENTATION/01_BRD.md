@@ -1,25 +1,25 @@
 # BUSINESS REQUIREMENTS DOCUMENT (BRD)
-## Nata Group - Metro Paragon Residence Project Monitoring System
+## VibeDesk - Ticketing & IT Support Management System
 
 ---
 
 ## 1. EXECUTIVE SUMMARY
 
-**Project Name:** Metro Paragon Residence Project Monitoring & Management System  
-**Client:** Nata Group  
-**Project Type:** Real-time Construction & Project Management Web Platform  
-**Objective:** Membangun platform web yang mengintegrasikan monitoring real-time progress pembangunan, analytics biaya, timeline milestone, manajemen dokumen SPR, dan live data dari lapangan.
+**Project Name:** VibeDesk IT Support & Ticketing System  
+**Client:** Internal / Public Demo  
+**Project Type:** Real-time Ticketing, Support & Project Management Web Platform  
+**Objective:** Membangun platform web terpadu untuk manajemen tiket IT, dukungan operasional (support), monitoring SLA, manajemen pengetahuan (knowledge base), dan pelaporan (reporting) secara real-time. Terdapat lingkungan "Demo" tersendiri untuk menampilkan fitur-fitur kepada calon klien tanpa menyentuh data asli.
 
 ---
 
 ## 2. BUSINESS OBJECTIVES
 
 ### Primary Goals:
-1. **Real-time Project Visibility**: Memberikan akses real-time kepada management untuk monitoring progress pembangunan
-2. **Data-Driven Decision Making**: Menggunakan analytics untuk mengoptimalkan keputusan bisnis
-3. **Document Management**: Centralized storage dan tracking dokumen SPR (Surat Perintah Rancang/Technical Drawings)
-4. **Budget Control**: Monitoring pengeluaran vs budget allocation secara real-time
-5. **Stakeholder Communication**: Dashboard yang dapat dibagikan dengan stakeholders
+1. **Efficient Ticket Management**: Memudahkan penerimaan, tracking, dan resolusi tiket kendala IT.
+2. **SLA Monitoring**: Memastikan setiap tiket diselesaikan sesuai batas waktu (SLA) yang disepakati.
+3. **Demo & Production Environment Separation**: Menyediakan portal Demo (Mock Data) yang aman tanpa mengganggu Production DB.
+4. **Knowledge Base Management**: Centralized repository untuk solusi dari kendala yang sering terjadi.
+5. **Stakeholder Analytics**: Dashboard pelaporan real-time terkait performa tim support dan volume tiket.
 
 ### Secondary Goals:
 - Meningkatkan efisiensi operasional
@@ -35,18 +35,18 @@
 
 #### A. DASHBOARD & MONITORING
 - Dashboard overview dengan KPI utama:
-  - Progress pembangunan (% completion)
-  - Timeline status (on-track, delayed, ahead)
-  - Budget status (vs allocation)
-  - Jumlah unit/blok dalam progress
-  - Active workers/resources count
+  - Jumlah Tiket (Open, In Progress, Resolved, Pending)
+  - SLA Compliance Rate
+  - Kinerja Tim (Response time & Resolution time)
+  - Ticket distribution by category/priority
+- Role Switcher khusus lingkungan Demo (Simulasi Role)
 
-#### B. PROGRESS TRACKING
-- Visual progress meter per blok/fase
-- Milestone timeline dengan status (completed, in-progress, pending)
-- Photo documentation dari lapangan
-- Phase-based progress tracking
-- Historical trend analysis
+#### B. TICKETING PIPELINE & TRIAGE
+- Visualisasi pipeline tiket (Kanban / List view)
+- Prioritization (Critical, High, Medium, Low)
+- Auto-assignment / Manual assignment tiket
+- Update status dan progress resolution
+- Komentar dan komunikasi internal/eksternal pada tiket
 
 #### C. FINANCIAL ANALYTICS
 - Budget vs Actual spending dashboard
@@ -55,12 +55,11 @@
 - Variance analysis (budget deviation alerts)
 - Cash flow projection
 
-#### D. DOKUMEN MANAGEMENT (SPR)
-- Upload/categorize technical documents
-- Version control untuk dokumen
-- Access control per role
-- Search & filter functionality
-- Document approval workflow
+#### D. DEMO & PRODUCTION ISOLATION
+- Routing khusus Demo (e.g. `/demo-login`, `/admin/dashboard-demo`, `/functional`)
+- Mock Database Bypasses pada API untuk user Demo (ID `demo-1`)
+- Kemampuan mengubah role simulasi (`dev-switch-role`)
+- Reset state data demo tanpa menghapus database utama
 
 #### E. LIVE DATA INTEGRATION
 - Data sources: Sensors, IoT devices, field reports
@@ -85,30 +84,30 @@
 
 ## 4. USER PERSONAS & REQUIREMENTS
 
-### 1. Project Director/Admin
-- **Goals**: Full visibility, strategic decision making
-- **Needs**: Complete dashboard, analytics, reports, user management
-- **Access**: All features, full data access
+### 1. Super Admin / Admin
+- **Goals**: Mengelola keseluruhan sistem dan user, melihat metrik tingkat tinggi
+- **Needs**: Complete dashboard, user management, system settings, global queue
+- **Access**: Full access to all features
 
-### 2. Project Manager
-- **Goals**: Day-to-day monitoring, timeline management
-- **Needs**: Progress tracking, milestone management, team coordination
-- **Access**: Dashboard, progress, some analytics, team management
+### 2. Functional Team (Helpdesk)
+- **Goals**: Triage dan analisis kendala dari user
+- **Needs**: Ticket queue, assignment tools, initial response tracking
+- **Access**: Panel Triage, tiket pending & active
 
-### 3. Site Supervisor
-- **Goals**: Field coordination, daily progress update
-- **Needs**: Photo upload, daily reports, worker tracking
-- **Access**: Progress input, photo upload, basic dashboard view
+### 3. Developer / IT Support
+- **Goals**: Menyelesaikan masalah teknis yang dilaporkan
+- **Needs**: Code access, ticket details, update progress/status
+- **Access**: Assigned tickets, update progress, internal notes
 
-### 4. Finance Manager
-- **Goals**: Budget monitoring, financial reporting
-- **Needs**: Financial analytics, spending reports, variance analysis
-- **Access**: Financial section, budget data, reports
+### 4. Quality Assurance (QA)
+- **Goals**: Memverifikasi penyelesaian tiket
+- **Needs**: Review resolved tickets, test cases, reopen tickets if failed
+- **Access**: Review dashboard, QA approval workflow
 
-### 5. External Stakeholders (Investors/Partners)
-- **Goals**: Project overview for decision making
-- **Needs**: High-level dashboard, key metrics, reports
-- **Access**: Limited dashboard view, no sensitive data
+### 5. Viewer / End User
+- **Goals**: Mengajukan tiket baru dan memantau status
+- **Needs**: Ticket submission form, personal ticket tracking
+- **Access**: Limited dashboard, own tickets only
 
 ---
 
@@ -135,15 +134,13 @@
 ## 6. DATA MODEL OVERVIEW
 
 ### Core Entities:
-- **Projects**: Metro Paragon Residence
-- **Blocks/Units**: Individual blocks/units dalam project
-- **Phases**: Pembagian fase konstruksi
-- **Milestones**: Key achievement targets
-- **Budget Lines**: Budget allocation per kategori
-- **Documents**: SPR dan dokumen teknis
-- **Users**: Team members dengan roles
-- **Metrics/Data Points**: Real-time measurement data
-- **Audit Logs**: Activity tracking
+- **Tickets**: Induk data masalah/kendala
+- **Users**: Admin, Functional Team, Developer, QA, Viewer
+- **Comments**: Diskusi dalam tiket (Public/Internal)
+- **Ticket History**: Audit trail perubahan tiket
+- **Attachments**: File terkait tiket
+- **System Settings**: Konfigurasi web seperti nomor telepon, teks landing page
+- **Knowledge Base**: Artikel panduan dan solusi (Future)
 
 ---
 
