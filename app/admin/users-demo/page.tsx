@@ -35,8 +35,48 @@ export default function AdminUsersPage() {
 
   const roles = ['SUPER_ADMIN', 'ADMIN', 'FUNCTIONAL_TEAM', 'DEVELOPER', 'QA', 'VIEWER'];
 
+  // Mock users data
+  const mockUsers: User[] = [
+    {
+      id: '1',
+      email: 'fitrahramdhan31@gmail.com',
+      name: 'Admin User',
+      role: 'SUPER_ADMIN',
+      department: 'Management',
+      isActive: true,
+      lastLogin: new Date().toISOString(),
+    },
+    {
+      id: '2',
+      email: 'agent1@vibedesk.com',
+      name: 'Functional QA',
+      role: 'QA',
+      department: 'Testing',
+      isActive: true,
+      lastLogin: new Date(Date.now() - 3600000).toISOString(),
+    },
+    {
+      id: '3',
+      email: 'agent2@vibedesk.com',
+      name: 'Backend Dev',
+      role: 'DEVELOPER',
+      department: 'Engineering',
+      isActive: true,
+      lastLogin: new Date(Date.now() - 7200000).toISOString(),
+    },
+    {
+      id: '4',
+      email: 'viewer@vibedesk.com',
+      name: 'Viewer User',
+      role: 'VIEWER',
+      department: 'Management',
+      isActive: true,
+      lastLogin: new Date(Date.now() - 86400000).toISOString(),
+    },
+  ];
+
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuth = () => {
       const storedUser = localStorage.getItem('user');
       const token = localStorage.getItem('token');
 
@@ -52,24 +92,8 @@ export default function AdminUsersPage() {
       }
 
       setUser(parsedUser);
-      
-      try {
-        const response = await fetch('/api/users', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (data.success) {
-          setUsers(data.data);
-        } else {
-          swal.fire('Error', data.error || 'Failed to fetch users', 'error');
-        }
-      } catch (err) {
-        swal.fire('Error', 'Connection error', 'error');
-      } finally {
-        setLoading(false);
-      }
+      setUsers(mockUsers);
+      setLoading(false);
     };
 
     checkAuth();

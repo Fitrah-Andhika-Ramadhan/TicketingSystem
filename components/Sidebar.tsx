@@ -147,9 +147,17 @@ export default function Sidebar({ user }: SidebarProps) {
 
   const NavItem = ({ item }: { item: typeof sections[0][0] }) => {
     const Icon = item.icon;
-    const active = isActive(item.href);
+    const isDemoUser = user?.email === 'demo@fitrahpro.com';
+    let targetHref = item.href;
+    
+    // Append -demo to href if it's a demo user and doesn't already have it
+    if (isDemoUser && !targetHref.endsWith('-demo') && targetHref !== '/') {
+      targetHref = `${targetHref}-demo`;
+    }
+
+    const active = isActive(targetHref);
     return (
-      <Link href={item.href} onClick={() => setIsOpen(false)}>
+      <Link href={targetHref} onClick={() => setIsOpen(false)}>
         <div className={`group/item relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 overflow-hidden w-60 cursor-pointer ${
           active
             ? 'bg-white/20 text-white shadow-sm'

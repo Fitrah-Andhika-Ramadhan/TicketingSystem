@@ -33,10 +33,14 @@ export default function AdminQueuePage() {
   const [newAssignee, setNewAssignee] = useState('');
   const [newStatus, setNewStatus] = useState('');
 
-  const [agents, setAgents] = useState<{id: string, name: string}[]>([]);
+  const agents = [
+    { id: '1', name: 'Admin User' },
+    { id: '2', name: 'Support Agent 1' },
+    { id: '3', name: 'Support Agent 2' },
+  ];
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuth = () => {
       const storedUser = localStorage.getItem('user');
       const token = localStorage.getItem('token');
 
@@ -53,20 +57,6 @@ export default function AdminQueuePage() {
 
       setUser(parsedUser);
       fetchTickets(token);
-      
-      try {
-        const res = await fetch('/api/users', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const data = await res.json();
-        if (data.success) {
-          // Filter out users that can be assigned tickets (e.g. not viewers)
-          const validAgents = data.data.filter((u: any) => u.role !== 'VIEWER');
-          setAgents(validAgents);
-        }
-      } catch (err) {
-        console.error('Failed to fetch agents:', err);
-      }
     };
 
     checkAuth();

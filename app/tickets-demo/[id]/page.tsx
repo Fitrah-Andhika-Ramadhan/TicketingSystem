@@ -8,7 +8,6 @@ import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { ArrowLeft, Send, Clock, User, Calendar, History, MessageSquare, ShieldAlert, CheckCircle2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useRealtime } from '@/hooks/useRealtime';
 
 export default function TicketDetailPage() {
   const router = useRouter();
@@ -51,20 +50,6 @@ export default function TicketDetailPage() {
 
     checkAuth();
   }, [router]);
-
-  useRealtime('Ticket', (payload) => {
-    if (payload.new && payload.new.id === ticketId) {
-      const token = localStorage.getItem('token');
-      if (token) fetchTicket(token, user);
-    }
-  });
-
-  useRealtime('TicketComment', (payload) => {
-    if (payload.new && payload.new.ticketId === ticketId) {
-      const token = localStorage.getItem('token');
-      if (token) fetchTicket(token, user);
-    }
-  });
 
   const fetchTicket = async (token: string, currentUser?: any) => {
     try {
