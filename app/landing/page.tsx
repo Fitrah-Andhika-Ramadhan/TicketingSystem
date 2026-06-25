@@ -296,7 +296,7 @@ export default function Landing() {
 
           {/* Interactive Showcase Slider */}
           <div 
-            className="relative max-w-5xl mx-auto aspect-video md:aspect-[16/9] rounded-2xl border border-slate-100 bg-slate-50/30 overflow-hidden shadow-xl shadow-slate-100/70 group"
+            className="relative max-w-5xl mx-auto aspect-video md:aspect-[16/9] rounded-2xl border border-slate-100 bg-slate-50/30 overflow-hidden shadow-xl shadow-slate-100/70 group hover:shadow-2xl hover:border-slate-200 transition-all duration-500"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -319,7 +319,7 @@ export default function Landing() {
 
                   {/* Visual UI Grid Mock */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
-                    <div className="bg-white border border-slate-100/80 p-5 rounded-2xl space-y-3 shadow-sm hover:shadow-md transition-all duration-200">
+                    <div className="bg-white border border-slate-100/80 p-5 rounded-2xl space-y-3 shadow-sm hover:shadow-xl hover:-translate-y-2 hover:border-blue-100 cursor-default transition-all duration-300">
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tiket Masuk</p>
                       <div className="text-3xl font-extrabold text-slate-800">1,482</div>
                       <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -328,7 +328,7 @@ export default function Landing() {
                       <p className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">↑ 12% <span className="text-slate-400 font-normal">dari minggu lalu</span></p>
                     </div>
 
-                    <div className="bg-white border border-slate-100/80 p-5 rounded-2xl space-y-3 shadow-sm hover:shadow-md transition-all duration-200">
+                    <div className="bg-white border border-slate-100/80 p-5 rounded-2xl space-y-3 shadow-sm hover:shadow-xl hover:-translate-y-2 hover:border-blue-100 cursor-default transition-all duration-300">
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tingkat Resolusi</p>
                       <div className="text-3xl font-extrabold text-slate-800">94.2%</div>
                       <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -337,7 +337,7 @@ export default function Landing() {
                       <p className="text-[10px] text-slate-500 font-bold">Sesuai target SLA 90%</p>
                     </div>
 
-                    <div className="bg-white border border-slate-100/80 p-5 rounded-2xl space-y-3 shadow-sm hover:shadow-md transition-all duration-200">
+                    <div className="bg-white border border-slate-100/80 p-5 rounded-2xl space-y-3 shadow-sm hover:shadow-xl hover:-translate-y-2 hover:border-blue-100 cursor-default transition-all duration-300">
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Rata-rata Respon</p>
                       <div className="text-3xl font-extrabold text-slate-800">1m 48s</div>
                       <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -369,7 +369,7 @@ export default function Landing() {
 
                   {/* SLA Alert List Visual */}
                   <div className="space-y-3.5 my-auto max-w-xl mx-auto w-full">
-                    <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-center justify-between shadow-sm hover:shadow hover:-translate-y-0.5 transition-all duration-200">
+                    <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-rose-100 transition-all duration-300 cursor-default">
                       <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-xl bg-rose-50 text-rose-600">
                           <AlertCircle className="w-5 h-5" />
@@ -382,7 +382,7 @@ export default function Landing() {
                       <span className="text-[10px] px-3 py-1.5 rounded-lg bg-rose-50 border border-rose-100 text-rose-600 font-bold font-mono shadow-sm">12 mnt tersisa</span>
                     </div>
 
-                    <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-center justify-between shadow-sm hover:shadow hover:-translate-y-0.5 transition-all duration-200">
+                    <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-amber-100 transition-all duration-300 cursor-default">
                       <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600">
                           <Clock className="w-5 h-5" />
@@ -422,7 +422,7 @@ export default function Landing() {
                       <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-md shadow-blue-500/10">
                         A
                       </div>
-                      <div className="flex-1 bg-white border border-slate-100 rounded-2xl rounded-tl-none p-4 shadow-sm space-y-1">
+                      <div className="flex-1 bg-white border border-slate-100 rounded-2xl rounded-tl-none p-4 shadow-sm space-y-1 hover:shadow-md hover:-translate-y-0.5 hover:border-slate-200 transition-all duration-300 cursor-default">
                         <div className="flex justify-between items-center">
                           <span className="text-xs font-bold text-slate-800">Admin User</span>
                           <span className="text-[9px] text-slate-400">10:45 AM</span>
@@ -435,7 +435,7 @@ export default function Landing() {
                       <div className="w-8 h-8 rounded-xl bg-blue-500 flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-md shadow-blue-500/10">
                         T
                       </div>
-                      <div className="flex-1 bg-blue-50/50 border border-blue-100/50 rounded-2xl rounded-tl-none p-4 shadow-sm space-y-1">
+                      <div className="flex-1 bg-blue-50/50 border border-blue-100/50 rounded-2xl rounded-tl-none p-4 shadow-sm space-y-1 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 transition-all duration-300 cursor-default">
                         <div className="flex justify-between items-center">
                           <span className="text-xs font-bold text-blue-700">Tim Contractor</span>
                           <span className="text-[9px] text-blue-400 font-mono">Internal</span>
