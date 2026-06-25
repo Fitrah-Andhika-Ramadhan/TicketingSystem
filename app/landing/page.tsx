@@ -499,7 +499,7 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Ticket Management */}
-            <div className="rounded-2xl border border-slate-100 bg-white p-6 space-y-4 shadow-sm hover:shadow-md transition duration-300">
+            <div className="rounded-2xl border border-slate-100 bg-white p-6 space-y-4 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-default group">
               <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                 <Ticket className="w-6 h-6" />
               </div>
@@ -515,7 +515,7 @@ export default function Landing() {
             </div>
 
             {/* Collaboration */}
-            <div className="rounded-2xl border border-slate-100 bg-white p-6 space-y-4 shadow-sm hover:shadow-md transition duration-300">
+            <div className="rounded-2xl border border-slate-100 bg-white p-6 space-y-4 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-default group">
               <div className="h-12 w-12 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center">
                 <MessageSquare className="w-6 h-6" />
               </div>
@@ -531,7 +531,7 @@ export default function Landing() {
             </div>
 
             {/* Performance SLA */}
-            <div className="rounded-2xl border border-slate-100 bg-white p-6 space-y-4 shadow-sm hover:shadow-md transition duration-300">
+            <div className="rounded-2xl border border-slate-100 bg-white p-6 space-y-4 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-default group">
               <div className="h-12 w-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                 <Clock className="w-6 h-6" />
               </div>
@@ -576,7 +576,7 @@ export default function Landing() {
                 description: 'Admin memantau kualitas layanan, waktu penyelesaian, dan kepuasan pelanggan secara real-time.'
               }
             ].map((item, i) => (
-              <div key={i} className="text-left relative space-y-3.5">
+              <div key={i} className="text-left relative space-y-3.5 p-6 rounded-3xl border border-transparent hover:border-slate-100 hover:bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-default">
                 <div className="text-5xl font-black text-blue-500/10 font-mono tracking-wider">{item.step}</div>
                 <h3 className="text-xl font-bold text-slate-900">{item.title}</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">{item.description}</p>
