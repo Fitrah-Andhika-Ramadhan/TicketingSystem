@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue } from 'framer-motion';
 
 export default function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
@@ -10,9 +10,8 @@ export default function CustomCursor() {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
-  const springConfig = { damping: 30, stiffness: 600 };
-  const cursorXSpring = useSpring(cursorX, springConfig);
-  const cursorYSpring = useSpring(cursorY, springConfig);
+  // User requested "normal speed like native mouse", so we remove the spring delay
+  // and bind directly to the raw X/Y coordinates for zero lag.
 
   useEffect(() => {
     // Hide default cursor on body
@@ -62,8 +61,8 @@ export default function CustomCursor() {
     <motion.div
       className="fixed top-0 left-0 z-[999999] pointer-events-none select-none flex items-center justify-center"
       style={{
-        x: cursorXSpring,
-        y: cursorYSpring,
+        x: cursorX,
+        y: cursorY,
         opacity: isVisible ? 1 : 0,
         translateX: '-10%', // Adjusting visual hotspot roughly to the pointing finger
         translateY: '-10%',
