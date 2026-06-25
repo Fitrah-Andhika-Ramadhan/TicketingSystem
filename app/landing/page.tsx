@@ -22,6 +22,7 @@ import {
   Linkedin,
   Github
 } from 'lucide-react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function Landing() {
   const [email, setEmail] = useState('');
@@ -161,6 +162,11 @@ export default function Landing() {
             <a href="#slider-showcase" className="hover:text-blue-600 transition-all duration-200 hover:-translate-y-[1px]">Showcase</a>
             <a href="#how-it-works" className="hover:text-blue-600 transition-all duration-200 hover:-translate-y-[1px]">How It Works</a>
             <a href="#contact" className="hover:text-blue-600 transition-all duration-200 hover:-translate-y-[1px]">Contact</a>
+            
+            <div className="mx-2 flex items-center">
+              <LanguageSwitcher />
+            </div>
+
             {isLoggedIn ? (
               <Link href="/dashboard">
                 <Button className="bg-blue-600 hover:bg-blue-700 border-0 text-white font-semibold rounded-lg shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-200 active:scale-[0.98]">
