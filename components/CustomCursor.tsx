@@ -15,6 +15,13 @@ export default function CustomCursor() {
   // and bind directly to the raw X/Y coordinates for zero lag.
 
   useEffect(() => {
+    // Check if the device has a touch screen (mobile)
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    if (isTouchDevice) {
+      return; // Do not initialize custom cursor on mobile to prevent lag/choppiness
+    }
+
     // Hide default cursor on body
     document.documentElement.style.cursor = 'none';
 
@@ -42,9 +49,12 @@ export default function CustomCursor() {
     };
   }, [cursorX, cursorY, isVisible]);
 
+  // Hide the element on small screens completely via Tailwind as a fallback
+
+
   return (
     <motion.div
-      className="fixed top-0 left-0 z-[999999] pointer-events-none select-none flex items-center justify-center"
+      className="fixed top-0 left-0 z-[999999] pointer-events-none select-none hidden md:flex items-center justify-center"
       style={{
         x: cursorX,
         y: cursorY,
