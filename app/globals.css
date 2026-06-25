@@ -162,3 +162,15 @@
 .animate-fade-in {
   animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Hide Google Translate Banner and Widget */
+.VIpgJd-ZVi9od-ORHb-OEVmcd {
+  display: none !important;
+}
+.skiptranslate > iframe.skiptranslate {
+  display: none !important; 
+  visibility: hidden !important;
+}
+body {
+  top: 0px !important; 
+}

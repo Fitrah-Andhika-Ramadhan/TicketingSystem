@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useRouter } from 'next/navigation';
 
 interface NavbarProps {
@@ -94,6 +95,9 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
       </div>
 
       <div className="flex items-center gap-3">
+        
+        {/* Language Switcher */}
+        <LanguageSwitcher />
 
         {/* Role Switcher + Guide */}
         <div className="flex items-center gap-1">
