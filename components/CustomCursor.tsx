@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { motion, useMotionValue } from 'framer-motion';
+import { Hand, HandGrab } from 'lucide-react';
 
 export default function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isClicking, setIsClicking] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
 
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
@@ -15,47 +16,31 @@ export default function CustomCursor() {
 
   useEffect(() => {
     // Hide default cursor on body
-    document.body.style.cursor = 'none';
-    
-    // Also hide it on all elements by adding a global style
-    const style = document.createElement('style');
-    style.innerHTML = `
-      * {
-        cursor: none !important;
-      }
-    `;
-    document.head.appendChild(style);
+    document.documentElement.style.cursor = 'none';
 
-    const moveCursor = (e: MouseEvent) => {
+    const moveMouse = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
       if (!isVisible) setIsVisible(true);
     };
 
-    const handleMouseDown = () => setIsClicking(true);
-    const handleMouseUp = () => setIsClicking(false);
-    
+    const handleMouseDown = () => setIsClicked(true);
+    const handleMouseUp = () => setIsClicked(false);
     const handleMouseLeave = () => setIsVisible(false);
-    const handleMouseEnter = () => setIsVisible(true);
 
-    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener('mousemove', moveMouse);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
-    document.documentElement.addEventListener('mouseleave', handleMouseLeave);
-    document.documentElement.addEventListener('mouseenter', handleMouseEnter);
+    document.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
-      window.removeEventListener('mousemove', moveCursor);
+      document.documentElement.style.cursor = 'auto';
+      window.removeEventListener('mousemove', moveMouse);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
-      document.documentElement.removeEventListener('mouseleave', handleMouseLeave);
-      document.documentElement.removeEventListener('mouseenter', handleMouseEnter);
-      document.body.style.cursor = 'auto';
-      document.head.removeChild(style);
+      document.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, [cursorX, cursorY, isVisible]);
-
-  if (typeof window === 'undefined') return null;
 
   return (
     <motion.div
@@ -64,15 +49,22 @@ export default function CustomCursor() {
         x: cursorX,
         y: cursorY,
         opacity: isVisible ? 1 : 0,
-        translateX: '-10%', // Adjusting visual hotspot roughly to the pointing finger
-        translateY: '-10%',
+        translateX: '-40%', // Center horizontally a bit
+        translateY: '-20%', // Shift to make the pointing tip accurate
       }}
       animate={{
-        scale: isClicking ? 0.85 : 1,
+        scale: isClicked ? 0.8 : 1,
+        rotate: isClicked ? -15 : 0,
       }}
-      transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+      transition={{ type: 'spring', stiffness: 600, damping: 25 }}
     >
-      <img src="/cursor.png" alt="cursor" className="w-10 h-10 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" />
+      <div className="relative">
+        {isClicked ? (
+          <HandGrab className="w-8 h-8 text-slate-900 fill-white drop-shadow-md transition-all duration-200" />
+        ) : (
+          <Hand className="w-8 h-8 text-slate-900 fill-white drop-shadow-md transition-all duration-200" />
+        )}
+      </div>
     </motion.div>
   );
 }
