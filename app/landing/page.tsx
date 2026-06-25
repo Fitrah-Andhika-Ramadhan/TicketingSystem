@@ -296,7 +296,7 @@ export default function Landing() {
 
           {/* Interactive Showcase Slider */}
           <div 
-            className="relative max-w-5xl mx-auto aspect-video md:aspect-[16/9] rounded-2xl border border-slate-100 bg-slate-50/30 overflow-hidden shadow-xl shadow-slate-100/70 group hover:shadow-2xl hover:border-slate-200 transition-all duration-500"
+            className="relative max-w-5xl mx-auto h-[500px] sm:h-auto sm:aspect-video md:aspect-[16/9] rounded-2xl border border-slate-100 bg-slate-50/30 overflow-hidden shadow-xl shadow-slate-100/70 group hover:shadow-2xl hover:border-slate-200 transition-all duration-500"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -306,7 +306,7 @@ export default function Landing() {
               {/* SLIDE 0: Real-time Analytics Mock */}
               {activeSlide === 0 && (
                 <div className="w-full h-full flex flex-col justify-between animate-fade-in">
-                  <div className="flex justify-between items-center border-b border-slate-100 pb-4 select-none">
+                  <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-3 sm:gap-0 border-b border-slate-100 pb-4 select-none">
                     <div className="space-y-1">
                       <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                         <BarChart3 className="w-5 h-5 text-blue-600" />
@@ -356,7 +356,7 @@ export default function Landing() {
               {/* SLIDE 1: SLA Control Panel Mock */}
               {activeSlide === 1 && (
                 <div className="w-full h-full flex flex-col justify-between animate-fade-in">
-                  <div className="flex justify-between items-center border-b border-slate-100 pb-4 select-none">
+                  <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-3 sm:gap-0 border-b border-slate-100 pb-4 select-none">
                     <div className="space-y-1">
                       <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                         <Clock className="w-5 h-5 text-rose-600" />
@@ -405,7 +405,7 @@ export default function Landing() {
               {/* SLIDE 2: Team Collaboration Mock */}
               {activeSlide === 2 && (
                 <div className="w-full h-full flex flex-col justify-between animate-fade-in">
-                  <div className="flex justify-between items-center border-b border-slate-100 pb-4 select-none">
+                  <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-3 sm:gap-0 border-b border-slate-100 pb-4 select-none">
                     <div className="space-y-1">
                       <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                         <MessageSquare className="w-5 h-5 text-blue-600" />
