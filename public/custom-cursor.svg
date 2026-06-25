@@ -1,8 +1,0 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Retro Pointer Hand Cursor -->
-  <path d="M12 2C12 0.89543 12.8954 0 14 0H16C17.1046 0 18 0.89543 18 2V12H23C24.6569 12 26 13.3431 26 15V24C26 27.3137 23.3137 30 20 30H12C8.68629 30 6 27.3137 6 24V16C6 14.8954 6.89543 14 8 14H12V2Z" fill="#F8FAFC" stroke="#0F172A" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M15 11V3" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
-  <path d="M12 20V26" stroke="#0F172A" stroke-width="2" stroke-linecap="round"/>
-  <path d="M16 20V26" stroke="#0F172A" stroke-width="2" stroke-linecap="round"/>
-  <path d="M20 20V26" stroke="#0F172A" stroke-width="2" stroke-linecap="round"/>
-</svg>
