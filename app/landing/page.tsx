@@ -686,7 +686,7 @@ export default function Landing() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-6 text-center space-y-3.5 shadow-sm">
+            <div className="rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-white p-6 text-center space-y-3.5 shadow-sm hover:shadow-xl hover:border-blue-100 hover:-translate-y-2 transition-all duration-300 group cursor-default">
               <div className="h-10 w-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
                 <Mail className="w-5 h-5" />
               </div>
@@ -695,8 +695,7 @@ export default function Landing() {
                 {sysSettings.email}
               </a>
             </div>
-
-            <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-6 text-center space-y-3.5 shadow-sm">
+            <div className="rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-white p-6 text-center space-y-3.5 shadow-sm hover:shadow-xl hover:border-cyan-100 hover:-translate-y-2 transition-all duration-300 group cursor-default">
               <div className="h-10 w-10 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center mx-auto">
                 <Phone className="w-5 h-5" />
               </div>
@@ -705,8 +704,7 @@ export default function Landing() {
                 {sysSettings.phone}
               </a>
             </div>
-
-            <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-6 text-center space-y-3.5 shadow-sm">
+            <div className="rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-white p-6 text-center space-y-3.5 shadow-sm hover:shadow-xl hover:border-emerald-100 hover:-translate-y-2 transition-all duration-300 group cursor-default">
               <div className="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
                 <MapPin className="w-5 h-5" />
               </div>
@@ -716,7 +714,7 @@ export default function Landing() {
           </div>
 
           {/* Newsletter Box */}
-          <div className="max-w-2xl mx-auto rounded-2xl border border-slate-100 bg-slate-50/50 p-8 text-center shadow-md">
+          <div className="max-w-2xl mx-auto rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white p-8 text-center shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
             <h3 className="text-xl font-bold text-slate-900 mb-2">Berlangganan Newsletter</h3>
             <p className="text-slate-500 text-xs mb-6">Dapatkan info pembaruan fitur baru dan tips SLA manajemen gratis.</p>
             <form onSubmit={handleSubscribe} className="flex gap-2 max-w-md mx-auto">
