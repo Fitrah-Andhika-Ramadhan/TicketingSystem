@@ -72,9 +72,7 @@ export default function CustomCursor() {
       }}
       transition={{ type: 'spring', stiffness: 500, damping: 28 }}
     >
-      {/* We use a white fill that acts as a mask via mix-blend-difference, making it look very cool and dynamic. 
-          Or we can just display the custom SVG the user uploaded. Let's use the image. */}
-      <img src="/custom-cursor.svg" alt="cursor" className="w-8 h-8 drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]" />
+      <img src="/cursor.png" alt="cursor" className="w-10 h-10 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" />
     </motion.div>
   );
 }
