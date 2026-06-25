@@ -601,14 +601,14 @@ export default function Landing() {
                 {c.about.description}
               </p>
               <div className="space-y-4 pt-2">
-                <div className="flex gap-4">
+                <div className="flex gap-4 p-3 -m-3 rounded-xl hover:bg-white hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-default">
                   <div className="h-6 w-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</div>
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm">Misi Kami</h4>
                     <p className="text-slate-500 text-xs mt-1">{c.about.mission}</p>
                   </div>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex gap-4 p-3 -m-3 rounded-xl hover:bg-white hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-default">
                   <div className="h-6 w-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0 mt-1">✓</div>
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm">Visi Kami</h4>
@@ -621,7 +621,7 @@ export default function Landing() {
             {/* Visual illustration of the About Section */}
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-cyan-500 rounded-3xl rotate-3 scale-[1.02] opacity-5 blur-[10px] pointer-events-none" />
-              <div className="relative rounded-3xl overflow-hidden border border-slate-100 bg-white p-8 shadow-xl space-y-6">
+              <div className="relative rounded-3xl overflow-hidden border border-slate-100 bg-white p-8 shadow-xl hover:shadow-2xl hover:-translate-y-2 hover:border-blue-100 transition-all duration-300 space-y-6 cursor-default">
                 <div className="flex justify-between items-center pb-4 border-b border-slate-100">
                   <span className="text-xs font-bold text-slate-400">Pemberitahuan Sistem</span>
                   <span className="text-xs px-2.5 py-1 rounded-full bg-green-50 text-green-600 font-mono text-[10px]">active</span>
