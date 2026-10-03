@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
-    "start": "prisma db push && next start",
+    "build": "DATABASE_URL=\"mysql://u760780658_ticketingsys:fitrahDindaaja%40123@127.0.0.1:3306/u760780658_ticketingsys\" prisma db push --accept-data-loss && next build --webpack",
+    "start": "next start",
     "lint": "eslint .",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
