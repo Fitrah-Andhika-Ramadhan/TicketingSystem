@@ -12,6 +12,7 @@ export default function AnalyticsPage() {
   const [user, setUser] = useState<any>(null);
   const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -30,19 +31,30 @@ export default function AnalyticsPage() {
   const fetchAnalytics = async (token: string) => {
     try {
       setLoading(true);
+      setErrorMsg(null);
       const response = await fetch('/api/analytics', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
       if (data.success) {
         setMetrics(data.data);
+      } else {
+        setErrorMsg(data.error || 'Failed to fetch analytics');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch analytics:', error);
+      setErrorMsg(error.message || 'Network error');
     } finally {
       setLoading(false);
     }
   };
+
+  if (errorMsg) {
+    return <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
+      <div className="text-red-500 font-bold mb-2">Error Loading Analytics</div>
+      <div className="text-gray-600">{errorMsg}</div>
+    </div>;
+  }
 
   if (!user || loading || !metrics) {
     return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Loading Real-Time Analytics...</div>;
