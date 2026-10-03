@@ -29,6 +29,7 @@ const MENUS: Record<string, {
     [
       { label: 'Admin Dashboard', icon: Home, href: '/admin/dashboard' },
       { label: 'Monitor Tiket', icon: Ticket, href: '/tickets' },
+      { label: 'Kanban Board', icon: LayoutList, href: '/kanban' },
       { label: 'Analytics', icon: BarChart3, href: '/analytics' },
       { label: 'Manajemen Tim', icon: Users, href: '/team' },
     ],

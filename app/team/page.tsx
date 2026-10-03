@@ -23,13 +23,11 @@ interface TeamMember {
   id: string;
   name: string;
   role: string;
-  position: string;
   email: string;
-  phone: string;
+  phoneNumber?: string;
   department: string;
-  status: string;
-  joinDate: Date;
-  avatar: string;
+  isActive: boolean;
+  createdAt: string;
 }
 
 export default function TeamPage() {
@@ -44,8 +42,9 @@ export default function TeamPage() {
   const [currentMember, setCurrentMember] = useState<TeamMember | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    position: '',
+    role: 'VIEWER',
     email: '',
+    phoneNumber: '',
     department: 'IT Support'
   });
 
@@ -76,83 +75,13 @@ export default function TeamPage() {
   const fetchTeamMembers = async (token: string) => {
     try {
       setLoading(true);
-      // Mock team members data
-      const mockTeam = [
-        {
-          id: '1',
-          name: 'Admin User',
-          role: 'SUPER_ADMIN',
-          position: 'Project Director',
-          email: 'fitrahramdhan31@gmail.com',
-          phone: '+62812345678',
-          department: 'Management',
-          status: 'Active',
-          joinDate: new Date('2023-01-15'),
-          avatar: 'A',
-        },
-        {
-          id: '2',
-          name: 'Budi Santoso',
-          role: 'MANAGER',
-          position: 'IT Support Manager',
-          email: 'budi@fitrahpro.com',
-          phone: '+62812345679',
-          department: 'IT Support',
-          status: 'Active',
-          joinDate: new Date('2023-02-01'),
-          avatar: 'B',
-        },
-        {
-          id: '3',
-          name: 'Siti Nurhaliza',
-          role: 'MANAGER',
-          position: 'SLA QA Lead',
-          email: 'siti@fitrahpro.com',
-          phone: '+62812345680',
-          department: 'Quality Assurance',
-          status: 'Active',
-          joinDate: new Date('2023-02-15'),
-          avatar: 'S',
-        },
-        {
-          id: '4',
-          name: 'Roni Wijaya',
-          role: 'CONTRACTOR',
-          position: 'Senior Support Agent',
-          email: 'roni@fitrahpro.com',
-          phone: '+62812345681',
-          department: 'IT Support',
-          status: 'Active',
-          joinDate: new Date('2023-03-01'),
-          avatar: 'R',
-        },
-        {
-          id: '5',
-          name: 'Dewi Lestari',
-          role: 'CONTRACTOR',
-          position: 'Security Analyst',
-          email: 'dewi@fitrahpro.com',
-          phone: '+62812345682',
-          department: 'IT Security',
-          status: 'Active',
-          joinDate: new Date('2023-03-10'),
-          avatar: 'D',
-        },
-        {
-          id: '6',
-          name: 'Andi Gunawan',
-          role: 'VIEWER',
-          position: 'System Administrator',
-          email: 'andi@fitrahpro.com',
-          phone: '+62812345683',
-          department: 'Administration',
-          status: 'Active',
-          joinDate: new Date('2023-04-01'),
-          avatar: 'A',
-        },
-      ];
-
-      setTeamMembers(mockTeam);
+      const response = await fetch('/api/users', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setTeamMembers(data.data);
+      }
     } catch (error) {
       console.error('Failed to fetch team members:', error);
     } finally {
@@ -163,7 +92,7 @@ export default function TeamPage() {
   const handleAddMemberClick = () => {
     setIsEditing(false);
     setCurrentMember(null);
-    setFormData({ name: '', position: '', email: '', department: 'IT Support' });
+    setFormData({ name: '', role: 'VIEWER', email: '', phoneNumber: '', department: 'IT Support' });
     setIsModalOpen(true);
   };
 
@@ -172,40 +101,44 @@ export default function TeamPage() {
     setCurrentMember(member);
     setFormData({
       name: member.name,
-      position: member.position,
+      role: member.role,
       email: member.email,
+      phoneNumber: member.phoneNumber || '',
       department: member.department,
     });
     setIsModalOpen(true);
   };
 
-  const handleSaveMember = () => {
-    if (!formData.name || !formData.position || !formData.email) {
-      swal.fire({ icon: 'error', title: 'Error', text: 'Semua kolom harus diisi!' });
+  const handleSaveMember = async () => {
+    if (!formData.name || !formData.email) {
+      swal.fire({ icon: 'error', title: 'Error', text: 'Nama dan email harus diisi!' });
       return;
     }
 
-    if (isEditing && currentMember) {
-      setTeamMembers(teamMembers.map(m =>
-        m.id === currentMember.id 
-          ? { ...m, ...formData, avatar: formData.name.charAt(0).toUpperCase() } 
-          : m
-      ));
-      swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Data anggota tim berhasil diperbarui.', timer: 1500, showConfirmButton: false });
-    } else {
-      const newMember: TeamMember = {
-        id: String(Date.now()),
-        ...formData,
-        role: 'CONTRACTOR',
-        phone: '+62812' + Math.floor(10000000 + Math.random() * 90000000),
-        status: 'Active',
-        joinDate: new Date(),
-        avatar: formData.name.charAt(0).toUpperCase(),
-      };
-      setTeamMembers([...teamMembers, newMember]);
-      swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Anggota tim baru berhasil ditambahkan.', timer: 1500, showConfirmButton: false });
+    const token = localStorage.getItem('token');
+    try {
+      if (isEditing && currentMember) {
+        const res = await fetch(`/api/users/${currentMember.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(formData)
+        });
+        if (!res.ok) throw new Error('Update failed');
+        swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Data anggota tim berhasil diperbarui.', timer: 1500, showConfirmButton: false });
+      } else {
+        const res = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(formData)
+        });
+        if (!res.ok) throw new Error('Create failed');
+        swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Anggota tim baru berhasil ditambahkan.', timer: 1500, showConfirmButton: false });
+      }
+      fetchTeamMembers(token || '');
+      setIsModalOpen(false);
+    } catch (error) {
+      swal.fire('Error', 'Gagal menyimpan anggota tim', 'error');
     }
-    setIsModalOpen(false);
   };
 
   const handleDeleteMember = (id: string, name: string) => {
@@ -216,14 +149,20 @@ export default function TeamPage() {
       showCancelButton: true,
       confirmButtonText: 'Ya, Hapus!',
       cancelButtonText: 'Batal',
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setTeamMembers(teamMembers.filter(m => m.id !== id));
-        swal.fire({
-          icon: 'success',
-          title: 'Berhasil!',
-          text: 'Anggota tim berhasil dihapus.',
-        });
+        const token = localStorage.getItem('token');
+        try {
+          const res = await fetch(`/api/users/${id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (!res.ok) throw new Error('Delete failed');
+          setTeamMembers(teamMembers.filter(m => m.id !== id));
+          swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Anggota tim berhasil dihapus.' });
+        } catch (error) {
+          swal.fire('Error', 'Gagal menghapus anggota tim', 'error');
+        }
       }
     });
   };
@@ -306,7 +245,7 @@ export default function TeamPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold text-green-600">
-                    {teamMembers.filter(m => m.status === 'Active').length}
+                    {teamMembers.filter(m => m.isActive !== false).length}
                   </div>
                 </CardContent>
               </Card>
@@ -342,11 +281,11 @@ export default function TeamPage() {
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg">
-                          {member.avatar}
+                          {member.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
                           <h3 className="font-semibold text-gray-900">{member.name}</h3>
-                          <p className="text-sm text-gray-600">{member.position}</p>
+                          <p className="text-sm text-gray-600">{member.department || 'No Dept'}</p>
                         </div>
                       </div>
                       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getRoleColor(member.role)}`}>
@@ -363,19 +302,19 @@ export default function TeamPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Phone className="w-4 h-4 text-gray-400" />
-                        <a href={`tel:${member.phone}`} className="hover:text-blue-600">
-                          {member.phone}
+                        <a href={`tel:${member.phoneNumber || ''}`} className="hover:text-blue-600">
+                          {member.phoneNumber || '-'}
                         </a>
                       </div>
                       <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-gray-400" />
-                        {member.department}
+                        {member.department || 'No Dept'}
                       </div>
                     </div>
 
                     <div className="pt-4 border-t border-gray-200 flex justify-between">
                       <span className="text-xs text-gray-500">
-                        Joined: {member.joinDate.toLocaleDateString()}
+                        Joined: {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : '-'}
                       </span>
                       <div className="flex gap-2">
                         <Button 
@@ -451,12 +390,28 @@ export default function TeamPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="position" className="text-sm font-semibold text-slate-700">Jabatan</Label>
+              <Label htmlFor="role" className="text-sm font-semibold text-slate-700">Role</Label>
+              <select
+                id="role"
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                className="flex h-10 w-full rounded-md border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
+              >
+                <option value="VIEWER">VIEWER</option>
+                <option value="QA">QA</option>
+                <option value="DEVELOPER">DEVELOPER</option>
+                <option value="FUNCTIONAL_TEAM">FUNCTIONAL_TEAM</option>
+                <option value="ADMIN">ADMIN</option>
+                <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber" className="text-sm font-semibold text-slate-700">Telepon</Label>
               <Input
-                id="position"
-                value={formData.position}
-                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                placeholder="Senior IT Support"
+                id="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                placeholder="0812345678"
                 className="focus-visible:ring-blue-500/50 bg-slate-50/50 border-slate-200"
               />
             </div>
