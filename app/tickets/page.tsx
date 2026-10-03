@@ -43,6 +43,7 @@ export default function TicketsPage() {
   const [newCategory, setNewCategory] = useState('BUG');
   const [newPriority, setNewPriority] = useState('MEDIUM');
   const [newDueDate, setNewDueDate] = useState('');
+  const [newImage, setNewImage] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   // Custom Delete Confirm Modal States
@@ -122,6 +123,16 @@ export default function TicketsPage() {
 
     setSubmitting(true);
     try {
+      let imageBase64 = null;
+      if (newImage) {
+        const reader = new FileReader();
+        const readPromise = new Promise((resolve) => {
+          reader.onloadend = () => resolve(reader.result);
+        });
+        reader.readAsDataURL(newImage);
+        imageBase64 = (await readPromise) as string;
+      }
+
       const token = localStorage.getItem('token');
       const response = await fetch('/api/tickets', {
         method: 'POST',
@@ -135,6 +146,7 @@ export default function TicketsPage() {
           category: newCategory,
           priority: newPriority,
           dueDate: newDueDate || undefined,
+          attachments: imageBase64 ? [imageBase64] : [],
         }),
       });
 
@@ -146,6 +158,7 @@ export default function TicketsPage() {
         setNewCategory('BUG');
         setNewPriority('MEDIUM');
         setNewDueDate('');
+        setNewImage(null);
         toast.success('Tiket baru berhasil dibuat!');
         fetchTickets(token!);
       } else {
@@ -516,6 +529,27 @@ export default function TicketsPage() {
                   rows={4}
                   required
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  Lampiran Gambar (Opsional)
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setNewImage(e.target.files[0]);
+                      }
+                    }}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                </div>
+                {newImage && (
+                  <p className="text-xs text-green-600 mt-1">Terpilih: {newImage.name}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
