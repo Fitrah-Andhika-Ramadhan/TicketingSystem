@@ -29,7 +29,31 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true, data: users });
+    // Also include static admin users
+    const staticUsers = [
+      {
+        id: '1',
+        name: 'Admin User',
+        email: 'admin@fitrahpro.com',
+        role: 'SUPER_ADMIN',
+        isActive: true,
+        department: 'Management',
+        phoneNumber: '+62812345678',
+      },
+      {
+        id: 'demo-1',
+        name: 'Admin Demo',
+        email: 'demo@fitrahpro.com',
+        role: 'SUPER_ADMIN',
+        isActive: true,
+        department: 'Management',
+        phoneNumber: '+62812345678',
+      }
+    ];
+
+    const allUsers = [...staticUsers, ...users];
+
+    return NextResponse.json({ success: true, data: allUsers });
   } catch (error) {
     console.error('Failed to fetch users:', error);
     return NextResponse.json({ success: false, error: 'Failed to fetch users' }, { status: 500 });
