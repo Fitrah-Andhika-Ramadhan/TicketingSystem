@@ -123,7 +123,8 @@ export default function TeamPage() {
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify(formData)
         });
-        if (!res.ok) throw new Error('Update failed');
+        const resData = await res.json();
+        if (!res.ok) throw new Error(resData.error || 'Update failed');
         swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Data anggota tim berhasil diperbarui.', timer: 1500, showConfirmButton: false });
       } else {
         const res = await fetch('/api/users', {
@@ -131,13 +132,14 @@ export default function TeamPage() {
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify(formData)
         });
-        if (!res.ok) throw new Error('Create failed');
+        const resData = await res.json();
+        if (!res.ok) throw new Error(resData.error || 'Create failed');
         swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Anggota tim baru berhasil ditambahkan.', timer: 1500, showConfirmButton: false });
       }
       fetchTeamMembers(token || '');
       setIsModalOpen(false);
-    } catch (error) {
-      swal.fire('Error', 'Gagal menyimpan anggota tim', 'error');
+    } catch (error: any) {
+      swal.fire('Error', error.message || 'Gagal menyimpan anggota tim', 'error');
     }
   };
 

@@ -91,6 +91,6 @@ export async function POST(request: NextRequest) {
     if (error.code === 'P2002') {
       return NextResponse.json({ success: false, error: 'Email already exists' }, { status: 400 });
     }
-    return NextResponse.json({ success: false, error: 'Failed to create user' }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message || 'Failed to create user' }, { status: 500 });
   }
 }

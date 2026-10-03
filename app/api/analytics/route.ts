@@ -44,7 +44,8 @@ export async function GET(request: NextRequest) {
     }
 
     tickets.forEach(t => {
-      const dateStr = t.createdAt.toISOString().split('T')[0];
+      const dateObj = new Date(t.createdAt);
+      const dateStr = dateObj.toISOString().split('T')[0];
       if (trendDataMap[dateStr]) {
         trendDataMap[dateStr].created += 1;
         if (['RESOLVED', 'CLOSED'].includes(t.status)) {
@@ -67,8 +68,8 @@ export async function GET(request: NextRequest) {
         tickets
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Analytics fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
