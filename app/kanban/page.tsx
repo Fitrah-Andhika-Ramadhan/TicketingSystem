@@ -32,10 +32,17 @@ export default function KanbanPage() {
   const [loading, setLoading] = useState(true);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState('');
+  const [careerActivities, setCareerActivities] = useState<any[]>([]);
+  const [careerLoading, setCareerLoading] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const savedKey = localStorage.getItem('career_api_key');
-    if (savedKey) setApiKey(savedKey);
+    if (savedKey) {
+      setApiKey(savedKey);
+      setIsConnected(true);
+      fetchCareerActivities(savedKey);
+    }
   }, []);
 
   const columns = [
@@ -120,12 +127,34 @@ export default function KanbanPage() {
     }
   };
 
+  const fetchCareerActivities = async (token: string) => {
+    try {
+      setCareerLoading(true);
+      const response = await fetch('/api/career-activities', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await response.json();
+      if (data.success) {
+        const activities = Array.isArray(data.data) ? data.data : (data.data?.data || data.data?.activities || []);
+        setCareerActivities(activities);
+        setIsConnected(true);
+      } else {
+        console.error('Career API error:', data.error);
+      }
+    } catch (error) {
+      console.error('Failed to fetch career activities:', error);
+    } finally {
+      setCareerLoading(false);
+    }
+  };
+
   const handleSaveApiKey = () => {
     localStorage.setItem('career_api_key', apiKey);
+    fetchCareerActivities(apiKey);
     swal.fire({
       icon: 'success',
       title: 'Terhubung!',
-      text: 'API Key Career Web berhasil disimpan. Sekarang semua perubahan di web karir akan ter-tracking otomatis di Kanban ini.',
+      text: 'API Key Career Web berhasil disimpan. Data pelamar akan tampil di Kanban secara otomatis.',
     });
     setIsApiKeyModalOpen(false);
   };
@@ -148,14 +177,63 @@ export default function KanbanPage() {
                 <h1 className="text-3xl font-bold text-gray-900">Kanban Board</h1>
                 <p className="text-gray-600 mt-1">Track and manage ticket pipeline</p>
               </div>
-              <Button 
-                onClick={() => setIsApiKeyModalOpen(true)}
-                className="bg-indigo-600 hover:bg-indigo-700 shadow-sm"
-              >
-                <Webhook className="w-4 h-4 mr-2" />
-                Integration Settings
-              </Button>
+              <div className="flex items-center gap-3">
+                {isConnected && (
+                  <div className="flex items-center gap-2 text-xs bg-green-50 text-green-700 border border-green-200 px-3 py-2 rounded-lg">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span>Career Web Terhubung</span>
+                    {careerLoading && <span className="text-green-500">(Memuat...)</span>}
+                  </div>
+                )}
+                <Button 
+                  onClick={() => setIsApiKeyModalOpen(true)}
+                  className="bg-indigo-600 hover:bg-indigo-700 shadow-sm"
+                >
+                  <Webhook className="w-4 h-4 mr-2" />
+                  Integration Settings
+                </Button>
+              </div>
             </div>
+
+            {/* Career Activities Section */}
+            {isConnected && careerActivities.length > 0 && (
+              <div className="mb-6">
+                <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">📡 Aktivitas Terbaru dari Career Web</h2>
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {careerActivities.slice(0, 10).map((activity: any, idx: number) => (
+                    <div key={idx} className="min-w-[280px] bg-white border border-indigo-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
+                          {activity.type || activity.status || 'Aktivitas'}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          {activity.created_at ? new Date(activity.created_at).toLocaleDateString('id-ID') : '-'}
+                        </span>
+                      </div>
+                      <p className="text-sm font-semibold text-slate-800 line-clamp-2">
+                        {activity.title || activity.name || activity.description || activity.message || JSON.stringify(activity).substring(0, 80)}
+                      </p>
+                      {(activity.applicant_name || activity.user_name || activity.candidate) && (
+                        <p className="text-xs text-slate-500 mt-1">
+                          👤 {activity.applicant_name || activity.user_name || activity.candidate}
+                        </p>
+                      )}
+                      {(activity.position || activity.job_title || activity.vacancy) && (
+                        <p className="text-xs text-slate-500">
+                          💼 {activity.position || activity.job_title || activity.vacancy}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {isConnected && !careerLoading && careerActivities.length === 0 && (
+              <div className="mb-4 text-sm text-slate-400 italic">
+                Belum ada aktivitas dari Career Web yang terdeteksi.
+              </div>
+            )}
 
             <div className="flex-1 overflow-x-auto pb-4">
               <DragDropContext onDragEnd={onDragEnd}>
@@ -250,17 +328,21 @@ export default function KanbanPage() {
           </DialogHeader>
           <div className="py-4 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="apiKey">Career API Key</Label>
+              <Label htmlFor="apiKey">Career API Token</Label>
               <Input
                 id="apiKey"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk_career_..."
+                placeholder="Tempel token dari career-rc3id.id/public/admin/api-integration"
                 className="font-mono text-sm"
               />
+              <p className="text-xs text-slate-500">Salin token dari halaman <strong>API & Integrations</strong> di web Career Anda, bukan URL-nya.</p>
             </div>
             <div className="bg-blue-50 text-blue-800 p-3 rounded-md text-xs">
-              <strong>Info:</strong> Setelah terhubung, webhook dari Career Web akan otomatis membuat atau memperbarui status tracking di Kanban Board ini.
+              <strong>Cara mendapatkan token:</strong><br/>
+              1. Buka <strong>career-rc3id.id/public/admin/api-integration</strong><br/>
+              2. Salin teks panjang di bagian <strong>"API Token Aktif"</strong><br/>
+              3. Tempel di sini dan klik Simpan Koneksi
             </div>
           </div>
           <DialogFooter>
