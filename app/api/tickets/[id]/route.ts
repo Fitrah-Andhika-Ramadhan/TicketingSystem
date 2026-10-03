@@ -21,29 +21,6 @@ export async function GET(
       );
     }
 
-    // Mock response for demo tickets to prevent DB crash
-    if (['1', '2', '3', '4', '5'].includes(params.id)) {
-      return NextResponse.json({
-        success: true,
-        data: {
-          id: params.id,
-          ticketNumber: `VD-104${6 - Number(params.id)}`,
-          title: 'Demo Ticket',
-          description: 'This is a demo ticket for simulation.',
-          category: 'BUG',
-          priority: 'HIGH',
-          status: 'IN_PROGRESS',
-          progress: 50,
-          createdByName: 'Admin Demo',
-          createdByEmail: 'demo@fitrahpro.com',
-          assignedName: 'Admin Demo',
-          comments: [],
-          history: [],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      });
-    }
 
     const ticket = await prisma.ticket.findUnique({
       where: { id: params.id },
@@ -129,18 +106,6 @@ export async function PATCH(
     const userId = decoded?.userId || '1';
     const body = await request.json();
 
-    // Mock response for demo tickets to prevent DB crash
-    if (['1', '2', '3', '4', '5'].includes(params.id)) {
-      return NextResponse.json({
-        success: true,
-        data: {
-          id: params.id,
-          status: body.status || 'IN_PROGRESS',
-          priority: body.priority || 'MEDIUM',
-          progress: body.progress || 0,
-        }
-      });
-    }
 
     const ticket = await prisma.ticket.findUnique({
       where: { id: params.id },

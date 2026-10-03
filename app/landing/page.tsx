@@ -175,14 +175,9 @@ export default function Landing() {
               </Link>
             ) : (
               <div className="flex items-center gap-2">
-                <Link href="/demo-login">
-                  <Button variant="outline" className="border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold rounded-lg shadow-sm transition-all duration-200">
-                    Login Demo
-                  </Button>
-                </Link>
                 <Link href="/login">
                   <Button className="bg-blue-600 hover:bg-blue-700 border-0 text-white font-semibold rounded-lg shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-200 active:scale-[0.98]">
-                    Login (Real)
+                    Login
                   </Button>
                 </Link>
               </div>
@@ -197,11 +192,6 @@ export default function Landing() {
               </Link>
             ) : (
               <>
-                <Link href="/demo-login">
-                  <Button size="sm" variant="outline" className="border-slate-200 text-slate-700">
-                    Demo
-                  </Button>
-                </Link>
                 <Link href="/login">
                   <Button size="sm" className="bg-blue-600 hover:bg-blue-700 border-0 text-white font-semibold rounded-lg">
                     Login
@@ -250,14 +240,9 @@ export default function Landing() {
               </Link>
             ) : (
               <>
-                <Link href="/demo-login">
-                  <Button variant="outline" className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 text-base font-semibold px-8 py-6 rounded-lg flex items-center gap-2 shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200">
-                    Login Demo
-                  </Button>
-                </Link>
                 <Link href="/login">
                   <Button className="bg-blue-600 hover:bg-blue-700 border-0 text-base font-semibold px-8 py-6 rounded-lg flex items-center gap-2 shadow-lg shadow-blue-500/15 hover:shadow-xl hover:shadow-blue-500/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200">
-                    Login (Real) <ArrowRight className="w-5 h-5" />
+                    Login <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
               </>
@@ -661,14 +646,9 @@ export default function Landing() {
             </Link>
           ) : (
             <div className="flex justify-center gap-4 flex-wrap">
-              <Link href="/demo-login">
-                <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 font-semibold shadow-xl active:scale-[0.98] transition px-8 py-6 rounded-lg cursor-pointer">
-                  Login Demo
-                </Button>
-              </Link>
               <Link href="/login">
                 <Button size="lg" className="bg-white hover:bg-slate-50 text-blue-700 font-semibold shadow-xl active:scale-[0.98] transition px-8 py-6 rounded-lg cursor-pointer border-0">
-                  Login (Real)
+                  Login
                 </Button>
               </Link>
             </div>
