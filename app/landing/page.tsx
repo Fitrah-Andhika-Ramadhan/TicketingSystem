@@ -140,11 +140,7 @@ export default function Landing() {
     <div className="min-h-screen relative text-slate-800 font-sans antialiased overflow-x-hidden scroll-smooth selection:bg-blue-500/10 selection:text-blue-600">
       
       {/* Interactive UI Runner / Animated Background */}
-      <div className="fixed inset-0 z-[-3] bg-gradient-to-br from-indigo-50/50 via-white to-cyan-50/50"></div>
-      <div className="fixed inset-0 z-[-2] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-      <div className="fixed left-0 right-0 top-0 z-[-1] m-auto h-[310px] w-[310px] rounded-full bg-blue-500 opacity-20 blur-[100px] animate-pulse"></div>
-      <div className="fixed bottom-0 right-0 z-[-1] h-[400px] w-[400px] rounded-full bg-purple-500 opacity-10 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
-      <div className="fixed bottom-1/2 left-0 z-[-1] h-[300px] w-[300px] rounded-full bg-cyan-400 opacity-10 blur-[100px] animate-pulse" style={{ animationDelay: '4s' }}></div>
+      <div className="fixed inset-0 z-[-3] bg-slate-50"></div>
 
       {/* Navigation */}
       <nav className="border-b border-slate-200/50 sticky top-0 bg-white/60 backdrop-blur-xl z-50 shadow-sm shadow-slate-200/20 transition-all duration-200">
@@ -204,32 +200,36 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
-        {/* Background Mesh Orbs */}
-        <div className="absolute top-[10%] left-[-10%] w-[45%] aspect-square rounded-full bg-blue-500/3 blur-[130px] pointer-events-none" />
-        <div className="absolute top-[20%] right-[-10%] w-[35%] aspect-square rounded-full bg-cyan-500/3 blur-[110px] pointer-events-none" />
- 
-        <div className="text-center mb-20 relative z-10 space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold tracking-wide select-none shadow-sm">
-            <Sparkles className="w-3.5 h-3.5" />
-            {c.hero.subtitle}
-          </div>
-          
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 max-w-4xl mx-auto leading-[1.15]">
-            Platform Modern untuk{' '}
-            <span className="block h-[1.25em] relative overflow-hidden">
-              <span 
-                key={rotatorIndex} 
-                className="absolute inset-x-0 top-0 animate-slide-up text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500 font-extrabold"
-              >
-                {rotatorWords[rotatorIndex]}
+      <section 
+        className="w-full relative py-32 overflow-hidden bg-black"
+        style={{
+          backgroundImage: "linear-gradient(rgba(0,0,0, 0.75), rgba(0,0,0, 0.85)), url('https://career-rc3id.id/hero_background.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-20 space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold tracking-wide select-none shadow-lg">
+              <Sparkles className="w-3.5 h-3.5" />
+              {c.hero.subtitle}
+            </div>
+            
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.15] drop-shadow-sm">
+              Platform Modern untuk{' '}
+              <span className="block h-[1.25em] relative overflow-hidden">
+                <span 
+                  key={rotatorIndex} 
+                  className="absolute inset-x-0 top-0 animate-slide-up text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 font-extrabold"
+                >
+                  {rotatorWords[rotatorIndex]}
+                </span>
               </span>
-            </span>
-          </h1>
+            </h1>
 
-          <p className="text-base sm:text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
-            {c.hero.description}
-          </p>
+            <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed font-medium">
+              {c.hero.description}
+            </p>
 
           <div className="flex gap-4 justify-center pt-6 flex-wrap">
             {isLoggedIn ? (
@@ -248,26 +248,27 @@ export default function Landing() {
               </>
             )}
             <a href="#slider-showcase">
-              <Button variant="outline" className="text-base px-8 py-6 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-950 bg-white rounded-lg shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200">
+              <Button variant="outline" className="text-base px-8 py-6 border-white/20 text-white hover:bg-white/10 bg-transparent rounded-lg shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200">
                 Lihat Showcase
               </Button>
             </a>
           </div>
         </div>
 
-        {/* Hero Quick Statistics Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 max-w-5xl mx-auto relative z-10">
-          {[
-            { value: `${c.stats.projects}K+`, label: 'Tiket Selesai' },
-            { value: `${c.stats.units} mnt`, label: 'Rata-rata Respon' },
-            { value: `${c.stats.yearsExperience}%`, label: 'Uptime SLA' },
-            { value: `${c.stats.satisfaction}+`, label: 'Perusahaan Mitra' },
-          ].map((stat, i) => (
-            <div key={i} className="rounded-2xl border border-slate-100 bg-white p-6 text-center shadow-md shadow-slate-100/50 hover:shadow-xl hover:shadow-slate-200/60 hover:-translate-y-1 transition-all duration-300">
-              <div className="text-3xl sm:text-4xl font-extrabold text-blue-600 mb-2">{stat.value}</div>
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{stat.label}</p>
-            </div>
-          ))}
+          {/* Hero Quick Statistics Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 max-w-5xl mx-auto relative z-10">
+            {[
+              { value: `${c.stats.projects}K+`, label: 'Tiket Selesai' },
+              { value: `${c.stats.units} mnt`, label: 'Rata-rata Respon' },
+              { value: `${c.stats.yearsExperience}%`, label: 'Uptime SLA' },
+              { value: `${c.stats.satisfaction}+`, label: 'Perusahaan Mitra' },
+            ].map((stat, i) => (
+              <div key={i} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-6 text-center shadow-lg hover:bg-white/10 hover:-translate-y-1 transition-all duration-300">
+                <div className="text-3xl sm:text-4xl font-extrabold text-blue-400 mb-2">{stat.value}</div>
+                <p className="text-xs font-bold uppercase tracking-wider text-white/70">{stat.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
