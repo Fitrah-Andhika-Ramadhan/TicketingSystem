@@ -10,53 +10,32 @@ import Navbar from '@/components/Navbar';
 export default function AnalyticsPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
-  const [analyticsData, setAnalyticsData] = useState<any[]>([]);
+  const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [projectName, setProjectName] = useState('FitrahPro');
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('vibedesk_settings');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          if (parsed.projectName) {
-            setProjectName(parsed.projectName);
-          }
-        } catch (e) {}
-      }
-    }
-  }, []);
 
   useEffect(() => {
     const checkAuth = () => {
       const storedUser = localStorage.getItem('user');
       const token = localStorage.getItem('token');
-
       if (!token || !storedUser) {
         router.push('/login');
         return;
       }
-
       setUser(JSON.parse(storedUser));
       fetchAnalytics(token);
     };
-
     checkAuth();
   }, [router]);
 
   const fetchAnalytics = async (token: string) => {
     try {
       setLoading(true);
-      const response = await fetch('/api/projects/1/analytics?days=90', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await fetch('/api/analytics', {
+        headers: { Authorization: `Bearer ${token}` }
       });
-
       const data = await response.json();
       if (data.success) {
-        setAnalyticsData(data.data.analytics);
+        setMetrics(data.data);
       }
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
@@ -65,17 +44,25 @@ export default function AnalyticsPage() {
     }
   };
 
-  if (!user) {
-    return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Loading...</div>;
+  if (!user || loading || !metrics) {
+    return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Loading Real-Time Analytics...</div>;
   }
 
-  const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b'];
+  // Pre-process Data for Charts
+  const statusData = [
+    { name: 'Open', value: metrics.tickets.filter((t: any) => t.status === 'OPEN').length },
+    { name: 'In Progress', value: metrics.tickets.filter((t: any) => t.status === 'IN_PROGRESS' || t.status === 'IN_REVIEW').length },
+    { name: 'Resolved/Closed', value: metrics.tickets.filter((t: any) => t.status === 'RESOLVED' || t.status === 'CLOSED').length },
+  ];
 
-  // Calculate metrics
-  const avgWorkers = Math.round(analyticsData.reduce((sum, d) => sum + d.workersOnSite, 0) / analyticsData.length || 0);
-  const totalIncidents = analyticsData.reduce((sum, d) => sum + d.safetyIncidents, 0);
-  const avgQuality = (analyticsData.reduce((sum, d) => sum + d.qualityScore, 0) / analyticsData.length || 0).toFixed(1);
-  const avgBudget = (analyticsData.reduce((sum, d) => sum + d.budgetUtilization, 0) / analyticsData.length || 0).toFixed(1);
+  const priorityData = [
+    { name: 'Low', count: metrics.tickets.filter((t: any) => t.priority === 'LOW').length },
+    { name: 'Medium', count: metrics.tickets.filter((t: any) => t.priority === 'MEDIUM').length },
+    { name: 'High', count: metrics.tickets.filter((t: any) => t.priority === 'HIGH').length },
+    { name: 'Critical', count: metrics.tickets.filter((t: any) => t.priority === 'CRITICAL').length },
+  ];
+
+  const STATUS_COLORS = ['#3b82f6', '#f59e0b', '#10b981'];
 
   return (
     <div className="flex h-screen bg-slate-50">
@@ -87,176 +74,133 @@ export default function AnalyticsPage() {
         <main className="flex-1 overflow-auto">
           <div className="p-8 max-w-7xl mx-auto">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
-              <p className="text-gray-600 mt-1">{projectName} - 90 Day Analysis</p>
+              <h1 className="text-3xl font-bold text-gray-900">Real-Time Analytics</h1>
+              <p className="text-gray-600 mt-1">Live tracking of your ticketing system performance.</p>
             </div>
 
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">Avg Workers On-site</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-600">Total Tickets</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-600">{avgWorkers}</div>
-                  <p className="text-xs text-gray-500 mt-1">people per day</p>
+                  <div className="text-3xl font-bold text-blue-600">{metrics.totalTickets}</div>
+                  <p className="text-xs text-gray-500 mt-1">All time</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">Safety Incidents</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-600">Active Pipeline</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-red-600">{totalIncidents}</div>
-                  <p className="text-xs text-gray-500 mt-1">total incidents</p>
+                  <div className="text-3xl font-bold text-orange-600">{metrics.openTickets}</div>
+                  <p className="text-xs text-gray-500 mt-1">Open/In Progress</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">Avg Quality Score</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-600">Resolved</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-green-600">{avgQuality}%</div>
-                  <p className="text-xs text-gray-500 mt-1">quality rating</p>
+                  <div className="text-3xl font-bold text-green-600">{metrics.closedTickets}</div>
+                  <p className="text-xs text-gray-500 mt-1">Closed/Resolved</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">Budget Utilization</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-600">Critical Issues</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-orange-600">{avgBudget}%</div>
-                  <p className="text-xs text-gray-500 mt-1">average usage</p>
+                  <div className="text-3xl font-bold text-red-600">{metrics.criticalTickets}</div>
+                  <p className="text-xs text-gray-500 mt-1">Requires immediate attention</p>
                 </CardContent>
               </Card>
             </div>
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              {/* Workers Trend */}
-              <Card>
+              {/* Trend Chart */}
+              <Card className="lg:col-span-2">
                 <CardHeader>
-                  <CardTitle>Workers On-Site Trend</CardTitle>
-                  <CardDescription>90-day historical data</CardDescription>
+                  <CardTitle>Ticket Creation Trend (Last 30 Days)</CardTitle>
+                  <CardDescription>Compare newly created vs resolved tickets</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={analyticsData}>
+                    <LineChart data={metrics.trendData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" stroke="#9ca3af" />
+                      <XAxis dataKey="date" stroke="#9ca3af" tick={{ fontSize: 12 }} />
                       <YAxis stroke="#9ca3af" />
                       <Tooltip />
                       <Legend />
-                      <Line type="monotone" dataKey="workersOnSite" stroke="#3b82f6" name="Workers" strokeWidth={2} />
+                      <Line type="monotone" dataKey="created" stroke="#3b82f6" name="Tickets Created" strokeWidth={2} />
+                      <Line type="monotone" dataKey="resolved" stroke="#10b981" name="Tickets Resolved" strokeWidth={2} />
                     </LineChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
 
-              {/* Quality Score Trend */}
+              {/* Status Pie */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Quality Score Trend</CardTitle>
-                  <CardDescription>90-day historical data</CardDescription>
+                  <CardTitle>Status Distribution</CardTitle>
+                  <CardDescription>Overall ticket pipeline breakdown</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex items-center justify-center">
                   <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={analyticsData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" stroke="#9ca3af" />
-                      <YAxis stroke="#9ca3af" />
+                    <PieChart>
+                      <Pie
+                        data={statusData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        paddingAngle={5}
+                        dataKey="value"
+                        label
+                      >
+                        {statusData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={STATUS_COLORS[index % STATUS_COLORS.length]} />
+                        ))}
+                      </Pie>
                       <Tooltip />
                       <Legend />
-                      <Line type="monotone" dataKey="qualityScore" stroke="#10b981" name="Quality %" strokeWidth={2} />
-                    </LineChart>
+                    </PieChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
-
-              {/* Budget vs Progress */}
+              
+              {/* Priority Bar Chart */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Budget vs Progress</CardTitle>
-                  <CardDescription>Monthly comparison</CardDescription>
+                  <CardTitle>Ticket Priorities</CardTitle>
+                  <CardDescription>Volume of tickets by urgency</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={analyticsData.slice(-30)}>
+                    <BarChart data={priorityData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" stroke="#9ca3af" />
+                      <XAxis dataKey="name" stroke="#9ca3af" />
                       <YAxis stroke="#9ca3af" />
                       <Tooltip />
-                      <Legend />
-                      <Bar dataKey="budgetUtilization" fill="#f59e0b" name="Budget %" />
-                      <Bar dataKey="progressPercentage" fill="#3b82f6" name="Progress %" />
+                      <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]}>
+                        {
+                          priorityData.map((entry, index) => {
+                            const colors = ['#94a3b8', '#3b82f6', '#f59e0b', '#ef4444'];
+                            return <Cell key={`cell-${index}`} fill={colors[index]} />;
+                          })
+                        }
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
-
-              {/* Safety Incidents Pie */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Safety Status</CardTitle>
-                  <CardDescription>Last 30 days</CardDescription>
-                </CardHeader>
-                <CardContent className="flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-4xl font-bold text-green-600 mb-2">
-                      {30 - (analyticsData.slice(-30).reduce((sum, d) => sum + d.safetyIncidents, 0))}
-                    </div>
-                    <p className="text-gray-600">Incident-Free Days</p>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
-
-            {/* Detailed Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Daily Analytics Detail</CardTitle>
-                <CardDescription>Last 30 days of detailed metrics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead className="border-b">
-                      <tr>
-                        <th className="text-left py-3 px-4">Date</th>
-                        <th className="text-center py-3 px-4">Workers</th>
-                        <th className="text-center py-3 px-4">Quality</th>
-                        <th className="text-center py-3 px-4">Progress</th>
-                        <th className="text-center py-3 px-4">Budget</th>
-                        <th className="text-center py-3 px-4">Incidents</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {analyticsData.slice(-30).reverse().map((item, idx) => (
-                        <tr key={idx} className="border-b hover:bg-gray-50">
-                          <td className="py-3 px-4">{new Date(item.date).toLocaleDateString()}</td>
-                          <td className="text-center py-3 px-4 font-semibold">{item.workersOnSite}</td>
-                          <td className="text-center py-3 px-4">
-                            <span className={`px-2 py-1 rounded text-xs font-semibold ${item.qualityScore >= 80 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                              {item.qualityScore}%
-                            </span>
-                          </td>
-                          <td className="text-center py-3 px-4">{item.progressPercentage}%</td>
-                          <td className="text-center py-3 px-4">{item.budgetUtilization}%</td>
-                          <td className="text-center py-3 px-4">
-                            <span className={`px-2 py-1 rounded text-xs font-semibold ${item.safetyIncidents === 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                              {item.safetyIncidents}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </main>
       </div>
