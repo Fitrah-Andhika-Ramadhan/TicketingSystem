@@ -203,16 +203,37 @@ export default function KanbanPage() {
                   {columns.map(column => {
                     const columnTickets = tickets.filter(t => t.status === column.id);
                     // Merge career activities into OPEN column as special cards
-                    const careerCards = column.id === 'OPEN' ? careerActivities.map((a: any, i: number) => ({
-                      id: `career-${i}`,
-                      isCareer: true,
-                      ticketNumber: `KARIR-${String(i + 1).padStart(3, '0')}`,
-                      title: a.title || a.description || a.action || a.message || 'Aktivitas Pelamar',
-                      applicant: a.applicant_name || a.candidate_name || a.name || a.user || '',
-                      position: a.position || a.job_title || a.vacancy || a.job || '',
-                      status: a.status || '',
-                      createdAt: a.created_at || a.date || new Date().toISOString(),
-                    })) : [];
+                    const careerCards = column.id === 'OPEN' ? careerActivities.map((a: any, i: number) => {
+                      // Detect activity type
+                      const rawType = (a.type || a.action || a.category || '').toLowerCase();
+                      let typeLabel = 'UPDATE';
+                      let typeColor = 'bg-blue-100 text-blue-700';
+                      if (rawType.includes('bug') || rawType.includes('fix') || rawType.includes('error')) {
+                        typeLabel = '🐛 BUG FIX';
+                        typeColor = 'bg-red-100 text-red-700';
+                      } else if (rawType.includes('feature') || rawType.includes('fitur') || rawType.includes('new') || rawType.includes('baru')) {
+                        typeLabel = '✨ FITUR BARU';
+                        typeColor = 'bg-green-100 text-green-700';
+                      } else if (rawType.includes('update') || rawType.includes('change') || rawType.includes('perubahan')) {
+                        typeLabel = '🔄 UPDATE';
+                        typeColor = 'bg-blue-100 text-blue-700';
+                      } else if (rawType.includes('deploy') || rawType.includes('release')) {
+                        typeLabel = '🚀 DEPLOY';
+                        typeColor = 'bg-purple-100 text-purple-700';
+                      }
+                      return {
+                        id: `career-${i}`,
+                        isCareer: true,
+                        ticketNumber: `FITRU-${String(i + 1).padStart(3, '0')}`,
+                        typeLabel,
+                        typeColor,
+                        title: a.title || a.description || a.message || a.action || a.name || 'Aktivitas Career Web',
+                        detail: a.detail || a.notes || a.body || a.content || '',
+                        author: a.author || a.user || a.changed_by || a.created_by || '',
+                        module: a.module || a.feature || a.component || a.page || '',
+                        createdAt: a.created_at || a.date || a.timestamp || new Date().toISOString(),
+                      };
+                    }) : [];
                     
                     return (
                       <div key={column.id} className="w-80 flex flex-col bg-slate-100/50 rounded-xl border border-slate-200">
@@ -233,23 +254,27 @@ export default function KanbanPage() {
                               {/* Career activity cards in OPEN column */}
                               {careerCards.map((card, index) => (
                                 <div key={card.id} className="mb-3">
-                                  <Card className="shadow-sm hover:shadow-md transition-shadow border-indigo-200 bg-indigo-50/30">
+                                  <Card className="shadow-sm hover:shadow-md transition-shadow border-indigo-200 bg-gradient-to-br from-white to-indigo-50/40">
                                     <CardContent className="p-4 space-y-2">
                                       <div className="flex justify-between items-center">
                                         <span className="text-xs font-mono font-bold text-indigo-400">{card.ticketNumber}</span>
-                                        <span className="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold">📡 KARIR</span>
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${card.typeColor}`}>{card.typeLabel}</span>
                                       </div>
                                       <h4 className="font-bold text-slate-800 text-sm leading-snug line-clamp-2">{card.title}</h4>
-                                      {card.applicant && (
-                                        <p className="text-xs text-slate-500">👤 {card.applicant}</p>
+                                      {card.detail && (
+                                        <p className="text-xs text-slate-500 line-clamp-2">{card.detail}</p>
                                       )}
-                                      {card.position && (
-                                        <p className="text-xs text-slate-500">💼 {card.position}</p>
-                                      )}
-                                      <div className="flex items-center gap-1 text-xs text-slate-400 pt-1 border-t border-indigo-100">
+                                      <div className="flex items-center gap-2 pt-1 border-t border-indigo-100">
+                                        {card.module && (
+                                          <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">📦 {card.module}</span>
+                                        )}
+                                        {card.author && (
+                                          <span className="text-[10px] text-slate-400 ml-auto">👤 {card.author}</span>
+                                        )}
+                                      </div>
+                                      <div className="flex items-center gap-1 text-xs text-slate-400">
                                         <Calendar className="w-3 h-3" />
-                                        {new Date(card.createdAt).toLocaleDateString('id-ID')}
-                                        {card.status && <span className="ml-auto text-indigo-500 font-semibold">{card.status}</span>}
+                                        {new Date(card.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                                       </div>
                                     </CardContent>
                                   </Card>
