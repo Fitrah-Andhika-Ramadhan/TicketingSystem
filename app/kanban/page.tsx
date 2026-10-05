@@ -271,36 +271,45 @@ export default function KanbanPage() {
                             >
                               {/* Career activity cards in OPEN column */}
                               {careerCards.map((card, index) => (
-                                <div key={card.id} className="mb-3">
-                                  <Card className="shadow-sm hover:shadow-md transition-shadow border-indigo-200 bg-gradient-to-br from-white to-indigo-50/40">
-                                    <CardContent className="p-4 space-y-2">
-                                      <div className="flex justify-between items-center">
-                                        <span className="text-xs font-mono font-bold text-indigo-400">{card.ticketNumber}</span>
-                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${card.typeColor}`}>{card.typeLabel}</span>
-                                      </div>
-                                      <h4 className="font-bold text-slate-800 text-sm leading-snug line-clamp-2">{card.title}</h4>
-                                      {card.detail && (
-                                        <p className="text-xs text-slate-500 line-clamp-2">{card.detail}</p>
-                                      )}
-                                      <div className="flex items-center gap-2 pt-1 border-t border-indigo-100">
-                                        {card.module && (
-                                          <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">📦 {card.module}</span>
-                                        )}
-                                        {card.author && (
-                                          <span className="text-[10px] text-slate-400 ml-auto">👤 {card.author}</span>
-                                        )}
-                                      </div>
-                                      <div className="flex items-center gap-1 text-xs text-slate-400">
-                                        <Calendar className="w-3 h-3" />
-                                        {new Date(card.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-                                </div>
+                                <Draggable key={card.id} draggableId={card.id} index={index} isDragDisabled={true}>
+                                  {(provided) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className="mb-3 opacity-90 cursor-default"
+                                    >
+                                      <Card className="shadow-sm border-indigo-200 bg-gradient-to-br from-white to-indigo-50/40">
+                                        <CardContent className="p-4 space-y-2">
+                                          <div className="flex justify-between items-center">
+                                            <span className="text-xs font-mono font-bold text-indigo-400">{card.ticketNumber}</span>
+                                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${card.typeColor}`}>{card.typeLabel}</span>
+                                          </div>
+                                          <h4 className="font-bold text-slate-800 text-sm leading-snug line-clamp-2">{card.title}</h4>
+                                          {card.detail && (
+                                            <p className="text-xs text-slate-500 line-clamp-2">{card.detail}</p>
+                                          )}
+                                          <div className="flex items-center gap-2 pt-1 border-t border-indigo-100">
+                                            {card.module && (
+                                              <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">📦 {card.module}</span>
+                                            )}
+                                            {card.author && (
+                                              <span className="text-[10px] text-slate-400 ml-auto">👤 {card.author}</span>
+                                            )}
+                                          </div>
+                                          <div className="flex items-center gap-1 text-xs text-slate-400">
+                                            <Calendar className="w-3 h-3" />
+                                            {new Date(card.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                          </div>
+                                        </CardContent>
+                                      </Card>
+                                    </div>
+                                  )}
+                                </Draggable>
                               ))}
 
                               {columnTickets.map((ticket, index) => (
-                                <Draggable key={ticket.id} draggableId={ticket.id} index={index}>
+                                <Draggable key={ticket.id} draggableId={ticket.id} index={column.id === 'OPEN' ? index + careerCards.length : index}>
                                   {(provided, snapshot) => (
                                     <div
                                       ref={provided.innerRef}
