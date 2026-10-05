@@ -195,58 +195,31 @@ export default function KanbanPage() {
               </div>
             </div>
 
-            {/* Career Activities Section */}
-            {isConnected && careerActivities.length > 0 && (
-              <div className="mb-6">
-                <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">📡 Aktivitas Terbaru dari Career Web</h2>
-                <div className="flex gap-3 overflow-x-auto pb-2">
-                  {careerActivities.slice(0, 10).map((activity: any, idx: number) => (
-                    <div key={idx} className="min-w-[280px] bg-white border border-indigo-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                      <div className="flex items-start justify-between mb-2">
-                        <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
-                          {activity.type || activity.status || 'Aktivitas'}
-                        </span>
-                        <span className="text-xs text-slate-400">
-                          {activity.created_at ? new Date(activity.created_at).toLocaleDateString('id-ID') : '-'}
-                        </span>
-                      </div>
-                      <p className="text-sm font-semibold text-slate-800 line-clamp-2">
-                        {activity.title || activity.name || activity.description || activity.message || JSON.stringify(activity).substring(0, 80)}
-                      </p>
-                      {(activity.applicant_name || activity.user_name || activity.candidate) && (
-                        <p className="text-xs text-slate-500 mt-1">
-                          👤 {activity.applicant_name || activity.user_name || activity.candidate}
-                        </p>
-                      )}
-                      {(activity.position || activity.job_title || activity.vacancy) && (
-                        <p className="text-xs text-slate-500">
-                          💼 {activity.position || activity.job_title || activity.vacancy}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
-            {isConnected && !careerLoading && careerActivities.length === 0 && (
-              <div className="mb-4 text-sm text-slate-400 italic">
-                Belum ada aktivitas dari Career Web yang terdeteksi.
-              </div>
-            )}
 
             <div className="flex-1 overflow-x-auto pb-4">
               <DragDropContext onDragEnd={onDragEnd}>
                 <div className="flex gap-6 h-full min-w-max">
                   {columns.map(column => {
                     const columnTickets = tickets.filter(t => t.status === column.id);
+                    // Merge career activities into OPEN column as special cards
+                    const careerCards = column.id === 'OPEN' ? careerActivities.map((a: any, i: number) => ({
+                      id: `career-${i}`,
+                      isCareer: true,
+                      ticketNumber: `KARIR-${String(i + 1).padStart(3, '0')}`,
+                      title: a.title || a.description || a.action || a.message || 'Aktivitas Pelamar',
+                      applicant: a.applicant_name || a.candidate_name || a.name || a.user || '',
+                      position: a.position || a.job_title || a.vacancy || a.job || '',
+                      status: a.status || '',
+                      createdAt: a.created_at || a.date || new Date().toISOString(),
+                    })) : [];
                     
                     return (
                       <div key={column.id} className="w-80 flex flex-col bg-slate-100/50 rounded-xl border border-slate-200">
                         <div className="p-4 border-b border-slate-200 bg-slate-100 rounded-t-xl flex justify-between items-center">
                           <h3 className="font-bold text-slate-700">{column.title}</h3>
                           <span className="bg-white text-slate-500 text-xs font-bold px-2 py-1 rounded-full shadow-sm">
-                            {columnTickets.length}
+                            {columnTickets.length + (column.id === 'OPEN' ? careerCards.length : 0)}
                           </span>
                         </div>
                         
@@ -257,6 +230,32 @@ export default function KanbanPage() {
                               {...provided.droppableProps}
                               className={`flex-1 p-3 overflow-y-auto min-h-[150px] transition-colors ${snapshot.isDraggingOver ? 'bg-blue-50/50' : ''}`}
                             >
+                              {/* Career activity cards in OPEN column */}
+                              {careerCards.map((card, index) => (
+                                <div key={card.id} className="mb-3">
+                                  <Card className="shadow-sm hover:shadow-md transition-shadow border-indigo-200 bg-indigo-50/30">
+                                    <CardContent className="p-4 space-y-2">
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-xs font-mono font-bold text-indigo-400">{card.ticketNumber}</span>
+                                        <span className="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold">📡 KARIR</span>
+                                      </div>
+                                      <h4 className="font-bold text-slate-800 text-sm leading-snug line-clamp-2">{card.title}</h4>
+                                      {card.applicant && (
+                                        <p className="text-xs text-slate-500">👤 {card.applicant}</p>
+                                      )}
+                                      {card.position && (
+                                        <p className="text-xs text-slate-500">💼 {card.position}</p>
+                                      )}
+                                      <div className="flex items-center gap-1 text-xs text-slate-400 pt-1 border-t border-indigo-100">
+                                        <Calendar className="w-3 h-3" />
+                                        {new Date(card.createdAt).toLocaleDateString('id-ID')}
+                                        {card.status && <span className="ml-auto text-indigo-500 font-semibold">{card.status}</span>}
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                </div>
+                              ))}
+
                               {columnTickets.map((ticket, index) => (
                                 <Draggable key={ticket.id} draggableId={ticket.id} index={index}>
                                   {(provided, snapshot) => (
