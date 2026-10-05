@@ -34,6 +34,7 @@ export default function KanbanPage() {
   const [apiKey, setApiKey] = useState('');
   const [careerActivities, setCareerActivities] = useState<any[]>([]);
   const [careerLoading, setCareerLoading] = useState(false);
+  const [careerError, setCareerError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -130,6 +131,7 @@ export default function KanbanPage() {
   const fetchCareerActivities = async (token: string) => {
     try {
       setCareerLoading(true);
+      setCareerError(null);
       const response = await fetch('/api/career-activities', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -140,9 +142,16 @@ export default function KanbanPage() {
         setIsConnected(true);
       } else {
         console.error('Career API error:', data.error);
+        if (data.error.includes('401')) {
+           setCareerError('Token API Salah atau Kadaluarsa (401 Unauthorized)');
+        } else {
+           setCareerError(data.error);
+        }
+        setIsConnected(true); // Still connected so we show the error state
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch career activities:', error);
+      setCareerError(error.message || 'Gagal menyambung ke server');
     } finally {
       setCareerLoading(false);
     }
