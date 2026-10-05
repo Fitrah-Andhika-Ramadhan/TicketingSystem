@@ -212,9 +212,11 @@ export default function KanbanPage() {
                   {columns.map(column => {
                     const columnTickets = tickets.filter(t => t.status === column.id);
                     // Merge career activities into OPEN column as special cards
-                    const careerCards = column.id === 'OPEN' ? careerActivities.map((a: any, i: number) => {
+                    const careerCards = column.id === 'OPEN' && Array.isArray(careerActivities) ? careerActivities
+                      .filter(a => a !== null && typeof a === 'object')
+                      .map((a: any, i: number) => {
                       // Detect activity type
-                      const rawType = (a.type || a.action || a.category || '').toLowerCase();
+                      const rawType = String(a.type || a.action || a.category || '').toLowerCase();
                       let typeLabel = 'UPDATE';
                       let typeColor = 'bg-blue-100 text-blue-700';
                       if (rawType.includes('bug') || rawType.includes('fix') || rawType.includes('error')) {
@@ -230,6 +232,13 @@ export default function KanbanPage() {
                         typeLabel = '🚀 DEPLOY';
                         typeColor = 'bg-purple-100 text-purple-700';
                       }
+                      
+                      let safeDate = new Date().toISOString();
+                      try {
+                        const parsed = new Date(a.created_at || a.date || a.timestamp);
+                        if (!isNaN(parsed.getTime())) safeDate = parsed.toISOString();
+                      } catch (e) {}
+
                       return {
                         id: `career-${i}`,
                         isCareer: true,
@@ -240,7 +249,7 @@ export default function KanbanPage() {
                         detail: a.detail || a.notes || a.body || a.content || '',
                         author: a.author || a.user || a.changed_by || a.created_by || '',
                         module: a.module || a.feature || a.component || a.page || '',
-                        createdAt: a.created_at || a.date || a.timestamp || new Date().toISOString(),
+                        createdAt: safeDate,
                       };
                     }) : [];
                     
